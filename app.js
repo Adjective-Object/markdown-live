@@ -161,6 +161,7 @@
                 var this_ = this;
 
                 app.use(express.static(path.join(__dirname, 'public')));
+                app.use(express.static(process.cwd()));
 
                 app.get('/', function (req, res){
                     var view = fs.readFileSync(path.join(__dirname, 'views', 'index.haml'), 'utf8');
