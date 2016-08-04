@@ -1206,9 +1206,10 @@ pre.line-numbers>code {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    transition: background-color 0.25s, color 0.25s;
 }
 .nav a.active {
-    background: #05b491;
+    background-color: #05b491;
     color: #fff;
 }
 .nav span {
@@ -1236,6 +1237,18 @@ button#toggle-collapse {
     width: 24px;
     height: 24px;
     border: none;
+    background-color: rgba(0, 0, 0, 0.08);
+    transition: background-color 0.25s;
+
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+button#toggle-collapse:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+button#toggle-collapse:active {
+    background-color: #05b491;
 }
 button#toggle-collapse::before {
     content: "\2039";

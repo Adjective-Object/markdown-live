@@ -1,0 +1,51 @@
+<div id="nav" class="nav">
+   <button id="toggle-collapse"></button>
+    <div class="nav__scroll"> 
+        <div class="nav__inner"> 
+            <h4>Files</h4>
+
+            {{#each dirs}}
+            <div class="dir__content">
+                <span class="dir__title" title="{{this.title}}">
+                    <ul class="fix">
+
+                    {{#if this.files.length }}
+
+                    {{#each this.files}}
+                        <li>
+                            <a  href="#"
+                                data-file="{{this.id}}"
+                                title="{{this.title}}"
+                                />
+                                "{{this.name}}"
+                            </a>
+                        </li>
+                    {{/each}}
+
+                    {{else}}
+
+                        <li>
+                            <span>No files!</span>
+                        </li>
+
+                    {{/if}}
+
+                    </ul>
+                </span>
+            </div>
+        {{/each}}
+
+       </div>
+        <a class="author" href="http://www.mobily.pl" target="_blank">
+            www.mobily.pl
+        </a>
+    </div>
+</div>
+
+<section class="section__markdown">
+	<h4 class="markdown__heading">{{active.filename}}</h4>
+	<div class="markdown__body markdown-body">
+        {{body}}
+	</div>
+</section>
+
