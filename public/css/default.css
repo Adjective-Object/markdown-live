@@ -1243,3 +1243,22 @@ button#toggle-collapse::before {
 .collapsed button#toggle-collapse::before {
     content: "\203a";
 }
+@media print {
+    .section__markdown {
+        border: none;
+        margin-top: 0;
+    }
+
+    .markdown__heading,
+    .nav {
+        display: none;
+    }
+
+    .content {
+        padding-left: 24px;
+    }
+
+    hr {
+        page-break-after: always;
+    }
+}
