@@ -1,3 +1,7 @@
 node_modules/
 development/
 *.log
+*.swp
+*.swo
+public/js/*
+

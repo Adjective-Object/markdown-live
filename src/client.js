@@ -23,7 +23,7 @@ function() {
         var socketClient = io.connect(Db.socket || "http://localhost"),
             Models = {},
             Controllers = {},
-            Events = {};
+            Views = {};
 
         // Models logic
         Models.Files = Stapes.subclass({
@@ -40,11 +40,11 @@ function() {
                 socketClient.on("initialize", function(files) {
                     console.log('socketClient evt initialize', files);
 
-                    console.log('removing files')
+                    console.log('removing files', typeof(self.remove), self.remove)
                     self.remove();
                     console.log('selcting a file')
                     files[0].selected = true;
-                    console.log('pushing files')
+                    console.log('pushing files', files)
                     self.push(files);
 
                     console.log('AFTER SOCKETCLIENT INITIALIZATION', self);
@@ -81,16 +81,18 @@ function() {
                 });
             },
 
-            find: function(a) {
-                return this.get(function(b) {
-                    var c = "[object String]" === toString.call(a) ? a : a.path;
-                    return b.path === c
+            find: function(fileOrPath) {
+                return this.get(function(file) {
+                    var path = "[object String]" === toString.call(fileOrPath) 
+                            ? fileOrPath        // is path
+                            : fileOrPath.path;  // is file
+                    return file.path === path;
                 })
             },
 
             getActive: function() {
-                return this.get(function(a) {
-                    return a.selected
+                return this.get(function(file) {
+                    return file.selected
                 })
             },
 
@@ -124,7 +126,7 @@ function() {
                     markdown: document.getElementById("markdown")
                 }
 
-                this.view = new Events.Files(this.element)
+                this.view = new Views.Files(this.element);
                 this.events();
             },
 
@@ -145,14 +147,13 @@ function() {
             },
 
             render: function() {
-                console.log('render Controller, model is', this.model.files);
+                console.log('render Controller, model is', this.model.files.getAllAsArray());
 
-                var directories = _.groupBy( this.model.files, function(a) {
-                    console.log('groupby on dir', a, a.dir);
-                    return a.dir
+                var directories = _.groupBy( this.model.files.getAllAsArray(), function(a) {
+                    return a.dir;
                 });
 
-                console.log(directories);
+                console.log('directories', directories);
 
                 var directoryHTML = Template.markdown({
                     dirs: directories,
@@ -167,7 +168,7 @@ function() {
         }),
         
         // runtime event handlers
-        Events.Files = Stapes.subclass({
+        Views.Files = Stapes.subclass({
             constructor: function(a) {
                 this.element = a;
                 this.events();
@@ -185,7 +186,7 @@ function() {
 
                 Gator(document).on("click", "#toggle-collapse", function(e) {
                     e.preventDefault();
-                    // TODO move this to Model
+                    // TODO move this to Model?
                     document.getElementById('content')
                             .classList.toggle('collapsed')
                 })
@@ -223,7 +224,6 @@ function() {
                     console.log(Models[id]);
                 })
 
-                console.log(Models);
             },
 
             controllers: function() {
