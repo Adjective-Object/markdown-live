@@ -23,7 +23,9 @@ class FilesModel extends Framework {
   initialize() {
     socketClient.on('initialize', (files) => {
       this.clear();
-      files[0].selected = true;
+      if (files[0]) {
+        files[0].selected = true;
+      }
       this.push(files);
     });
   }

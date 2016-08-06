@@ -1,26 +1,28 @@
 {
-  "name": "markdown-live",
-  "version": "1.0.8",
+  "name": "md-live",
+  "version": "1.0.9",
   "description": "Markdown preview with live update.",
   "main": "app.js",
-  "author": "Marcin Dziewulski <hello@mobily.pl>",
+  "scripts": {
+    "dist": "webpack --config webpack.config.dist.js && tar -c -f md-live.tar --transform 's,^,md-live/,' app.js public bin package.json README.md views"
+  },
+  "author": "Maxwell Huang-Hobbs <mhuan13@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "express": "^4.10.4",
     "filewatcher": "^2.0.1",
-    "gator": "^1.2.4",
     "hamljs": "^0.6.2",
-    "handlebars": "^4.0.5",
     "marked": "^0.3.2",
     "minimist": "^1.1.0",
     "open": "0.0.5",
-    "prism": "^1.0.0",
-    "prismjs": "^1.5.1",
     "socket.io": "^1.2.1",
-    "underscore": "^1.8.3",
     "watch": "^0.13.0"
   },
   "devDependencies": {
+    "gator": "^1.2.4",
+    "handlebars": "^4.0.5",
+    "prismjs": "^1.5.1",
+    "underscore": "^1.8.3",
     "babel-core": "^6.13.2",
     "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.13.2",
@@ -37,7 +39,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mobily/markdown-live.git"
+    "url": "https://github.com/Adjective-Object/markdown-live.git"
   },
   "keywords": [
     "markdown",
@@ -45,7 +47,7 @@
     "preview"
   ],
   "bugs": {
-    "url": "https://github.com/mobily/markdown-live/issues"
+    "url": "https://github.com/Adjective-Object/markdown-live/issues"
   },
-  "homepage": "https://github.com/mobily/markdown-live"
+  "homepage": "https://github.com/Adjective-Object/markdown-live"
 }
