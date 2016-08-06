@@ -1276,10 +1276,10 @@ pre.line-numbers>code {
 .collapsed #button-drawer button:nth-of-type(4) { transform: translate(0, 84px); }
 
 button#toggle-collapse::before {
-  content: "\2039";
+  content: "\2770";
 }
 .collapsed button#toggle-collapse::before {
-  content: "\203a";
+  content: "\2771";
 }
 
 
@@ -1287,7 +1287,7 @@ button#toggle-nightmode::before {
   content: "\263D";
 }
 .night button#toggle-nightmode::before {
-  content: "\263c";
+  content: "\2600";
 }
 
 
@@ -1298,8 +1298,12 @@ button#toggle-nightmode::before {
   border-color: #111111;
 }
 .night .nav h4,
-.nav .author {
+.night .nav .author {
   color: #DDDDDD;
+}
+
+.night .nav .active {
+  background-color: #5E8D87;
 }
 
 .night #button-drawer button {

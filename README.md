@@ -2,6 +2,9 @@
 
 > Markdown preview with live update
 
+Forked from [mobily/markdown-live](https://github.com/mobily/markdown-live) due
+to inctivity
+
 ## Content
 
 * [Screencasts](#screencasts)
@@ -15,9 +18,9 @@
 
 ## Screencasts
 
-![](https://raw.githubusercontent.com/mobily/markdown-live/master/screencasts/gif1.gif)
+![](https://raw.githubusercontent.com/Adjective-Object/markdown-live/master/screencasts/gif1.gif)
 
-![](https://raw.githubusercontent.com/mobily/markdown-live/master/screencasts/gif2.gif)
+![](https://raw.githubusercontent.com/Adjective-Object/markdown-live/master/screencasts/gif2.gif)
 
 ## Installation
 
@@ -88,12 +91,14 @@ AVAILABLE MARKDOWN EXTENSIONS:
 
 ## Contact
 
- - Marcin Dziewulski, <hello@mobily.pl>
- - Twitter: [@marcinmobily](https://twitter.com/marcinmobily)
+ - Maxwell Huang-Hobbs, <mhuan13@gmail.com>
+ - Twitter: [@adjectiveobject](https://twitter.com/adjectiveobject)
 
 ## Changelog
 
 ```
+2016-08-06    1.0.9    deobfuscated sources, ported to es6. added nightmode and
+                       collapsable sidebar.
 2015-01-17    1.0.8    added support for alternate filename extensions
                        added support for setting socket.io hostname  or IP address
 2014-12-09    1.0.6    watch *.md files outside the current directory (option: --file)
@@ -124,3 +129,4 @@ AVAILABLE MARKDOWN EXTENSIONS:
 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
+
