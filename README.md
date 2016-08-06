@@ -1,8 +1,8 @@
 # markdown-live
 
-> Markdown preview with live update.
+> Markdown preview with live update
 
-## Contents
+## Content
 
 * [Screencasts](#screencasts)
 * [Installation](#installation)

@@ -16,6 +16,11 @@ module.exports = {
                 query: {
                     runtime: nodeModules + '/handlebars/dist/handlebars.runtime.js'
                 }
+            },
+            {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                loader: 'babel-loader?presets[]=es2015',
             }
         ]
     },
