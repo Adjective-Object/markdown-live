@@ -134,9 +134,16 @@ class FilesView extends Framework {
 
     Gator(document).on('click', '#toggle-collapse', (e) => {
       e.preventDefault();
-      document.getElementById('content')
+      document.getElementsByTagName('body')[0]
               .classList.toggle('collapsed');
     });
+
+    Gator(document).on('click', '#toggle-nightmode', (e) => {
+      e.preventDefault();
+      document.getElementsByTagName('body')[0]
+              .classList.toggle('night');
+    });
+
   }
 }
 
