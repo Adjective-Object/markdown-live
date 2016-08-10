@@ -1114,8 +1114,6 @@ pre.line-numbers>code {
 }
 .content__inner {
   *zoom: 1;
-  padding-left: 24px;
-  padding-right: 23px;
 }
 .content__inner:before,
 .content__inner:after {
@@ -1135,30 +1133,8 @@ pre.line-numbers>code {
 }
 .section__markdown {
   max-width: 790px;
-  margin: 40px auto;
-  border: 1px solid #ddd;
-  border-radius: 3px;
   position: relative;
-  padding-top: 40px;
-}
-.section__markdown .markdown__heading {
-  background: #f5f5f5;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 14px 30px;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  margin: 0;
-  border-radius: 3px 3px 0 0;
-  border-bottom: 1px solid #ddd;
-  font-weight: bold;
-}
-.section__markdown .markdown__heading:before {
-  content: "~";
+  margin: auto;
 }
 .section__markdown .markdown__body {
   padding: 30px;
@@ -1323,15 +1299,10 @@ button#toggle-nightmode::before {
   }
 
   .night .content {
-    background-color: #333333;
+    background-color: #2a2a2a;
   }
 
-  .night .markdown__heading {
-    background-color: #222222;
-    color: #efefef;
-  }
-
-  .night .section__markdown, .night .markdown__heading {
+  .night .section__markdown {
     border-color: #111111;
   }
 
@@ -1363,7 +1334,6 @@ button#toggle-nightmode::before {
     margin-top: 0;
   }
 
-  .markdown__heading,
   .nav {
     display: none;
   }
