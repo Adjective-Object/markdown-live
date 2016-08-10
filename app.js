@@ -160,7 +160,7 @@ var renderer = new Markdown.Renderer();
               var this_ = this;
 
               app.use(express.static(path.join(__dirname, 'public')));
-              app.use(express.static(process.cwd()));
+              app.use(express.static(this.options.dir));
 
               app.get('/', function (req, res){
                   var view = fs.readFileSync(
