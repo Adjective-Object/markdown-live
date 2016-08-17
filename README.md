@@ -3,7 +3,7 @@
 > Markdown preview with live update
 
 Forked from [mobily/markdown-live](https://github.com/mobily/markdown-live) due
-to inctivity
+to inactivity
 
 ## Content
 

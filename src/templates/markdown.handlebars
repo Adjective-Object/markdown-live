@@ -50,9 +50,13 @@
     </div>
 </div>
 
-<section class="section__markdown">
-	<div class="markdown__body markdown-body">
-        {{{ current.content }}}
-	</div>
+<section class="section__document">
+    <iframe 
+        style="width: 100%"
+        onload="this.style.height=this.contentWindow.document.body.scrollHeight + 'px'"
+        id="document__body" 
+        class="document__body"
+        srcdoc="<link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;/css/{{current.type}}-document.css&quot;/>{{{escape-quotes current.content }}}">
+    </iframe>
 </section>
 

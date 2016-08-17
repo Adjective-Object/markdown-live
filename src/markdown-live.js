@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 import Framework from './Framework';
 
-let markdownTemplate = require('./markdown.handlebars');
+let markdownTemplate = require('./templates/markdown.handlebars');
 
 // Db is provided by inline script from serverS
 /* eslint-disable no-undef */

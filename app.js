@@ -94,20 +94,23 @@ var _ = {
     var name = path.basename(file);
     var dir = file.replace(name, '');
 
-    var content = "";
+    var content, type
     if (_.isMD(file)) {
       // compile with markdown
       content = Markdown(data, { renderer: renderer });
+      type = 'markdown'
     } else if (_.isStructured(file)) {
       content = StructuredDocument(file, data);
+      type = 'structured'
     }
 
     return {
       name: name, 
       dir: dir,
       path: file, 
-      markdown: data,
-      content: content
+      source: data,
+      content: content,
+      type: type
     }
   },
   
