@@ -123,7 +123,6 @@ class FilesController extends Framework {
   }
 }
 
-
 // runtime event handlers
 class FilesView extends Framework {
   initialize() {}
@@ -136,14 +135,12 @@ class FilesView extends Framework {
 
     Gator(document).on('click', '#toggle-collapse', (e) => {
       e.preventDefault();
-      document.getElementsByTagName('body')[0]
-              .classList.toggle('collapsed');
+      toggleStateClass('collapsed')
     });
 
     Gator(document).on('click', '#toggle-nightmode', (e) => {
       e.preventDefault();
-      document.getElementsByTagName('body')[0]
-              .classList.toggle('night');
+      toggleStateClass('night')
     });
 
   }
@@ -153,8 +150,22 @@ const init = () => {
   Views.Files = new FilesView();
   Models.Files = new FilesModel();
   Controllers.Files = new FilesController();
+
+  window.addEventListener('keydown', function(evt) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key === 'p') {
+      evt.preventDefault();
+      var iframe = document.getElementById('document__body');
+      iframe.focus();
+      iframe.contentWindow.print();      
+    }
+  });
 };
 
+function toggleStateClass(className) {
+  document.getElementsByTagName('body')[0]
+          .classList.toggle(className);  
+  document.getElementById('document__body')
+          .contentDocument.body.classList.toggle(className);         
+}
+
 export default init;
-
-

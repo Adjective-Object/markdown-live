@@ -860,3 +860,26 @@ pre.line-numbers>code {
   margin: auto;
 }
 
+
+@media screen {
+  body.night {
+    color: #EFEFEF;
+    background-color: #2a2a2a;
+  }
+
+  .night .highlight,
+  .night .highlight pre code,
+  .night .highlight pre {
+    background-color: #1D1F21;
+    color: #f8f8f2;
+    text-shadow: 0 1px black;
+  }
+
+  .night blockquote {
+    color: #aaaaaa;
+  }
+
+  .night body a {
+    color: #81A2BE;
+  }
+}

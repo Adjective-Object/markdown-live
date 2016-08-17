@@ -252,30 +252,6 @@ button#toggle-nightmode::before {
     background-color: #2a2a2a;
   }
 
-  .night .section__document {
-    border-color: #111111;
-  }
-
-  .night .document__body {
-    color: #EFEFEF;
-    background-color: #2a2a2a;
-  }
-
-  .night .highlight,
-  .night .highlight pre code,
-  .night .highlight pre {
-    background-color: #1D1F21;
-    color: #f8f8f2;
-    text-shadow: 0 1px black;
-  }
-
-  .night blockquote {
-    color: #aaaaaa;
-  }
-
-  .night .document__body a {
-    color: #81A2BE;
-  }
 }
 
 @media print {
