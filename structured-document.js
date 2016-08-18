@@ -1,3 +1,5 @@
+'use strict'
+
 var handlebars = require('handlebars');
 var yaml = require('js-yaml');
 var path = require('path');
@@ -33,6 +35,8 @@ function loadDocs(data) {
 }
 
 function parseMeta(file, meta) {
+  if (!meta) return null;
+
   var templatePath = path.join(
     path.dirname(file),
     meta.template
@@ -40,6 +44,13 @@ function parseMeta(file, meta) {
 
 
   try {
+
+      for(let key in meta.helpers) {
+        handlebars.registerHelper(key, require(
+            path.join(path.dirname(file), meta.helpers[key])
+        ));
+      }
+
     if (! Object.hasOwnProperty(Templates, templatePath)) {
       Templates[templatePath] = handlebars.compile(
         fs.readFileSync(templatePath).toString()
@@ -77,7 +88,10 @@ module.exports = function buildDoc(file, data) {
   var content = loadDoc(docs);
 
   if (!docs || !meta || !content) {
-    meta = { template: errorTemplate }
+    meta = {
+        template: errorTemplate,
+        helpers: []
+    }
     content = {
       msg: 'could not load document ' +
             file + '\n\n' + data

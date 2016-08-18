@@ -125,32 +125,44 @@ class FilesController extends Framework {
       });
 
     let current = this.model.files.getActive();
+    console.log(current);
 
     this.element.nav.innerHTML = navTemplate({ dirs, current });
-    this.element.doc.innerHTML = docTemplate({ current })
+    if (current) {
+      this.element.doc.innerHTML = docTemplate({ current })
+    }
   }
 
   postRender() {
-    var iframe = this.element.doc.getElementsByTagName('iframe')[0];
-    var anchors = 
-      Array.prototype.slice.call(
-        iframe.contentDocument.getElementsByTagName('a')
-      ).filter(
-        (a) => a.href.startsWith(window.location.origin + "/#")
-      );
+    let iframes = this.element.doc.getElementsByTagName('iframe');
+    while(iframes.length !== 1) {
+      iframes[0].remove()
+    }
+    this.hijackIframe(iframes[0]);
+
+    Prism.highlightAll();
+  }
+
+  hijackIframe(iframe) {
+      var anchors = 
+        Array.prototype.slice.call(
+          iframe.contentDocument.getElementsByTagName('a')
+        ).filter(
+          (a) => a.href.startsWith(window.location.origin + "/#")
+        );
 
     anchors.forEach((a) => {
       var anchorHash = a.href.substring(a.href.indexOf('#') + 1);
       a.addEventListener('click', (evt) => {
         evt.preventDefault();
-        var container = document.getElementsByClassName('section__document')[0];
         var elem = iframe.contentDocument.getElementById(anchorHash);
 
         iframe.contentDocument.body.scrollTop = elem.offsetTop;
       });
     });
 
-    Prism.highlightAll();
+    iframe.style.height = iframe.contentDocument.body.scrollHeight + "px";
+    console.log(iframe.style);
   }
 }
 

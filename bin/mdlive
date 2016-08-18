@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-var path = require('path'),
+var path = require('path');
 var minimist = require('minimist');
-var mdlive = require(path.join(__dirname, '..', 'app'))
+var mdlive = require(path.join(__dirname, '..', 'app'));
 
 var argv = minimist( process.argv.slice(2), {
   alias: { 
@@ -14,4 +14,4 @@ var argv = minimist( process.argv.slice(2), {
   }
 });
 
-mdlive(argv);
+new mdlive(argv);
