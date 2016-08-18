@@ -92,7 +92,7 @@ class FilesController extends Framework {
 
     this.element = {
       nav: document.getElementById('nav'),
-      doc: document.getElementById('docview')
+      doc: document.getElementById('doc')
     };
 
     this.view = Views.Files;
@@ -102,7 +102,7 @@ class FilesController extends Framework {
     });
 
     this.observer.observe(
-      this.element.doc,
+      this.element.doc.contentDocument.body,
       {
         childList: true,
       }
@@ -125,21 +125,21 @@ class FilesController extends Framework {
       });
 
     let current = this.model.files.getActive();
-    console.log(current);
+
+    // TODO try to persist stylesheets between laods
+    var existingStylesheets = Array.prototype.slice.call(
+      this.element.doc.contentDocument.stylesheets || []
+    );
 
     this.element.nav.innerHTML = navTemplate({ dirs, current });
-    if (current) {
-      this.element.doc.innerHTML = docTemplate({ current })
-    }
+    existingStylesheets.forEach((e) => {
+      this.element.doc.contentDocument.stylesheets.push(e);
+    })
+    this.element.doc.contentDocument.body.innerHTML = docTemplate({current});
   }
 
   postRender() {
-    let iframes = this.element.doc.getElementsByTagName('iframe');
-    while(iframes.length !== 1) {
-      iframes[0].remove()
-    }
-    this.hijackIframe(iframes[0]);
-
+    this.hijackIframe(doc);
     Prism.highlightAll();
   }
 
@@ -161,8 +161,8 @@ class FilesController extends Framework {
       });
     });
 
-    iframe.style.height = iframe.contentDocument.body.scrollHeight + "px";
-    console.log(iframe.style);
+    iframe.style.height = 0;
+    iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + "px";
   }
 }
 
@@ -197,7 +197,7 @@ const init = () => {
   window.addEventListener('keydown', function(evt) {
     if ((evt.ctrlKey || evt.metaKey) && evt.key === 'p') {
       evt.preventDefault();
-      var iframe = document.getElementById('document__body');
+      var iframe = document.getElementsByTagName('iframe')[0];
       iframe.focus();
       iframe.contentWindow.print();      
     }

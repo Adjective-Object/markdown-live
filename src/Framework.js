@@ -1,9 +1,11 @@
 import { assign } from 'underscore';
+import { MD5 as ObjMd5 } from 'object-hash';
 
 export default class Framework {
   constructor() {
     this._guidCounter = 0;
     this.data = {};
+    this.hashes = {};
     this.listeners = {};
 
     this.initialize();
@@ -24,8 +26,14 @@ export default class Framework {
     }
   }
 
-  set(key, val) {
-    this.data[key] = val;
+  set(id, val) {
+    var valMd5 = ObjMd5(val);
+    if (this.hashes[id] === valMd5) {
+      return;
+    }
+
+    this.hashes[id] = valMd5;
+    this.data[id] = val;
     this.emit('change');
   }
 
@@ -39,7 +47,13 @@ export default class Framework {
   }
 
   update(id, newVal) {
+    var valMd5 = ObjMd5(newVal);
+    if (this.hashes[id] === valMd5) {
+      return;
+    }
+
     this.data[id] = assign(this.data[id], newVal);
+    this.hashes[id] = valMd5;
     this.emit('change');
     return this.data[id];
   }
