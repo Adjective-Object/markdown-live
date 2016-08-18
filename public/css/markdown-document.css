@@ -37,7 +37,6 @@ body {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   color: #333;
-  overflow: hidden;
   font-family: Helvetica Neue, Helvetica, Segoe UI, Arial, freesans, sans-serif;
   font-size: 16px;
   line-height: 1.6;
@@ -363,7 +362,8 @@ pre {
   margin-bottom: 0;
   word-break: normal;
 }
-c  overflow: auto;
+code {
+  overflow: auto;
   margin-top: 0;
   margin-bottom: 0;
   font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;

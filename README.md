@@ -6,7 +6,6 @@ Forked from [mobily/markdown-live](https://github.com/mobily/markdown-live) due
 to inactivity
 
 ## Content
-
 * [Screencasts](#screencasts)
 * [Installation](#installation)
 * [Usage](#usage)

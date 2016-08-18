@@ -8,7 +8,8 @@
     %link{ href: '/css/default.css', media: 'all', rel: 'stylesheet' }
   %body
     %div#content.content
-      %div#markdown.content__inner
+      %nav#nav.nav
+      %section#docview.section__document
     %script{ type: 'text/javascript' }
       != 'var Db = { socket: "'+socket+'" }'
     %script{ type: 'text/javascript', src: '/js/app.js' }

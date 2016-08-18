@@ -5,7 +5,8 @@ import _ from 'underscore';
 
 import Framework from './Framework';
 
-let markdownTemplate = require('./templates/markdown.handlebars');
+let navTemplate = require('./templates/nav.handlebars');
+let docTemplate = require('./templates/document.handlebars');
 
 // Db is provided by inline script from serverS
 /* eslint-disable no-undef */
@@ -90,10 +91,22 @@ class FilesController extends Framework {
     this.model.files = Models.Files;
 
     this.element = {
-      markdown: document.getElementById('markdown')
+      nav: document.getElementById('nav'),
+      doc: document.getElementById('docview')
     };
 
     this.view = Views.Files;
+
+    this.observer = new MutationObserver(() => {
+      setTimeout(this.postRender.bind(this), 100)
+    });
+
+    this.observer.observe(
+      this.element.doc,
+      {
+        childList: true,
+      }
+    );
   }
 
   events() {
@@ -101,24 +114,42 @@ class FilesController extends Framework {
 
     this.view.on('switchFile', (a) => {
       this.model.files.select(a);
-    }
-    );
+    });
   }
 
   render() {
-    let directories = _.groupBy(
+    let dirs = _.groupBy(
         this.model.files.asList(),
         (a) => {
           return a.dir;
-        });
+      });
 
+    let current = this.model.files.getActive();
 
-    let directoryHTML = markdownTemplate({
-      dirs: directories,
-      current: this.model.files.getActive()
+    this.element.nav.innerHTML = navTemplate({ dirs, current });
+    this.element.doc.innerHTML = docTemplate({ current })
+  }
+
+  postRender() {
+    var iframe = this.element.doc.getElementsByTagName('iframe')[0];
+    var anchors = 
+      Array.prototype.slice.call(
+        iframe.contentDocument.getElementsByTagName('a')
+      ).filter(
+        (a) => a.href.startsWith(window.location.origin + "/#")
+      );
+
+    anchors.forEach((a) => {
+      var anchorHash = a.href.substring(a.href.indexOf('#') + 1);
+      a.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        var container = document.getElementsByClassName('section__document')[0];
+        var elem = iframe.contentDocument.getElementById(anchorHash);
+
+        iframe.contentDocument.body.scrollTop = elem.offsetTop;
+      });
     });
 
-    this.element.markdown.innerHTML = directoryHTML;
     Prism.highlightAll();
   }
 }
@@ -162,10 +193,11 @@ const init = () => {
 };
 
 function toggleStateClass(className) {
-  document.getElementsByTagName('body')[0]
-          .classList.toggle(className);  
+  var body = document.getElementsByTagName('body')[0];
+  body.classList.toggle(className);  
   document.getElementById('document__body')
-          .contentDocument.body.classList.toggle(className);         
+          .contentDocument.body
+          .classList.toggle(className, body.classList.contains(className));
 }
 
 export default init;
