@@ -77,6 +77,11 @@ class FilesModel extends Framework {
   }
 
   select(id) {
+    // do nothing i the document is already active
+    if (id === this.getActive()._id) {
+      return;
+    }
+
     this.unselect();
     return this.update(id, {
       selected: true
