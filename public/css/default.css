@@ -183,13 +183,14 @@ ul.fix li {
 }
 
 #docview {
-  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-iframe {
-  min-height: 100%
+iframe#doc {
+  position: relative;
   height: 100%;
-  min-height: 100%;
   width: 100%;
   border: none;
 }

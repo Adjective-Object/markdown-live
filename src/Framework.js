@@ -47,6 +47,7 @@ export default class Framework {
   }
 
   update(id, newVal) {
+    console.log('hashing');
     var valMd5 = ObjMd5(newVal);
     if (this.hashes[id] === valMd5) {
       return;

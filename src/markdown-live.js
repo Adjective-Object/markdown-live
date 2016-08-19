@@ -97,9 +97,9 @@ class FilesController extends Framework {
 
     this.view = Views.Files;
 
-    this.observer = new MutationObserver(() => {
-      setTimeout(this.postRender.bind(this), 100)
-    });
+    this.observer = new MutationObserver(
+      this.postRender.bind(this)
+    );
 
     this.observer.observe(
       this.element.doc.contentDocument.body,
@@ -125,17 +125,34 @@ class FilesController extends Framework {
       });
 
     let current = this.model.files.getActive();
-
-    // TODO try to persist stylesheets between laods
-    var existingStylesheets = Array.prototype.slice.call(
-      this.element.doc.contentDocument.stylesheets || []
-    );
+    console.log("current:", current);
 
     this.element.nav.innerHTML = navTemplate({ dirs, current });
-    existingStylesheets.forEach((e) => {
-      this.element.doc.contentDocument.stylesheets.push(e);
-    })
-    this.element.doc.contentDocument.body.innerHTML = docTemplate({current});
+    let docHTML = current ? docTemplate({current}) : '';
+
+    // extract stylesheet links from the document and remove them
+    let stylesheets = docHTML.match(/<link[^>]*rel="stylesheet"[^>]*>/g) || [];
+    for (let stylesheet of stylesheets) {
+      docHTML = docHTML.replace(stylesheet, '');
+    }
+
+    let numExistingStyles = this.element.doc.contentDocument.styleSheets.length;
+
+    let parser = new DOMParser();
+    let tempDoc = '<html><head>' + stylesheets.join('') + '</head></body>';
+    let sheetsDoc = parser.parseFromString(tempDoc, 'text/html');
+    let sheets = sheetsDoc.getElementsByTagName('link');
+    while (sheets.length !== 0) {
+      this.element.doc.contentDocument.head.appendChild(sheets[0]);
+    }
+
+    this.element.doc.contentDocument.body.innerHTML = docHTML;
+
+    console.log('pop ' + numExistingStyles + ' styles');
+    for (let i=0; i<numExistingStyles; i++) {
+      console.log( this.element.doc.contentDocument.styleSheets );
+      this.element.doc.contentDocument.styleSheets[0].ownerNode.remove();
+    }
   }
 
   postRender() {
@@ -160,9 +177,6 @@ class FilesController extends Framework {
         iframe.contentDocument.body.scrollTop = elem.offsetTop;
       });
     });
-
-    iframe.style.height = 0;
-    iframe.style.minHeight = iframe.contentDocument.body.scrollHeight + "px";
   }
 }
 
@@ -207,7 +221,7 @@ const init = () => {
 function toggleStateClass(className) {
   var body = document.getElementsByTagName('body')[0];
   body.classList.toggle(className);  
-  document.getElementById('document__body')
+  document.getElementById('doc')
           .contentDocument.body
           .classList.toggle(className, body.classList.contains(className));
 }

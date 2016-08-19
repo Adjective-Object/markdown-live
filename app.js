@@ -98,10 +98,12 @@ var _ = {
     if (_.isMD(file)) {
       // compile with markdown
       content = Markdown(data, { renderer: renderer });
-      type = 'markdown'
+      type = 'markdown';
     } else if (_.isStructured(file)) {
       content = StructuredDocument(file, data);
-      type = 'structured'
+      type = 'structured';
+    } else {
+      type = 'unknown';
     }
 
     return {
