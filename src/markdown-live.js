@@ -153,11 +153,15 @@ class FilesController extends Framework {
 
     this.element.doc.contentDocument.body.innerHTML = docHTML;
 
-    console.log('pop ' + numExistingStyles + ' styles');
-    for (let i=0; i<numExistingStyles; i++) {
-      console.log( this.element.doc.contentDocument.styleSheets );
-      this.element.doc.contentDocument.styleSheets[0].ownerNode.remove();
-    }
+    // hold both stylesheets in the iframe until the new ones have been evaluated
+    // then pop the old ones. This avoids flashing when reloading the same document.
+    // TODO use some kind of mutationobserver to resolve this instead?
+    setTimeout(() => {
+      for (let i=0; i<numExistingStyles; i++) {
+        console.log( this.element.doc.contentDocument.styleSheets );
+        this.element.doc.contentDocument.styleSheets[0].ownerNode.remove();
+      }
+    }, 100);
   }
 
   postRender() {
