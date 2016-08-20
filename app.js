@@ -1,19 +1,24 @@
 'use strict'
 
-var fs = require('fs');
-var path = require('path');
-var express = require('express');
-var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-var haml = require('hamljs');
-var yaml = require('js-yaml');
-var filewatcher = require('filewatcher')({ interval: 1000 });
-var dirwatcher = require('watch');
-var open = require('open');
-var Markdown = require('marked');
-var StructuredDocument = require('./structured-document');
-var renderer = new Markdown.Renderer();
+let fs = require('fs');
+let path = require('path');
+let express = require('express');
+let app = express();
+let server = require('http').Server(app);
+let io = require('socket.io')(server);
+let haml = require('hamljs');
+let yaml = require('js-yaml');
+let filewatcher = require('filewatcher')({ interval: 1000 });
+let dirwatcher = require('watch');
+let open = require('open');
+
+let MarkdownDocument = require('./document-types/markdown-document');
+let StructuredDocument = require('./document-types/structured-document');
+
+let docTypes = [
+  MarkdownDocument,
+  StructuredDocument
+];
 
 var Message = {
   start: 'server: %s',
@@ -35,6 +40,11 @@ var DefaultArgs = {
   socket: 'http://localhost:2304'
 }
 
+var FileTypes = [
+  MarkdownDocument,
+  StructuredDocument
+]
+
 var _ = {
   log: function(message){
     var arr = _.argsToArr(arguments);
@@ -43,12 +53,13 @@ var _ = {
     console.log.apply(null, arr);
   },
 
-  isMD: function(file){
-    return /\.(markdown|mdown|mkdn|md|mkd|mdwn|mdtxt|mdtext)$/.test(file);
-  },
-
-  isStructured: function(file){
-    return /\.doc\.(yaml|yml)$/.test(file);
+  isWatched: function(path) {
+    for (let kind of FileTypes) {
+      if (kind.isDoc(path)) {
+        return true;
+      }
+    }
+    return false
   },
 
   isEmpty: function(arr){
@@ -94,16 +105,14 @@ var _ = {
     var name = path.basename(file);
     var dir = file.replace(name, '');
 
-    var content, type
-    if (_.isMD(file)) {
-      // compile with markdown
-      content = Markdown(data, { renderer: renderer });
-      type = 'markdown';
-    } else if (_.isStructured(file)) {
-      content = StructuredDocument(file, data);
-      type = 'structured';
-    } else {
-      type = 'unknown';
+    var content = '', type = 'unknown';
+
+    for (let kind of docTypes) {
+      if (kind.isDoc(file)) {
+        content = kind.render(file, data);
+        kind = kind.type;
+        break;
+      }
     }
 
     return {
@@ -115,19 +124,6 @@ var _ = {
       type: type
     }
   },
-  
-  renderer: function() {
-    var view = fs.readFileSync(path.join(__dirname, 'views', 'code.haml'), 'utf8');
-
-    renderer.code = function(code, lang) {
-      return haml.render(view, {
-        locals: {
-          code: code,
-          lang: lang
-        }
-      });
-    }
-  }
 }
 
 class MarkdownLive {
@@ -135,8 +131,6 @@ class MarkdownLive {
   constructor(options) {
     this.options = _.extend(DefaultArgs, options);
     this.log = (this.options.verbose) ? _.log : function() {}
-
-    _.renderer();
 
     this.url = _.joinArgs('http://localhost:', this.options.port);
 
@@ -204,15 +198,14 @@ class MarkdownLive {
     var self = this;
     var files = fs.readdirSync(this.options.dir)
       .filter(function(file){
-        return _.isMD(file) || _.isStructured(file);
+        return _.isWatched(file);
       }).map(function(name){
         return path.join(self.options.dir, name);
       }) || [];
 
     if (this.options.file) {
       this.options.file.split(',').forEach(function(file){
-        if (fs.existsSync(file) && 
-          (_.isMD(file) || _.isStructured(file))){
+        if (fs.existsSync(file) && _.isWatched(file)) {
           files.push(file);
         } else {
           _.log(Message.not_exist, file);
@@ -221,8 +214,8 @@ class MarkdownLive {
     }
 
     this.files = files.map(function(file){
-      var content = fs.readFileSync(file, 'utf8');
-      return _.buildData(file, content);
+      var data = fs.readFileSync(file, 'utf8');
+      return _.buildData(file, data);
     });
   }
 
@@ -266,7 +259,7 @@ class MarkdownLive {
       ignoreDirectoryPattern: /.+/,
       ignoreUnreadableDir: true,
       filter: function(file){
-        return _.isMD(file);
+        _.isWatched(file);
       }
     }, function(file, current, prev){
       if (_.isObject(file)) return;

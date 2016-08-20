@@ -15,11 +15,8 @@ handlebars.registerHelper('md', function(str) {
   );
 })
 
-var errorTemplate = handlebars.compile(
-  fs.readFileSync(
-    path.join(__dirname, 'error-template.handlebars')
-  ).toString()
-);
+let loadHandlebars = require('./lib.js').loadHandlebars
+let errorTemplate = loadHandlebars('./error-template.handlebars');
 
 function loadDocs(data) {
   // load handlebars template
@@ -44,22 +41,23 @@ function parseMeta(file, meta) {
 
 
   try {
-
       for(let key in meta.helpers) {
         handlebars.registerHelper(key, require(
             path.join(path.dirname(file), meta.helpers[key])
         ));
       }
 
-    if (! Object.hasOwnProperty(Templates, templatePath)) {
-      Templates[templatePath] = handlebars.compile(
-        fs.readFileSync(templatePath).toString()
-      );
-    }
-    return {
-      template: Templates[templatePath]
-    }
+      if (! Object.hasOwnProperty(Templates, templatePath)) {
+        Templates[templatePath] = handlebars.compile(
+          fs.readFileSync(templatePath).toString()
+        );
+      }
+
+      return {
+        template: Templates[templatePath]
+      }
   } catch (e) {
+    console.log(e);
     return null;
   }
 }
@@ -82,21 +80,34 @@ function loadDoc(docs) {
   }
 }
 
-module.exports = function buildDoc(file, data) {
-  var docs = loadDocs(data);
-  var meta = loadMeta(file, docs);
-  var content = loadDoc(docs);
+let StructuredDocument = {
+  isDoc: (path) => {
+    return /\.doc\.(yaml|yml)$/.test(path);
+  },
 
-  if (!docs || !meta || !content) {
-    meta = {
-        template: errorTemplate,
-        helpers: []
+  render: (path, data) => {
+    var docs = loadDocs(data);
+    var meta = loadMeta(path, docs);
+    var content = loadDoc(docs);
+
+
+    console.log(docs, meta, content);
+    if (!docs || !meta || !content) {
+      meta = {
+          template: errorTemplate,
+          helpers: []
+      }
+      content = {
+        msg: 'could not load document ' +
+              path + '\n\n' + data
+      };
     }
-    content = {
-      msg: 'could not load document ' +
-            file + '\n\n' + data
-    };
-  }
 
-  return meta.template(content);
+    return meta.template(content);
+  },
+
+  type: 'structured'
+
 }
+
+module.exports = StructuredDocument;
