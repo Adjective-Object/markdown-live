@@ -22,7 +22,6 @@ let Views = {};
 class FilesModel extends Framework {
   initialize() {
     socketClient.on('initialize', (files) => {
-      console.log('got init event', files);
       this.clear();
       if (files) {
         if (files[0]) {
@@ -118,7 +117,6 @@ class FilesController extends Framework {
 
     let current = this.model.files.getActive();
     this.element.nav.innerHTML = navTemplate({ dirs, current });
-    console.log('current:', current);
 
     if (current) {
       let newFrame = document.createElement('iframe');

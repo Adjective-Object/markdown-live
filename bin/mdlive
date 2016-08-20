@@ -10,7 +10,8 @@ var argv = minimist( process.argv.slice(2), {
     d: 'dir',
     v: 'verbose', 
     f: 'file',
-    s: 'socket'
+    s: 'socket',
+    b: 'browser'
   }
 });
 

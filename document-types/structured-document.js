@@ -91,7 +91,6 @@ let StructuredDocument = {
     var content = loadDoc(docs);
 
 
-    console.log(docs, meta, content);
     if (!docs || !meta || !content) {
       meta = {
           template: errorTemplate,

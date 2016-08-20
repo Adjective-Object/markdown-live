@@ -5,6 +5,7 @@ Usage: mdlive [OPTIONS]
 OPTIONS:
 
   -h, --help         Show this message and exit.
+  -b, --browser      Whether or not to open the viewer in a browser
   -d, --dir          Specifies the directory to find *.md files (default: current directory).
   -f, --file         Specifies *.md files to watch.
   -p, --port         Specifies the port to use (default: 2304).

@@ -36,6 +36,7 @@ var DefaultArgs = {
   dir: path.resolve('.'),
   verbose: false,
   help: false,
+  browser: false,
   file: false,
   socket: 'http://localhost:2304'
 }
@@ -286,7 +287,9 @@ class MarkdownLive {
    *  @method open
    */
   open(){
-    // open(this.url); 
+    if (this.options.browser) {
+      open(this.url); 
+    }
   }
 
   /**
@@ -295,13 +298,10 @@ class MarkdownLive {
    *  @method socket
    */
   socket(){
-    var self = this;
-
-    io.on('connection', function(socket){
-      io.emit('initialize', self.files);
+    io.on('connection', (socket) => {
+      io.emit('initialize', this.files);
     });
   }
 }
 
 module.exports = MarkdownLive;
-new MarkdownLive();
