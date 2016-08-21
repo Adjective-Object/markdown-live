@@ -107,6 +107,8 @@ class FilesController extends Framework {
     this.view.on('switchFile', (a) => {
       this.model.files.select(a);
     });
+
+    this.bindPrintRequest(window);
   }
 
   render() {
@@ -122,8 +124,12 @@ class FilesController extends Framework {
       let newFrame = document.createElement('iframe');
       newFrame.srcdoc = current.content;
 
-      // TODO initial classes based on state
-      newFrame.addEventListener('load', () => {this.postRender()});
+      // TODO defer render until after the iframe body is loaded
+      // 'load' event does not guarantee this for some reason
+      newFrame.addEventListener('load', () => {
+        this.postRender()
+      });
+
       this.element.documents.appendChild(newFrame);
     }
   }
@@ -145,12 +151,13 @@ class FilesController extends Framework {
   }
 
   hijackIframe(iframe) {
-      var anchors = 
-        Array.prototype.slice.call(
-          iframe.contentDocument.getElementsByTagName('a')
-        ).filter(
-          (a) => a.href.startsWith(window.location.origin + "/#")
-        );
+    // redirect links
+    var anchors = 
+      Array.prototype.slice.call(
+        iframe.contentDocument.getElementsByTagName('a')
+      ).filter(
+        (a) => a.href.startsWith(window.location.origin + "/#")
+      );
 
     anchors.forEach((a) => {
       var anchorHash = a.href.substring(a.href.indexOf('#') + 1);
@@ -160,6 +167,19 @@ class FilesController extends Framework {
 
         iframe.contentDocument.body.scrollTop = elem.offsetTop;
       });
+    });
+
+    this.bindPrintRequest(iframe.contentWindow);
+  }
+
+  bindPrintRequest(window) {
+    window.addEventListener('keydown', function(evt) {
+      if ((evt.ctrlKey || evt.metaKey) && evt.key === 'p') {
+        evt.preventDefault();
+        var iframe = document.getElementsByTagName('iframe')[0];
+        iframe.focus();
+        iframe.contentWindow.print();      
+      }
     });
   }
 }
@@ -183,7 +203,6 @@ class FilesView extends Framework {
       e.preventDefault();
       toggleStateClass('night')
     });
-
   }
 }
 
@@ -191,15 +210,6 @@ const init = () => {
   Views.Files = new FilesView();
   Models.Files = new FilesModel();
   Controllers.Files = new FilesController();
-
-  window.addEventListener('keydown', function(evt) {
-    if ((evt.ctrlKey || evt.metaKey) && evt.key === 'p') {
-      evt.preventDefault();
-      var iframe = document.getElementsByTagName('iframe')[0];
-      iframe.focus();
-      iframe.contentWindow.print();      
-    }
-  });
 };
 
 function toggleStateClass(className) {
