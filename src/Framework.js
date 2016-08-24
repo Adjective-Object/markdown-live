@@ -14,10 +14,11 @@ export default class Framework {
 
   push(val, emit = true) {
     if (Array.isArray(val)) {
-      for (let v of val) {
+      for (const v of val) {
         this.push(v, false);
       }
-    } else {
+    }
+    else {
       val._id = this._guidCounter++;
       this.data[val._id] = val;
     }
@@ -27,7 +28,7 @@ export default class Framework {
   }
 
   set(id, val) {
-    var valMd5 = ObjMd5(val);
+    const valMd5 = ObjMd5(val);
     if (this.hashes[id] === valMd5) {
       return;
     }
@@ -38,7 +39,7 @@ export default class Framework {
   }
 
   get(filter) {
-    for(let k in this.data) {
+    for (const k in this.data) {
       if (filter(this.data[k])) {
         return this.data[k];
       }
@@ -47,7 +48,7 @@ export default class Framework {
   }
 
   update(id, newVal) {
-    var valMd5 = ObjMd5(newVal);
+    const valMd5 = ObjMd5(newVal);
     if (this.hashes[id] === valMd5) {
       return this.data[id];
     }
@@ -61,7 +62,7 @@ export default class Framework {
   remove(filter) {
     let shouldUpdate = false;
 
-    for(let k in this.data) {
+    for (const k in this.data) {
       if (filter(this.data[k])) {
         delete this.data[k];
         shouldUpdate = true;
@@ -88,8 +89,8 @@ export default class Framework {
   }
 
   emit(evt) {
-    let args = Array.prototype.slice.call(arguments, 1);
-    for(let x of this.listeners[evt] || []) {
+    const args = Array.prototype.slice.call(arguments, 1);
+    for (const x of this.listeners[evt] || []) {
       x.apply(null, args);
     }
   }

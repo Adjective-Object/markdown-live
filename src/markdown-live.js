@@ -5,20 +5,21 @@ import _ from 'underscore';
 
 import Framework from './Framework';
 
-let navTemplate = require('./templates/nav.handlebars');
+const navTemplate = require('./templates/nav.handlebars');
 
-// Db is provided by inline script from serverS
+// Db is provided by inline script from servers
 /* eslint-disable no-undef */
-let socketHost = Db.socket || 'http://localhost';
+const socketHost = Db.socket || 'http://localhost';
 /* eslint-enable no-undef */
-let socketClient = io.connect(socketHost);
+const socketClient = io.connect(socketHost);
 
 // initializers
-let Models = {};
-let Controllers = {};
-let Views = {};
+const Models = {};
+const Controllers = {};
+const Views = {};
 
-// Models logic
+// This class is responsible for handling socket events from the server, as well
+// as keeping track of the list of files currently being edited
 class FilesModel extends Framework {
   initialize() {
     socketClient.on('initialize', (files) => {
@@ -26,22 +27,22 @@ class FilesModel extends Framework {
       if (files) {
         this.push(files);
         if (files[0]) {
-          this.select(files[0]._id)
+          this.select(files[0]._id);
         }
-
       }
     });
   }
 
   events() {
-    let pushUpdate = (file) => {
-      let existingFile = this.find(file);
+    const pushUpdate = (file) => {
+      const existingFile = this.find(file);
       if (!existingFile) {
         this.push(file);
 
-        let node = this.find(file.path);
+        const node = this.find(file.path);
         this.select(node);
-      } else {
+      }
+      else {
         this.update(existingFile._id, file);
       }
     };
@@ -50,7 +51,7 @@ class FilesModel extends Framework {
     socketClient.on('data', pushUpdate);
 
     socketClient.on('rm', (path) => {
-      let killedFile = this.find(path);
+      const killedFile = this.find(path);
       if (killedFile) {
         this.remove((x) => x._id === killedFile._id);
       }
@@ -58,7 +59,7 @@ class FilesModel extends Framework {
   }
 
   find(fileOrPath) {
-    let path = typeof (fileOrPath) === 'string'
+    const path = typeof (fileOrPath) === 'string'
         ? fileOrPath        // is path
         : fileOrPath.path;  // is file
     return this.get((file) => {
@@ -71,21 +72,21 @@ class FilesModel extends Framework {
   }
 
   unselect() {
-    let active = this.getActive();
-    if ( active ) {
+    const active = this.getActive();
+    if (active) {
       this.update(active._id, { selected: false });
     }
   }
 
   select(id) {
     // do nothing i the document is already active
-    let active = this.getActive();
-    if ( active && id === active._id) {
+    const active = this.getActive();
+    if (active && id === active._id) {
       return this.data[id];
     }
 
     this.unselect();
-    let updated = this.update(id, { selected: true });
+    const updated = this.update(id, { selected: true });
     document.title = updated ? updated.name : 'Markdown Live';
     return updated;
   }
@@ -99,7 +100,7 @@ class FilesController extends Framework {
 
     this.element = {
       nav: document.getElementById('nav'),
-      documents: document.getElementById('docview')
+      documents: document.getElementById('docview'),
     };
 
     this.view = Views.Files;
@@ -115,22 +116,22 @@ class FilesController extends Framework {
   }
 
   render() {
-    let dirs = _.groupBy(
+    const dirs = _.groupBy(
       this.model.files.asList(),
       (a) => a.dir
     );
 
-    let current = this.model.files.getActive();
+    const current = this.model.files.getActive();
     this.element.nav.innerHTML = navTemplate({ dirs, current });
 
     if (current) {
-      let newFrame = document.createElement('iframe');
+      const newFrame = document.createElement('iframe');
       newFrame.srcdoc = current.content;
 
       // TODO defer render until after the iframe body is loaded
       // 'load' event does not guarantee this for some reason
       newFrame.addEventListener('load', () => {
-        this.postRender()
+        this.postRender();
       });
 
       this.element.documents.appendChild(newFrame);
@@ -139,57 +140,38 @@ class FilesController extends Framework {
 
   postRender() {
     // dump all but the last iframe
-    let firstFrame = this.element.documents.childNodes[0];
-    let scrollLeft = firstFrame.contentDocument.body.scrollLeft;
-    let scrollTop = firstFrame.contentDocument.body.scrollTop;
+    const firstFrame = this.element.documents.childNodes[0];
+    const scrollLeft = firstFrame.contentDocument.body.scrollLeft;
+    const scrollTop = firstFrame.contentDocument.body.scrollTop;
     while(this.element.documents.childNodes.length > 1) {
       this.element.documents.childNodes[0].remove();
     }
 
-    let newFrame = this.element.documents.childNodes[0];
+    const newFrame = this.element.documents.childNodes[0];
     newFrame.contentDocument.body.scrollTop = scrollTop;
     newFrame.contentDocument.body.scrollLeft = scrollLeft;
-    this.hijackIframe(newFrame);
+    this.view.hijackIframe(newFrame);
     Prism.highlightAll();
-  }
-
-  hijackIframe(iframe) {
-    // redirect links
-    var anchors = 
-      Array.prototype.slice.call(
-        iframe.contentDocument.getElementsByTagName('a')
-      ).filter(
-        (a) => a.href.startsWith(window.location.origin + "/#")
-      );
-
-    anchors.forEach((a) => {
-      var anchorHash = a.href.substring(a.href.indexOf('#') + 1);
-      a.addEventListener('click', (evt) => {
-        evt.preventDefault();
-        var elem = iframe.contentDocument.getElementById(anchorHash);
-
-        iframe.contentDocument.body.scrollTop = elem.offsetTop;
-      });
-    });
-
-    this.bindPrintRequest(iframe.contentWindow);
-  }
-
-  bindPrintRequest(window) {
-    window.addEventListener('keydown', function(evt) {
-      if ((evt.ctrlKey || evt.metaKey) && evt.key === 'p') {
-        evt.preventDefault();
-        var iframe = document.getElementsByTagName('iframe')[0];
-        iframe.focus();
-        iframe.contentWindow.print();      
-      }
-    });
   }
 }
 
-// runtime event handlers
+// This 'Stapes' type object is responsible for handling user interaction
+// with the dom
 class FilesView extends Framework {
   initialize() {}
+
+  toggleStateClass(className) {
+    const body = document.getElementsByTagName('body')[0];
+    body.classList.toggle(className);
+    Array.prototype.slice.call(
+        document.getElementById('docview').getElementsByTagName('iframe')
+      ).forEach((e) => {
+        e.contentDocument.body.classList.toggle(
+              className,
+              body.classList.contains(className
+            ));
+      });
+  }
 
   events() {
     Gator(document).on('click', '[data-file]', (e) => {
@@ -199,12 +181,46 @@ class FilesView extends Framework {
 
     Gator(document).on('click', '#toggle-collapse', (e) => {
       e.preventDefault();
-      toggleStateClass('collapsed')
+      this.toggleStateClass('collapsed');
     });
 
     Gator(document).on('click', '#toggle-nightmode', (e) => {
       e.preventDefault();
-      toggleStateClass('night')
+      this.toggleStateClass('night');
+    });
+  }
+
+  // hijacks a same-origin iframe element's links
+  hijackIframe(iframe) {
+    // redirect links
+    const anchors =
+      Array.prototype.slice.call(
+        iframe.contentDocument.getElementsByTagName('a')
+      );
+
+    anchors.forEach((a) => {
+      if (a.href.startsWith(window.location.origin + '/#')) {
+        // hijack hash links to scroll the iframe
+        a.href = a.href.substring(a.href.indexOf('#') + 1);
+      }
+      else {
+        // hijack other links to open in a new tab
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener');
+      }
+    });
+
+    this.bindPrintRequest(iframe.contentWindow);
+  }
+
+  bindPrintRequest(window) {
+    window.addEventListener('keydown', function printHijacker(evt) {
+      if ((evt.ctrlKey || evt.metaKey) && evt.key === 'p') {
+        evt.preventDefault();
+        const iframe = document.getElementsByTagName('iframe')[0];
+        iframe.focus();
+        iframe.contentWindow.print();
+      }
     });
   }
 }
@@ -214,18 +230,5 @@ const init = () => {
   Models.Files = new FilesModel();
   Controllers.Files = new FilesController();
 };
-
-function toggleStateClass(className) {
-  var body = document.getElementsByTagName('body')[0];
-  body.classList.toggle(className);  
-  Array.prototype.slice.call(
-      document.getElementById("docview").getElementsByTagName('iframe')
-    ).forEach((e) => {
-        e.contentDocument.body.classList.toggle(
-            className,
-            body.classList.contains(className
-          ));
-      });
-}
 
 export default init;
