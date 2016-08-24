@@ -24,10 +24,11 @@ class FilesModel extends Framework {
     socketClient.on('initialize', (files) => {
       this.clear();
       if (files) {
-        if (files[0]) {
-          files[0].selected = true;
-        }
         this.push(files);
+        if (files[0]) {
+          this.select(files[0]._id)
+        }
+
       }
     });
   }
@@ -84,7 +85,9 @@ class FilesModel extends Framework {
     }
 
     this.unselect();
-    return this.update(id, { selected: true });
+    let updated = this.update(id, { selected: true });
+    document.title = updated ? updated.name : 'Markdown Live';
+    return updated;
   }
 }
 
