@@ -111,8 +111,6 @@ class FilesController extends Framework {
     this.view.on('switchFile', (a) => {
       this.model.files.select(a);
     });
-
-    this.bindPrintRequest(window);
   }
 
   render() {
@@ -158,18 +156,33 @@ class FilesController extends Framework {
 // This 'Stapes' type object is responsible for handling user interaction
 // with the dom
 class FilesView extends Framework {
-  initialize() {}
+  initialize() {
+    this.bindPrintRequest(window);
+    this.set('classes', {});
+  }
+
+  setIframeClasses(iframe) {
+    const classes = this.data.classes;
+    for (const className in classes) {
+      iframe.contentDocument.body.classList.toggle(
+        className,
+        classes[className]);
+    }
+  }
 
   toggleStateClass(className) {
+    // toggle if the class is set
+    this.set('classes', _.assign(
+      this.data.classes, {
+        [className]: !this.data.classes[className],
+      }));
+
     const body = document.getElementsByTagName('body')[0];
     body.classList.toggle(className);
     Array.prototype.slice.call(
         document.getElementById('docview').getElementsByTagName('iframe')
-      ).forEach((e) => {
-        e.contentDocument.body.classList.toggle(
-              className,
-              body.classList.contains(className
-            ));
+      ).forEach((iframe) => {
+        this.setIframeClasses(iframe);
       });
   }
 
@@ -211,6 +224,7 @@ class FilesView extends Framework {
     });
 
     this.bindPrintRequest(iframe.contentWindow);
+    this.setIframeClasses(iframe);
   }
 
   bindPrintRequest(window) {
