@@ -149,7 +149,6 @@ class FilesController extends Framework {
     newFrame.contentDocument.body.scrollTop = scrollTop;
     newFrame.contentDocument.body.scrollLeft = scrollLeft;
     this.view.hijackIframe(newFrame);
-    Prism.highlightAll();
   }
 }
 
@@ -184,6 +183,24 @@ class FilesView extends Framework {
       ).forEach((iframe) => {
         this.setIframeClasses(iframe);
       });
+  }
+
+  highlightCode(iframe) {
+    // highlight all code blocks
+    let codeBlocks = Array.prototype.slice.call(
+            iframe.contentDocument.getElementsByTagName('code'));
+    for (let block of codeBlocks) {
+        if (block.className.indexOf('lang-') !== -1) {
+            let language = /lang-([^ ]*)/g.exec(block.className)[1];
+            let prismLanguage = Prism.languages[language];
+            if (prismLanguage !== undefined) {
+                block.innerHTML = Prism.highlight(
+                        block.innerText,
+                        Prism.languages[language]
+                );
+            }
+        }
+    };
   }
 
   events() {
@@ -223,6 +240,7 @@ class FilesView extends Framework {
       }
     });
 
+    this.highlightCode(iframe);
     this.bindPrintRequest(iframe.contentWindow);
     this.setIframeClasses(iframe);
   }
