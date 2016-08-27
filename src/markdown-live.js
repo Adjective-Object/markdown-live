@@ -33,7 +33,7 @@ const Views = {};
 class Toast extends Framework {
   initialize() {
     this.elements = {
-      dock: document.getElementById("notification-dock")
+      dock: document.getElementById('notification-dock')
     };
   }
 
@@ -41,17 +41,17 @@ class Toast extends Framework {
     socketClient.on('toast', (msg) => {
       this.notify(
         msg.title,
-        msg.text,
+        msg.text || '',
         msg.kind || 'info',
         msg.actions || [],
         msg.timeout || null)
     });
   }
 
-  notify(title, text, kind=null, actions=[], timeout=2000) {
+  notify(title, text, kind='info', actions=[], timeout=0) {
     let id;
     actions.push({
-      text: "ok",
+      text: 'ok',
       action: (e) => this.dismiss(id)
     })
 
@@ -75,7 +75,7 @@ class Toast extends Framework {
     });
 
     this.elements.dock.appendChild(toast);
-    toast.style.height = toast.clientHeight + "px";
+    toast.style.height = toast.clientHeight + 'px';
   }
 
   dismiss(id) { 
@@ -116,7 +116,7 @@ class FilesModel extends Framework {
         this.push(file);
 
         const node = this.find(file.path);
-        this.select(node);
+        this.select(node._id);
       }
       else {
         this.update(existingFile._id, file);
@@ -294,7 +294,14 @@ class FilesView extends Framework {
     anchors.forEach((a) => {
       if (a.href.startsWith(window.location.origin + '/#')) {
         // hijack hash links to scroll the iframe
-        a.href = a.href.substring(a.href.indexOf('#') + 1);
+        let targetId = a.href.substring(a.href.indexOf('#') + 1);
+        a.href = a.addEventListener('click', (e) => {
+          e.preventDefault();
+          iframe.contentWindow.scrollTo(
+            0,
+            iframe.contentDocument.getElementById(targetId).offsetTop
+          );
+        });
       }
       else {
         // hijack other links to open in a new tab

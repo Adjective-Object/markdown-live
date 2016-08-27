@@ -8,7 +8,7 @@ let server = require('http').Server(app);
 let io = require('socket.io')(server);
 let haml = require('hamljs');
 let yaml = require('js-yaml');
-let filewatcher = require('filewatcher')({ interval: 1000 });
+let chokidar = require('chokidar');
 let dirwatcher = require('watch');
 let open = require('open');
 
@@ -139,6 +139,28 @@ class MarkdownLive {
     this.start();
     this.socket();
     this.open();
+
+    this.filewatcher = chokidar.watch('./*.*')
+      .on('change', this.emitFileChange.bind(this, 'data'))
+      .on('add', this.emitFileChange.bind(this, 'push'))
+      .on('unlink', this.emitRemove.bind(this))
+  }
+
+  emitFileChange(event, filepath) {
+    filepath = path.resolve(filepath);
+    fs.readFile(filepath, 'utf8', function(err, data){
+      if (err) return;
+
+      io.emit(event, _.buildData(filepath, data));
+      _.log(Message.emit, filepath);
+
+    });
+  }
+
+  emitRemove(filepath) {
+    filepath = path.resolve(filepath);
+    io.emit('rm', filepath);
+    _.log(Message.removed, filepath);
   }
 
 
@@ -168,14 +190,14 @@ class MarkdownLive {
     app.use(express.static(path.join(__dirname, 'public')));
     app.use(express.static(this.options.dir));
 
+    self.prepare();
+
     app.get('/', function (req, res){
       var view = fs.readFileSync(
         path.join(__dirname, 'views', 'index.haml'),
         'utf8');
 
       self.prepare();
-      self.watch();
-      self.check();
 
       var render = haml.render(view, {
         locals: {
@@ -217,67 +239,6 @@ class MarkdownLive {
     this.files = files.map(function(file){
       var data = fs.readFileSync(file, 'utf8');
       return _.buildData(file, data);
-    });
-  }
-
-  /**
-   *  Listen on file changes.
-   *
-   *  @method watch
-   */
-  watch(){
-    var self = this;
-
-    filewatcher.removeAll();
-
-    this.files.forEach(function(file){
-      filewatcher.add(file.path);
-      _.log(Message.watch, file.path);
-    });
-
-    filewatcher.on('change', function(file){
-      fs.readFile(file, 'utf8', function(err, data){
-        if (err) return;
-
-        io.emit('data', _.buildData(file, data));
-        _.log(Message.emit, file);
-
-      });
-    });
-  }
-
-  /**
-   *  Listen on directory changes (removing or creating .md files).
-   *
-   *  @method check
-   */
-  check(){
-    var self = this;
-
-    dirwatcher.unwatchTree(this.options.dir);
-
-    dirwatcher.watchTree(this.options.dir, { 
-      ignoreDirectoryPattern: /.+/,
-      ignoreUnreadableDir: true,
-      filter: function(file){
-        _.isWatched(file);
-      }
-    }, function(file, current, prev){
-      if (_.isObject(file)) return;
-
-      if (prev === null){
-        fs.readFile(file, 'utf8', function(err, data){
-          if (err) return;
-
-          filewatcher.add(file);
-          _.log(Message.added, file);
-          io.emit('push', _.buildData(file, data));
-        });
-      } else if (current.nlink === 0) {
-        io.emit('rm', file);
-        filewatcher.remove(file);
-        _.log(Message.removed, file);
-      }
     });
   }
 
