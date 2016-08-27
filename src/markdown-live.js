@@ -5,6 +5,11 @@ import _ from 'underscore';
 
 import Framework from './Framework';
 
+const libraries = { Prism, Gator, Framework, _ };
+function provideLibrary(name) {
+  return libraries[name];
+}
+
 const navTemplate = require('./templates/nav.handlebars');
 
 // Db is provided by inline script from servers
@@ -145,10 +150,15 @@ class FilesController extends Framework {
       this.element.documents.childNodes[0].remove();
     }
 
+    // scroll to the place the old iframe was at
     const newFrame = this.element.documents.childNodes[0];
     newFrame.contentDocument.body.scrollTop = scrollTop;
     newFrame.contentDocument.body.scrollLeft = scrollLeft;
     this.view.hijackIframe(newFrame);
+
+    // inform the iframe that the post-render processing is complete
+    const event = new CustomEvent('post-render', {});
+    newFrame.contentDocument.dispatchEvent(event);
   }
 }
 
@@ -160,7 +170,7 @@ class FilesView extends Framework {
     this.set('classes', {});
   }
 
-  setIframeClasses(iframe) {
+  setStateClasses(iframe) {
     const classes = this.data.classes;
     for (const className in classes) {
       iframe.contentDocument.body.classList.toggle(
@@ -181,26 +191,8 @@ class FilesView extends Framework {
     Array.prototype.slice.call(
         document.getElementById('docview').getElementsByTagName('iframe')
       ).forEach((iframe) => {
-        this.setIframeClasses(iframe);
+        this.setStateClasses(iframe);
       });
-  }
-
-  highlightCode(iframe) {
-    // highlight all code blocks
-    let codeBlocks = Array.prototype.slice.call(
-            iframe.contentDocument.getElementsByTagName('code'));
-    for (let block of codeBlocks) {
-        if (block.className.indexOf('lang-') !== -1) {
-            let language = /lang-([^ ]*)/g.exec(block.className)[1];
-            let prismLanguage = Prism.languages[language];
-            if (prismLanguage !== undefined) {
-                block.innerHTML = Prism.highlight(
-                        block.innerText,
-                        Prism.languages[language]
-                );
-            }
-        }
-    };
   }
 
   events() {
@@ -240,9 +232,11 @@ class FilesView extends Framework {
       }
     });
 
-    this.highlightCode(iframe);
     this.bindPrintRequest(iframe.contentWindow);
-    this.setIframeClasses(iframe);
+    this.setStateClasses(iframe);
+
+    // introduce a require-type hook in the iframe child
+    iframe.contentWindow.use = provideLibrary;
   }
 
   bindPrintRequest(window) {
