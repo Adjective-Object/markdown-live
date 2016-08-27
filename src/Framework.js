@@ -14,9 +14,7 @@ export default class Framework {
 
   push(val, emit = true) {
     if (Array.isArray(val)) {
-      for (const v of val) {
-        this.push(v, false);
-      }
+      return val.map((v) => this.push(v, false));
     }
     else {
       val._id = this._guidCounter++;
@@ -25,6 +23,7 @@ export default class Framework {
     if (emit) {
       this.emit('change');
     }
+    return val._id;
   }
 
   set(id, val) {
@@ -45,6 +44,10 @@ export default class Framework {
       }
     }
     return null;
+  }
+
+  gt(id) {
+    return this.data[id];
   }
 
   update(id, newVal) {
@@ -72,6 +75,11 @@ export default class Framework {
     if (shouldUpdate) {
       this.emit('change');
     }
+  }
+
+  rm(id) {
+    delete this.data[id];
+    this.emit('change'); 
   }
 
   clear() {

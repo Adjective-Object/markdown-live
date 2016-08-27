@@ -1,0 +1,9 @@
+<section class="notification" data-kind="{{kind}}">
+	<h2>{{title}}</h2>
+	<section>{{{text}}}</section>
+	<section class="actions">
+	{{#each actions as |action|}}
+		<button notification-action>{{action.text}}</button>
+	{{/each}}
+	</section>
+</section>

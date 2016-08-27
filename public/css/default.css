@@ -238,6 +238,84 @@ button#toggle-nightmode::before {
   content: url(/img/sun.svg);
 }
 
+.section__notifications {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 99999;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 1em;
+  padding-top: 1em;
+}
+
+.section__notifications .notification {
+  width: 300px;
+  display: block;
+  padding: 1em;
+  color: white;
+  overflow: hidden;
+
+  transition: height 0.2s, padding 0.2s, opacity 0.2s, margin 0.2s;
+  box-shadow: 0 4px 4px 0px rgba(0,0,0,0.15);
+}
+
+.section__notifications .notification .actions{
+  text-align: right;
+}
+
+.section__notifications .notification.exit {
+  height: 0 !important;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  margin-bottom: 0;
+}
+
+.section__notifications .notification h2 {
+  margin: 0;
+}
+
+.section__notifications .notification[data-kind="info"] {
+  background-color: #0C84B2;
+}
+.section__notifications .notification[data-kind="ok"] {
+  background-color: #05b491;
+}
+.section__notifications .notification[data-kind="error"] {
+  background-color: #FF5138;
+}
+
+.section__notifications .notification {
+  margin-bottom: 1em;
+}
+
+.section__notifications button {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.5);
+  background-color: transparent;
+  color: white;
+  outline: none;
+  transition: color 0.2s, background-color: 0.2s;
+}
+
+.section__notifications .notification[data-kind="info"] button:active {
+  background-color: white;
+  color: #0C84B2;
+}
+
+.section__notifications .notification[data-kind="ok"] button:active {
+  background-color: white;
+  color: #05b491;
+}
+
+.section__notifications .notification[data-kind="error"] button:active {
+  background-color: white;
+  color: #FF5138;
+}
+
+
 
 @media screen {
   .night .content,
@@ -286,5 +364,9 @@ button#toggle-nightmode::before {
 
   hr {
     page-break-after: always;
+  }
+
+  .section__notifications {
+    display: none;
   }
 }
