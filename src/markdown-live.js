@@ -334,6 +334,22 @@ const init = () => {
   Views.Files = new FilesView();
   Models.Files = new FilesModel();
   Controllers.Files = new FilesController();
+
+  socketClient.on('disconnect', () => {
+    Models.Toast.notify(
+      'disconnect',
+      'socket connection to server was lost',
+      'error'
+    )
+  });
+
+  socketClient.on('reconnect', () => {
+    Models.Toast.notify(
+      'reconnect',
+      'socket connection restored',
+      'ok'
+    )
+  });
 };
 
 export default init;
