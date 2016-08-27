@@ -340,6 +340,9 @@ button#toggle-nightmode::before {
   .night #button-drawer button:hover {
     background-color: rgba(255,255,255, 0.08);
   }
+  .night #button-drawer button:active {
+      background-color: #5E8D87;
+  }
 
   .night .content,
   .night iframe {
