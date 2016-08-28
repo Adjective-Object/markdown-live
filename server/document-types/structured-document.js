@@ -15,9 +15,8 @@ handlebars.registerHelper('md', function(str) {
   );
 });
 
-const loadHandlebars = require('./lib.js').loadHandlebars;
 const ClientError = require('./lib.js').ClientError;
-const errorTemplate = loadHandlebars('./error-template.handlebars');
+const errorTemplate = require('./error-template.handlebars');
 
 function makeClientError(text) {
   return new ClientError({
@@ -68,7 +67,7 @@ function parseMeta(file, meta) {
   try {
     for(const key in meta.helpers) {
       try {
-        handlebars.registerHelper(key, require(
+        handlebars.registerHelper(key, nodeRequire(
               path.join(path.dirname(file), meta.helpers[key])
           ));
       } catch (e) {

@@ -6,7 +6,6 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-const haml = require('hamljs');
 const chokidar = require('chokidar');
 const open = require('open');
 
@@ -20,8 +19,8 @@ const docTypes = [
 
 const _lib = require('./document-types/lib.js');
 const ClientError = _lib.ClientError;
-const loadHandlebars = _lib.loadHandlebars;
-const errorTemplate = loadHandlebars('./error-template.handlebars');
+const errorTemplate = require('handlebars-loader!./document-types/error-template.handlebars');
+const indexTemplate = require('handlebars-loader!./views/index.handlebars');
 
 const Message = {
   start: 'server: %s',
@@ -227,19 +226,11 @@ class MarkdownLive {
     self.prepare();
 
     app.get('/', function(req, res) {
-      const view = fs.readFileSync(
-        path.join(__dirname, 'views', 'index.haml'),
-        'utf8');
-
-      self.prepare();
-
-      const render = haml.render(view, {
+      res.end(indexTemplate({
         locals: {
           socket: self.options.socket,
         },
-      });
-
-      res.end(render);
+      }));
     });
 
     server.listen(this.options.port);
