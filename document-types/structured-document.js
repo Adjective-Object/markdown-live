@@ -1,61 +1,96 @@
-'use strict'
+'use strict';
 
-var handlebars = require('handlebars');
-var yaml = require('js-yaml');
-var path = require('path');
-var fs = require('fs');
+const handlebars = require('handlebars');
+const yaml = require('js-yaml');
+const path = require('path');
+const fs = require('fs');
 
-var markdown = require('marked');
-var renderer = new markdown.Renderer();
+const markdown = require('marked');
+const renderer = new markdown.Renderer();
 
-var Templates = []
+const Templates = [];
 handlebars.registerHelper('md', function(str) {
   return new handlebars.SafeString(
     markdown(str, {renderer: renderer})
   );
-})
+});
 
-let loadHandlebars = require('./lib.js').loadHandlebars
-let errorTemplate = loadHandlebars('./error-template.handlebars');
+const loadHandlebars = require('./lib.js').loadHandlebars;
+const ClientError = require('./lib.js').ClientError;
+const errorTemplate = loadHandlebars('./error-template.handlebars');
+
+function makeClientError(text) {
+  return new ClientError({
+    title: 'parse error',
+    text: text,
+    actions: [
+      {
+        text: 'docs',
+        action: 'window.open(\'http://www.purple.com\', \'_blank\');',
+      },
+    ],
+    timeout: 0,
+  });
+}
 
 function loadDocs(data) {
   // load handlebars template
-  try {
-    var docs = []
-    yaml.safeLoadAll(data, function(doc) {
-      docs.push(doc)
-    });
-    return docs;
-  } catch (e) {
-    return null;
-  }
+  const docs = [];
+  yaml.safeLoadAll(data, function(doc) {
+    docs.push(doc);
+  });
+  return docs;
 }
 
 function parseMeta(file, meta) {
-  if (!meta) return null;
+  if (!meta) {
+    throw makeClientError('no meta block');
+  }
 
-  var templatePath = path.join(
+  if (!meta.template) {
+    throw makeClientError('template not specified in meta block of document');
+  }
+
+  const templatePath = path.join(
     path.dirname(file),
     meta.template
-  )
-
+  );
 
   try {
-      for(let key in meta.helpers) {
+    fs.statSync(templatePath);
+  } catch (e) {
+    throw makeClientError(
+      'could not load template \'' +
+      meta.template + '\''
+    );
+  }
+
+  try {
+    for(const key in meta.helpers) {
+      try {
         handlebars.registerHelper(key, require(
-            path.join(path.dirname(file), meta.helpers[key])
-        ));
+              path.join(path.dirname(file), meta.helpers[key])
+          ));
+      } catch (e) {
+        throw makeClientError('could not register helper \'' +
+            meta.helpers[key] + '\'');
       }
+    }
 
-      if (! Object.hasOwnProperty(Templates, templatePath)) {
+    if (! Object.hasOwnProperty(Templates, templatePath)) {
+      try {
         Templates[templatePath] = handlebars.compile(
-          fs.readFileSync(templatePath).toString()
-        );
+            fs.readFileSync(templatePath).toString()
+          );
+      } catch (e) {
+        throw makeClientError('error compiling template \'' +
+            meta.template + '\'');
       }
+    }
 
-      return {
-        template: Templates[templatePath]
-      }
+    return {
+      template: Templates[templatePath],
+    };
   } catch (e) {
     console.log(e);
     return null;
@@ -65,48 +100,51 @@ function parseMeta(file, meta) {
 function loadMeta(file, docs) {
   if (!docs) return null;
   switch(docs.length) {
-    case 1: return defaultMeta
-    case 2: return parseMeta(file, docs[0])
-    default: return null
+  case 1: return defaultMeta;
+  case 2: return parseMeta(file, docs[0]);
+  default: return null;
   }
 }
 
 function loadDoc(docs) {
   if (!docs) return null;
   switch(docs.length) {
-    case 1: return docs[0]
-    case 2: return docs[1]
-    default: return null
+  case 1: return docs[0];
+  case 2: return docs[1];
+  default: return null;
   }
 }
 
-let StructuredDocument = {
+const StructuredDocument = {
   isDoc: (path) => {
     return /\.doc\.(yaml|yml)$/.test(path);
   },
 
   render: (path, data) => {
-    var docs = loadDocs(data);
-    var meta = loadMeta(path, docs);
-    var content = loadDoc(docs);
+    const docs = loadDocs(data);
+    if (docs.length !== 1 && docs.length !== 2) {
+      throw makeClientError('expected 2 yaml documents. See the documentation');
+    }
 
+    let meta = loadMeta(path, docs);
+    let content = loadDoc(docs);
 
     if (!docs || !meta || !content) {
       meta = {
-          template: errorTemplate,
-          helpers: []
-      }
+        template: errorTemplate,
+        helpers: [],
+      };
       content = {
         msg: 'could not load document ' +
-              path + '\n\n' + data
+              path + '\n\n' + data,
       };
     }
 
     return meta.template(content);
   },
 
-  type: 'structured'
+  type: 'structured',
 
-}
+};
 
 module.exports = StructuredDocument;

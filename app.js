@@ -1,26 +1,29 @@
-'use strict'
+'use strict';
 
-let fs = require('fs');
-let path = require('path');
-let express = require('express');
-let app = express();
-let server = require('http').Server(app);
-let io = require('socket.io')(server);
-let haml = require('hamljs');
-let yaml = require('js-yaml');
-let chokidar = require('chokidar');
-let dirwatcher = require('watch');
-let open = require('open');
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+const haml = require('hamljs');
+const chokidar = require('chokidar');
+const open = require('open');
 
-let MarkdownDocument = require('./document-types/markdown-document');
-let StructuredDocument = require('./document-types/structured-document');
+const MarkdownDocument = require('./document-types/markdown-document');
+const StructuredDocument = require('./document-types/structured-document');
 
-let docTypes = [
+const docTypes = [
   MarkdownDocument,
-  StructuredDocument
+  StructuredDocument,
 ];
 
-var Message = {
+const _lib = require('./document-types/lib.js');
+const ClientError = _lib.ClientError;
+const loadHandlebars = _lib.loadHandlebars;
+const errorTemplate = loadHandlebars('./error-template.handlebars');
+
+const Message = {
   start: 'server: %s',
   empty: 'no *.md files in %s',
   emit: 'saved: %s',
@@ -28,72 +31,72 @@ var Message = {
   added: 'added: %s',
   removed: 'removed: %s',
   not_exist: 'doesn\'t exist: %s',
-  bad_doc: 'document is malformed'
-}
+  bad_doc: 'document is malformed',
+};
 
-var DefaultArgs = {
+const DefaultArgs = {
   port: 2304,
   dir: path.resolve('.'),
   verbose: false,
   help: false,
   browser: false,
   file: false,
-  socket: 'http://localhost:2304'
-}
+  socket: 'http://localhost:2304',
+};
 
-var FileTypes = [
+const FileTypes = [
   MarkdownDocument,
-  StructuredDocument
-]
+  StructuredDocument,
+];
 
-var _ = {
-  log: function(message){
-    var arr = _.argsToArr(arguments);
+const _ = {
+  log: function log(message) {
+    const arr = _.argsToArr(arguments);
 
     arr[0] = _.joinArgs('[mdlive] ', message);
     console.log.apply(null, arr);
   },
 
-  isWatched: function(path) {
-    for (let kind of FileTypes) {
-      if (kind.isDoc(path)) {
+  isWatched: function isWatched(filepath) {
+    for (const kind of FileTypes) {
+      if (kind.isDoc(filepath)) {
         return true;
       }
     }
-    return false
+    return false;
   },
 
-  isEmpty: function(arr){
+  isEmpty: function isEmpty(arr) {
     return !arr.length;
   },
 
-  isBool: function(obj){
+  isBool: function isBool(obj) {
     return toString.call(obj) === '[object Boolean]';
   },
 
-  isObject: function(obj){
-    var type = typeof obj;
+  isObject: function isObject(obj) {
+    const type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
   },
 
-  argsToArr: function(args){
+  argsToArr: function argsToarr(args) {
     return Array.prototype.slice.call(args);
   },
 
-  joinArgs: function(){
+  joinArgs: function joinArgs() {
     return _.argsToArr(arguments).join('');
   },
 
-  has: function(obj, key){
+  has: function has(obj, key) {
     return obj !== null && hasOwnProperty.call(obj, key);
   },
 
-  extend: function(obj){
-    for (var i = 1, x = arguments.length; i < x; i++){
-      var source = arguments[i];
+  extend: function extend(obj) {
+    for (let i = 1, x = arguments.length; i < x; i++) {
+      const source = arguments[i];
 
-      for (var property in source){
-        if (_.has(source, property)){
+      for (const property in source) {
+        if (_.has(source, property)) {
           obj[property] = source[property];
         }
       }
@@ -102,36 +105,52 @@ var _ = {
     return obj;
   },
 
-  buildData: function(file, data){
-    var name = path.basename(file);
-    var dir = file.replace(name, '');
+  buildData: function buildData(file, data, fallback) {
+    fallback = fallback || false;
 
-    var content = '', type = 'unknown';
+    const name = path.basename(file);
+    const dir = file.replace(name, '');
 
-    for (let kind of docTypes) {
+    let content = '', type = 'unknown';
+
+    for (const kind of docTypes) {
       if (kind.isDoc(file)) {
-        content = kind.render(file, data);
-        kind = kind.type;
+        type = kind.type;
+
+        if (fallback) {
+          try {
+            content = kind.render(file, data);
+          } catch (e) {
+            content = errorTemplate({
+              msg: e.stack,
+            });
+          }
+        }
+
+        else {
+          content = kind.render(file, data);
+        }
+
         break;
       }
     }
 
     return {
-      name: name, 
+      name: name,
       dir: dir,
-      path: file, 
+      path: file,
       source: data,
       content: content,
-      type: type
-    }
+      type: type,
+    };
   },
-}
+};
 
 class MarkdownLive {
 
   constructor(options) {
     this.options = _.extend(DefaultArgs, options);
-    this.log = (this.options.verbose) ? _.log : function() {}
+    this.log = (this.options.verbose) ? _.log : function doNothing() {};
 
     this.url = _.joinArgs('http://localhost:', this.options.port);
 
@@ -143,15 +162,31 @@ class MarkdownLive {
     this.filewatcher = chokidar.watch('./*.*')
       .on('change', this.emitFileChange.bind(this, 'data'))
       .on('add', this.emitFileChange.bind(this, 'push'))
-      .on('unlink', this.emitRemove.bind(this))
+      .on('unlink', this.emitRemove.bind(this));
   }
 
   emitFileChange(event, filepath) {
     filepath = path.resolve(filepath);
-    fs.readFile(filepath, 'utf8', function(err, data){
+    fs.readFile(filepath, 'utf8', function(err, data) {
       if (err) return;
 
-      io.emit(event, _.buildData(filepath, data));
+      try {
+        data = _.buildData(filepath, data);
+        io.emit(event, data);
+      }
+      catch (e) {
+        if (e instanceof ClientError) {
+          io.emit('toast', e.toast);
+        } else {
+          io.emit('toast', {
+            title: 'error',
+            text: e.message || e,
+            kind: 'error',
+            timeout: 0,
+          });
+        }
+      }
+
       _.log(Message.emit, filepath);
 
     });
@@ -163,7 +198,6 @@ class MarkdownLive {
     _.log(Message.removed, filepath);
   }
 
-
   /**
    *  Show help.
    *
@@ -172,9 +206,9 @@ class MarkdownLive {
   help() {
     if (!this.options.help) return;
 
-    var stream = fs.createReadStream(path.join(__dirname, 'help.txt'));
+    const stream = fs.createReadStream(path.join(__dirname, 'help.txt'));
     stream.pipe(process.stdout);
-    stream.on('end', function(){
+    stream.on('end', function() {
       process.exit();
     });
   }
@@ -184,26 +218,26 @@ class MarkdownLive {
    *
    *  @method start
    */
-  start(){
-    var self = this;
+  start() {
+    const self = this;
 
     app.use(express.static(path.join(__dirname, 'public')));
     app.use(express.static(this.options.dir));
 
     self.prepare();
 
-    app.get('/', function (req, res){
-      var view = fs.readFileSync(
+    app.get('/', function(req, res) {
+      const view = fs.readFileSync(
         path.join(__dirname, 'views', 'index.haml'),
         'utf8');
 
       self.prepare();
 
-      var render = haml.render(view, {
+      const render = haml.render(view, {
         locals: {
-          socket: self.options.socket
-        }
-      })
+          socket: self.options.socket,
+        },
+      });
 
       res.end(render);
     });
@@ -218,16 +252,16 @@ class MarkdownLive {
    *  @method prepare
    */
   prepare() {
-    var self = this;
-    var files = fs.readdirSync(this.options.dir)
-      .filter(function(file){
+    const self = this;
+    const files = fs.readdirSync(this.options.dir)
+      .filter(function(file) {
         return _.isWatched(file);
-      }).map(function(name){
+      }).map(function(name) {
         return path.join(self.options.dir, name);
       }) || [];
 
     if (this.options.file) {
-      this.options.file.split(',').forEach(function(file){
+      this.options.file.split(',').forEach(function(file) {
         if (fs.existsSync(file) && _.isWatched(file)) {
           files.push(file);
         } else {
@@ -236,9 +270,9 @@ class MarkdownLive {
       });
     }
 
-    this.files = files.map(function(file){
-      var data = fs.readFileSync(file, 'utf8');
-      return _.buildData(file, data);
+    this.files = files.map(function(file) {
+      const data = fs.readFileSync(file, 'utf8');
+      return _.buildData(file, data, true);
     });
   }
 
@@ -247,9 +281,9 @@ class MarkdownLive {
    *
    *  @method open
    */
-  open(){
+  open() {
     if (this.options.browser) {
-      open(this.url); 
+      open(this.url);
     }
   }
 
@@ -258,7 +292,7 @@ class MarkdownLive {
    *
    *  @method socket
    */
-  socket(){
+  socket() {
     io.on('connection', (socket) => {
       io.emit('initialize', this.files);
     });

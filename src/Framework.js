@@ -16,13 +16,14 @@ export default class Framework {
     if (Array.isArray(val)) {
       return val.map((v) => this.push(v, false));
     }
-    else {
-      val._id = this._guidCounter++;
-      this.data[val._id] = val;
-    }
+
+    val._id = this._guidCounter++;
+    this.data[val._id] = val;
+
     if (emit) {
       this.emit('change');
     }
+
     return val._id;
   }
 
@@ -79,7 +80,7 @@ export default class Framework {
 
   rm(id) {
     delete this.data[id];
-    this.emit('change'); 
+    this.emit('change');
   }
 
   clear() {

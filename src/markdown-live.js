@@ -11,7 +11,7 @@ function provideLibrary(name) {
 }
 
 function unpackTemplate(html) {
-  var template = document.createElement('template');
+  const template = document.createElement('template');
   template.innerHTML = html;
   return template.content.firstChild;
 }
@@ -33,7 +33,7 @@ const Views = {};
 class Toast extends Framework {
   initialize() {
     this.elements = {
-      dock: document.getElementById('notification-dock')
+      dock: document.getElementById('notification-dock'),
     };
   }
 
@@ -44,20 +44,32 @@ class Toast extends Framework {
         msg.text || '',
         msg.kind || 'info',
         msg.actions || [],
-        msg.timeout || null)
+        msg.timeout || null);
     });
   }
 
-  notify(title, text, kind='info', actions=[], timeout=0) {
+  notify(title, text, kind = 'info', actions = [], timeout = 0) {
     let id;
+
+    actions = actions.map((a) => {
+      if (typeof a.action === 'string') {
+        return {
+          text: a.text,
+          action: eval('(function() {' + a.action + '})'),
+        };
+      }
+
+      return a;
+    });
+
     actions.push({
       text: 'ok',
-      action: (e) => this.dismiss(id)
-    })
+      action: (e) => this.dismiss(id),
+    });
 
     // create the element, bind the actions
-    let toast = unpackTemplate(notificationTemplate({
-      title, text, kind, actions
+    const toast = unpackTemplate(notificationTemplate({
+      title, text, kind, actions,
     }));
 
     _.each(
@@ -69,24 +81,24 @@ class Toast extends Framework {
     id = this.push({
       text, kind, actions,
       timeoutHandle: timeout
-        ? setTimeout((e) => { this.dismiss(id) }, timeout)
+        ? setTimeout((e) => { this.dismiss(id); }, timeout)
         : null,
-      element: toast
+      element: toast,
     });
 
     this.elements.dock.appendChild(toast);
     toast.style.height = toast.clientHeight + 'px';
   }
 
-  dismiss(id) { 
-    let tokill = this.data[id];
+  dismiss(id) {
+    const tokill = this.data[id];
     if (tokill.timeoutHandle) {
       clearTimeout(tokill.timeoutHandle);
     }
 
     this.rm(id);
 
-    tokill.element.classList.add('exit')
+    tokill.element.classList.add('exit');
     setTimeout(() => {
       tokill.element.remove();
     }, 200);
@@ -294,7 +306,7 @@ class FilesView extends Framework {
     anchors.forEach((a) => {
       if (a.href.startsWith(window.location.origin + '/#')) {
         // hijack hash links to scroll the iframe
-        let targetId = a.href.substring(a.href.indexOf('#') + 1);
+        const targetId = a.href.substring(a.href.indexOf('#') + 1);
         a.href = a.addEventListener('click', (e) => {
           e.preventDefault();
           iframe.contentWindow.scrollTo(
@@ -339,16 +351,20 @@ const init = () => {
     Models.Toast.notify(
       'disconnect',
       'socket connection to server was lost',
-      'error'
-    )
+      'error',
+      [],
+      2000
+    );
   });
 
   socketClient.on('reconnect', () => {
     Models.Toast.notify(
       'reconnect',
       'socket connection restored',
-      'ok'
-    )
+      'ok',
+      [],
+      2000
+    );
   });
 };
 
