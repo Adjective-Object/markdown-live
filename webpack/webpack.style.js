@@ -1,3 +1,4 @@
+'use strict';
 const common = require('./common');
 const _ = require('underscore');
 const glob = require('glob');

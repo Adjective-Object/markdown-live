@@ -22,6 +22,7 @@ const ClientError = _lib.ClientError;
 const errorTemplate = require('./document-types/error-template.handlebars');
 const indexTemplate = require('./views/index.handlebars');
 
+/* eslint-disable camelcase */
 const Message = {
   start: 'server: %s',
   empty: 'no *.md files in %s',
@@ -32,6 +33,7 @@ const Message = {
   not_exist: 'doesn\'t exist: %s',
   bad_doc: 'document is malformed',
 };
+/* eslint-enable camelcase */
 
 const DefaultArgs = {
   port: 2304,
@@ -110,7 +112,8 @@ const _ = {
     const name = path.basename(file);
     const dir = file.replace(name, '');
 
-    let content = '', type = 'unknown';
+    let content = '';
+    let type = 'unknown';
 
     for (const kind of docTypes) {
       if (kind.isDoc(file)) {
@@ -119,7 +122,8 @@ const _ = {
         if (fallback) {
           try {
             content = kind.render(file, data);
-          } catch (e) {
+          }
+          catch (e) {
             content = errorTemplate({
               msg: e.stack,
             });
@@ -166,7 +170,7 @@ class MarkdownLive {
 
   emitFileChange(event, filepath) {
     filepath = path.resolve(filepath);
-    fs.readFile(filepath, 'utf8', function(err, data) {
+    fs.readFile(filepath, 'utf8', function readAndEmit(err, data) {
       if (err) return;
 
       try {
@@ -176,7 +180,8 @@ class MarkdownLive {
       catch (e) {
         if (e instanceof ClientError) {
           io.emit('toast', e.toast);
-        } else {
+        }
+        else {
           io.emit('toast', {
             title: 'error',
             text: e.message || e,
@@ -207,9 +212,7 @@ class MarkdownLive {
 
     const stream = fs.createReadStream(path.join(__dirname, 'help.txt'));
     stream.pipe(process.stdout);
-    stream.on('end', function() {
-      process.exit();
-    });
+    stream.on('end', process.exit);
   }
 
   /**
@@ -220,12 +223,14 @@ class MarkdownLive {
   start() {
     const self = this;
 
+    /* eslint-disable no-undef */
     app.use(express.static(path.join(DIRNAME, 'public')));
+    /* eslint-enable no-undef */
     app.use(express.static(this.options.dir));
 
     self.prepare();
 
-    app.get('/', function(req, res) {
+    app.get('/', function renderIndex(req, res) {
       res.end(indexTemplate({
         url: self.url,
       }));
@@ -243,23 +248,24 @@ class MarkdownLive {
   prepare() {
     const self = this;
     const files = fs.readdirSync(this.options.dir)
-      .filter(function(file) {
+      .filter(function removeWatched(file) {
         return _.isWatched(file);
-      }).map(function(name) {
+      }).map(function addOptionPath(name) {
         return path.join(self.options.dir, name);
       }) || [];
 
     if (this.options.file) {
-      this.options.file.split(',').forEach(function(file) {
+      this.options.file.split(',').forEach(function addFile(file) {
         if (fs.existsSync(file) && _.isWatched(file)) {
           files.push(file);
-        } else {
+        }
+        else {
           _.log(Message.not_exist, file);
         }
       });
     }
 
-    this.files = files.map(function(file) {
+    this.files = files.map(function readAndBuild(file) {
       const data = fs.readFileSync(file, 'utf8');
       return _.buildData(file, data, true);
     });

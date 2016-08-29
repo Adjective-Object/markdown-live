@@ -9,7 +9,7 @@ const markdown = require('marked');
 const renderer = new markdown.Renderer();
 
 const Templates = [];
-handlebars.registerHelper('md', function(str) {
+handlebars.registerHelper('md', function markdownHelper(str) {
   return new handlebars.SafeString(
     markdown(str, {renderer: renderer})
   );
@@ -35,7 +35,7 @@ function makeClientError(text) {
 function loadDocs(data) {
   // load handlebars template
   const docs = [];
-  yaml.safeLoadAll(data, function(doc) {
+  yaml.safeLoadAll(data, function pushDoc(doc) {
     docs.push(doc);
   });
   return docs;
@@ -57,7 +57,8 @@ function parseMeta(file, meta) {
 
   try {
     fs.statSync(templatePath);
-  } catch (e) {
+  }
+  catch (e) {
     throw makeClientError(
       'could not load template \'' +
       meta.template + '\''
@@ -67,10 +68,13 @@ function parseMeta(file, meta) {
   try {
     for(const key in meta.helpers) {
       try {
+        /* eslint-disable no-undef */
         handlebars.registerHelper(key, nodeRequire(
               path.join(path.dirname(file), meta.helpers[key])
           ));
-      } catch (e) {
+        /* eslint-enable no-undef */
+      }
+      catch (e) {
         throw makeClientError('could not register helper \'' +
             meta.helpers[key] + '\'');
       }
@@ -81,7 +85,8 @@ function parseMeta(file, meta) {
         Templates[templatePath] = handlebars.compile(
             fs.readFileSync(templatePath).toString()
           );
-      } catch (e) {
+      }
+      catch (e) {
         throw makeClientError('error compiling template \'' +
             meta.template + '\'');
       }
@@ -90,14 +95,25 @@ function parseMeta(file, meta) {
     return {
       template: Templates[templatePath],
     };
-  } catch (e) {
+  }
+  catch (e) {
     console.log(e);
     return null;
   }
 }
 
+const defaultMeta = {
+  helpers: [],
+  template: path.join(
+    /* eslint-disable no-undef */
+    DIRNAME,
+    /* eslint-enable no-undef */
+    '/document-types/default-meta.handlebars'
+  ),
+};
+
 function loadMeta(file, docs) {
-  if (!docs) return null;
+  if (!docs) { return null; }
   switch(docs.length) {
   case 1: return defaultMeta;
   case 2: return parseMeta(file, docs[0]);
@@ -106,7 +122,7 @@ function loadMeta(file, docs) {
 }
 
 function loadDoc(docs) {
-  if (!docs) return null;
+  if (!docs) { return null; }
   switch(docs.length) {
   case 1: return docs[0];
   case 2: return docs[1];
@@ -115,17 +131,17 @@ function loadDoc(docs) {
 }
 
 const StructuredDocument = {
-  isDoc: (path) => {
-    return /\.doc\.(yaml|yml)$/.test(path);
+  isDoc: (filePath) => {
+    return (/\.doc\.(yaml|yml)$/).test(filePath);
   },
 
-  render: (path, data) => {
+  render: (filePath, data) => {
     const docs = loadDocs(data);
     if (docs.length !== 1 && docs.length !== 2) {
       throw makeClientError('expected 2 yaml documents. See the documentation');
     }
 
-    let meta = loadMeta(path, docs);
+    let meta = loadMeta(filePath, docs);
     let content = loadDoc(docs);
 
     if (!docs || !meta || !content) {
@@ -135,7 +151,7 @@ const StructuredDocument = {
       };
       content = {
         msg: 'could not load document ' +
-              path + '\n\n' + data,
+              filePath + '\n\n' + data,
       };
     }
 
