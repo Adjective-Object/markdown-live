@@ -18,7 +18,12 @@ module.exports = _.chain(common.js).clone().assign({
     target: 'node',
     output: {
         path: 'dist/',
-        filename: 'server.js'
+        filename: 'server.js',
+        library: 'markdown-live',
+        libraryTarget: 'commonjs2'
     },
+
+    target: 'node',
+
     externals: nodeModules
 }).value()

@@ -2,6 +2,7 @@
 bundle: \
 	dist/server.js \
 	dist/public/js/client.js \
+	dist/public/js/client.lib.js \
 	dist/bin/mdlive \
 	dist/public/css/default.css \
 	\
@@ -19,7 +20,7 @@ dist/public/css/%.css: webpack/webpack.style.js client/css/%.scss
 dist/public/img/%.svg: client/img/%.svg dist/public/img/
 	cp $< $@ 
 
-dist/public/js/client.js: webpack/webpack.style.js \
+dist/public/js/client.js: webpack/webpack.client.js \
 		client/js/*.js \
 		client/js/templates/*.handlebars
 	webpack --config=$<
@@ -41,3 +42,6 @@ dist/bin/mdlive: server/bin/mdlive
 
 dist/public/img/:
 	mkdir -p $@
+
+watch: bundle
+	webpack --watch -d

@@ -1,7 +1,7 @@
 'use strict';
 const marked = require('marked');
 const renderer = new marked.Renderer();
-const markdownTemplate = require('handlebars-loader!./markdown-document.handlebars');
+const markdownTemplate = require('./markdown-document.handlebars');
 
 const MarkdownDocument = {
 	isDoc: (path) => {

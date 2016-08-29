@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 
-var path = require('path'),
-	argv = require('minimist')(process.argv.slice(2), {
-        alias: { 
-            h: 'help',
-            p: 'port',
-            d: 'dir',
-            v: 'verbose', 
-            f: 'file',
-            s: 'socket'
-        }
-    });
+var path = require('path');
+var argv = require('minimist')(process.argv.slice(2), {
+    alias: { 
+        h: 'help',
+        p: 'port',
+        d: 'dir',
+        v: 'verbose', 
+        f: 'file',
+        s: 'socket'
+    }
+});
 
 global.nodeRequire = require;
+global.DIRNAME = path.join(__dirname, '..');
 
-var mdlive = require(path.join(__dirname, '..', 'server'));
-mdlive();
+var mdlive = require(path.join(DIRNAME, 'server'));
+new mdlive(argv);

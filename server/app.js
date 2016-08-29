@@ -19,8 +19,8 @@ const docTypes = [
 
 const _lib = require('./document-types/lib.js');
 const ClientError = _lib.ClientError;
-const errorTemplate = require('handlebars-loader!./document-types/error-template.handlebars');
-const indexTemplate = require('handlebars-loader!./views/index.handlebars');
+const errorTemplate = require('./document-types/error-template.handlebars');
+const indexTemplate = require('./views/index.handlebars');
 
 const Message = {
   start: 'server: %s',
@@ -220,16 +220,14 @@ class MarkdownLive {
   start() {
     const self = this;
 
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(DIRNAME, 'public')));
     app.use(express.static(this.options.dir));
 
     self.prepare();
 
     app.get('/', function(req, res) {
       res.end(indexTemplate({
-        locals: {
-          socket: self.options.socket,
-        },
+        url: self.url,
       }));
     });
 

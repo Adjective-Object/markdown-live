@@ -1,4 +1,4 @@
-path = require('path');
+var path = require('path');
 
 var projectRoot = path.join(__dirname, '..');
 var nodeModules = path.join(projectRoot, 'node_modules');
@@ -15,24 +15,23 @@ var handlebarsRuntimePath = path.join(
 
 var common_js = {
     context: projectRoot,
-    loaders: [
-        { 
-            test: /\.handlebars$/,
-            loader: handlebarsLoaderPath,
-            query: { runtime: handlebarsRuntimePath }
-        },
-        {
-            test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
-            loader: 'babel-loader?presets[]=es2015',
-        }
-    ]
-}
+    module: {
+        loaders: [
+            { 
+                test: /\.handlebars$/,
+                loader: handlebarsLoaderPath,
+                query: { runtime: handlebarsRuntimePath }
+            },
+            {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                loader: 'babel-loader?presets[]=es2015',
+            }
+        ]
+    }
+};
 
-var vendor = [
-    
-]
-
+// load package.json
 module.exports = {
     js: common_js,
     nodeModules: nodeModules,

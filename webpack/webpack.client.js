@@ -9,4 +9,5 @@ module.exports = _.chain(common.js).clone().assign({
 		path: 'dist/public/js/',
 		filename: 'client.js'
 	},
+	debug: true
 }).value();
