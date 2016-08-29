@@ -12,7 +12,7 @@ fs.readdirSync(common.nodeModules)
     nodeModules[mod] = 'commonjs ' + mod;
   });
 
-module.exports = _.chain(common.js).clone().assign({
+module.exports = common.extend({
     name: 'server',
     entry: './server/app.js',
     target: 'node',
@@ -26,4 +26,4 @@ module.exports = _.chain(common.js).clone().assign({
     target: 'node',
 
     externals: nodeModules
-}).value()
+});

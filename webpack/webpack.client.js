@@ -1,13 +1,11 @@
 var common = require('./common');
-var _ = require('underscore');
 var path = require('path');
 
-module.exports = _.chain(common.js).clone().assign({
+module.exports = common.extend({
     name: 'client',
 	entry: './client/js/client.js',
 	output: {
 		path: 'dist/public/js/',
 		filename: 'client.js'
 	},
-	debug: true
-}).value();
+});

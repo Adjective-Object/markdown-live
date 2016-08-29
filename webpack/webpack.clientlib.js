@@ -1,9 +1,8 @@
 var webpack = require('webpack');
 var common = require('./common');
 var path = require('path');
-var _ = require('underscore');
 
-module.exports = _.chain(common.js).clone().assign({
+module.exports = common.extend({
     name: 'client',
 	context: __dirname,
 	entry: {
@@ -26,4 +25,4 @@ module.exports = _.chain(common.js).clone().assign({
 	    	/* filename= */'client.lib.js'
 	    )
 	]
-}).value();
+});
