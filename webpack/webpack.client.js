@@ -1,11 +1,10 @@
-var common = require('./common');
-var path = require('path');
+const common = require('./common');
 
 module.exports = common.extend({
-    name: 'client',
-	entry: './client/js/client.js',
-	output: {
-		path: 'dist/public/js/',
-		filename: 'client.js'
-	},
+  name: 'client',
+  entry: './client/js/client.js',
+  output: {
+    path: 'dist/public/js/',
+    filename: 'client.js',
+  },
 });
