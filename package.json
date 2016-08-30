@@ -4,7 +4,6 @@
   "description": "Markdown preview with live update.",
   "main": "app.js",
   "scripts": {
-    "dist": "webpack --config webpack.config.dist.js && tar -c -f md-live.tar --transform 's,^,md-live/,' app.js public bin package.json README.md views"
   },
   "author": "Maxwell Huang-Hobbs <mhuan13@gmail.com>",
   "license": "MIT",

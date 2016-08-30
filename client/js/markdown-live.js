@@ -49,7 +49,7 @@ class Toast extends Framework {
   }
 
   notify(title, text, kind = 'info', actions = [], timeout = 0) {
-    const id;
+    let id = null;
 
     actions = actions.map((a) => {
       if (typeof a.action === 'string') {

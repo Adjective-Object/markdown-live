@@ -1,4 +1,9 @@
 
+all: bundle
+dist: md-live.tar
+clean:
+	rm -rf dist
+
 bundle: \
 	dist/server.js \
 	dist/public/js/client.js \
@@ -45,3 +50,6 @@ dist/public/img/:
 
 watch: bundle
 	webpack --watch -d
+
+md-live.tar: bundle
+	tar -c -f md-live.tar dist

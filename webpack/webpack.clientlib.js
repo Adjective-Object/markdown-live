@@ -18,12 +18,11 @@ module.exports = common.extend({
   },
   output: {
     path: path.join(common.projectRoot, 'dist/public/js/'),
-    filename: '[name].js',
+    filename: 'client.lib.js',
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin(
-/* chunkName= */'vendor',
-/* filename= */'client.lib.js'
+    	'client.lib.js'
 ),
   ],
 });

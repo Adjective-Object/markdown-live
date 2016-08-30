@@ -1,4 +1,5 @@
 'use strict';
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 
@@ -14,6 +15,28 @@ const handlebarsRuntimePath = path.join(
     nodeModules,
     'handlebars/dist/handlebars.runtime.js'
 );
+
+// exit with error and remove build products if the build fails
+function exitErrorPlugin() {
+    this.plugin("done", function(stats)
+    {
+        if (stats.compilation.errors &&
+            stats.compilation.errors.length)
+        {
+            for(let x of stats.compilation.errors) {
+                console.log(x.message);
+            }
+
+            for (let a in stats.compilation.assets) {
+                console.log('unlinking', stats.compilation.assets[a].existsAt);
+                fs.unlink(stats.compilation.assets[a].existsAt);
+            }
+
+            process.exit(1);
+        }
+        // ...
+    });
+}
 
 const jsConfig = {
   context: projectRoot,
@@ -32,6 +55,7 @@ const jsConfig = {
     ],
   },
   plugins: [
+    exitErrorPlugin,
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,
@@ -83,5 +107,5 @@ module.exports = {
   js: jsConfig,
   nodeModules: nodeModules,
   projectRoot: projectRoot,
-  extend: extend,
+  extend: extend
 };
