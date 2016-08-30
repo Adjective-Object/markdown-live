@@ -52,4 +52,5 @@ watch: bundle
 	webpack --watch -d
 
 md-live.tar: bundle
-	tar -c -f md-live.tar dist
+	find dist | grep '\.map$$' | xargs rm -f
+	cd dist && tar -c -f ../$@ .
