@@ -32,9 +32,12 @@ function exitErrorPlugin() {
                 fs.unlink(stats.compilation.assets[a].existsAt);
             }
 
-            process.exit(1);
+            // recurseKeys(stats, 'stats')
+
+            if (! stats.compilation.compiler.options.watch) {
+                process.exit(1);
+            }
         }
-        // ...
     });
 }
 

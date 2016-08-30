@@ -106,6 +106,16 @@ const _ = {
     return obj;
   },
 
+  isTracked: function isTracked(filePath) {
+    for (const kind of docTypes) {
+      if (kind.isDoc(filePath)) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+
   buildData: function buildData(file, data, fallback) {
     fallback = fallback || false;
 
@@ -162,13 +172,20 @@ class MarkdownLive {
     this.socket();
     this.open();
 
-    this.filewatcher = chokidar.watch('./*.*')
+    this.filewatcher = chokidar.watch(path.join(
+        this.options.dir,
+        '*.*'
+      ))
       .on('change', this.emitFileChange.bind(this, 'data'))
-      .on('add', this.emitFileChange.bind(this, 'push'))
+      .on('add',    this.emitFileChange.bind(this, 'push'))
       .on('unlink', this.emitRemove.bind(this));
   }
 
   emitFileChange(event, filepath) {
+    if(!_.isTracked(filepath)) {
+      return;
+    }
+
     filepath = path.resolve(filepath);
     fs.readFile(filepath, 'utf8', function readAndEmit(err, data) {
       if (err) return;
