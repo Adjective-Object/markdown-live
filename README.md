@@ -79,6 +79,9 @@ AVAILABLE MARKDOWN EXTENSIONS:
   *.mdwn
   *.mdtxt
   *.mdtext
+
+AVAILABLE STRUCTURED DOCUMENT EXTENSIONS:
+  *.doc.yaml
 ```
 
 ## Contributions
