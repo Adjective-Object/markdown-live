@@ -4,6 +4,11 @@ dist: md-live.tar
 clean:
 	rm -rf dist
 
+.PHONY: lint bundle
+
+lint:
+	eslint client server
+
 bundle: \
 	dist/server.js \
 	dist/public/js/client.js \
@@ -57,3 +62,4 @@ watch: bundle
 md-live.tar: bundle dist/package.json
 	find dist | grep '\.map$$' | xargs rm -f
 	cd dist && tar -c -f ../$@ .
+

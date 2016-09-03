@@ -99,8 +99,11 @@ AVAILABLE STRUCTURED DOCUMENT EXTENSIONS:
 ## Changelog
 
 ```
-2016-08-06    1.0.9    deobfuscated sources, ported to es6. added nightmode and
-                       collapsable sidebar.
+2016-09-03    1.2.0    Moved document to an iframe srcdoc, added support for
+                       structured documents rendered from handlebars templates.
+                       Added toast messages for errors.
+2016-08-06    1.1.0    deobfuscated sources, ported to es6. added nightmode and
+                       collapsable sidebar. Began properly using semver
 2015-01-17    1.0.8    added support for alternate filename extensions
                        added support for setting socket.io hostname  or IP address
 2014-12-09    1.0.6    watch *.md files outside the current directory (option: --file)
