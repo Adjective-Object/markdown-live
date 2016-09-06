@@ -1,149 +1,63 @@
 //colors
-$gallery: #efefef;
-$color_shark_approx: #2a2a2a;
-$color_mirage_approx: #1d1f21;
-$color_spring_wood_approx: #f8f8f2;
+$affair_approx: #6e5494;
+$alto_approx: #ddd;
+$aqua_haze_approx: #eaf2f5;
+$bali_hai_approx: #81a2be;
+$barley_corn_approx: #a67f59;
 $black:  black;
-$color_silver_chalice_approx: #aaaaaa;
-$color_bali_hai_approx: #81a2be;
-$color_storm_dust_approx: #666;
-$color_mine_shaft_approx: #333;
-$color_steel_blue_approx: #4183c4;
-$color_gallery_approx: #eee;
-$color_tapa_approx: #777;
-$color_alto_approx: #ddd;
-$color_mercury_approx: #e7e7e7;
-$white: #fff;
-$color_celeste_approx: #ccc;
-$color_desert_storm_approx: #f8f8f8;
 $black_4: rgba(0, 0, 0, 0.04);
-$color_black_haze_approx: #f7f7f7;
-$color_strikemaster_approx: #945277;
-$color_trinidad_approx: #df5000;
-$color_east_bay_approx: #458;
-$color_lemon_grass_approx: #998;
-$color_mountain_mist_approx: #999;
-$teal: #008080;
-$color_bondi_blue_approx: #0086b3;
-$color_congress_blue_approx: #094e99;
-$color_seance_approx: #800080;
-$color_red_berry_approx: #900;
-$color_fuscous_gray_approx: #555;
+$black_haze_approx: #f7f7f7;
+$bondi_blue_approx: #0086b3;
+$bright_red_approx: #a00;
+$cabaret_approx: #dd4a68;
+$california_approx: #e90;
+$cardinal_pink_approx: #905;
+$celeste_approx: #ccc;
+$congress_blue_approx: #094e99;
+$cornflower_lilac_approx: #faa;
+$deep_cerulean_approx: #07a;
+$desert_storm_approx: #f8f8f8;
+$east_bay_approx: #458;
+$fun_green_approx: #017936;
+$fuscous_gray_approx: #555;
+$gallery: #efefef;
+$gallery_approx: #eee;
+$lemon_grass_approx: #998;
+$limeade_approx: #690;
+$mercury_approx: #e7e7e7;
+$mine_shaft_approx: #333;
+$mint_green_approx: #afa;
+$mirage_approx: #1d1f21;
+$mountain_mist_approx: #999;
 $navy_blue: #000080;
-$color_tamarillo_approx: #a61717;
-$color_swiss_coffee_approx: #e3d2d2;
-$color_pippin_approx: #fdd;
-$color_cornflower_lilac_approx: #faa;
-$color_bright_red_approx: #a00;
-$color_snowy_mint_approx: #dfd;
-$color_mint_green_approx: #afa;
-$color_suva_gray_approx: #888;
-$color_pink_swan_approx: #bbb;
-$color_fun_green_approx: #017936;
-$color_plum_approx: #8b467f;
-$color_aqua_haze_approx: #eaf2f5;
-$color_romance_approx: #fefefe;
-$color_nobel_approx: #b4b7b4;
-$color_affair_approx: #6e5494;
-$color_red_violet_approx: #d12089;
 $neon_carrot: #f93;
-$color_wild_sand_approx: #f5f5f5;
-$color_sail_approx: #b3d4fc;
-$color_pampas_approx: #f5f2f0;
+$nobel_approx: #b4b7b4;
+$pampas_approx: #f5f2f0;
+$pink_swan_approx: #bbb;
+$pippin_approx: #fdd;
+$plum_approx: #8b467f;
+$red_berry_approx: #900;
+$red_violet_approx: #d12089;
+$romance_approx: #fefefe;
+$sail_approx: #b3d4fc;
+$seance_approx: #800080;
+$shark_approx: #2a2a2a;
+$silver_chalice_approx: #aaaaaa;
 $slate_gray: slategray;
-$color_cardinal_pink_approx: #905;
-$color_limeade_approx: #690;
-$color_barley_corn_approx: #a67f59;
+$snowy_mint_approx: #dfd;
+$spring_wood_approx: #f8f8f2;
+$steel_blue_approx: #4183c4;
+$storm_dust_approx: #666;
+$strikemaster_approx: #945277;
+$suva_gray_approx: #888;
+$swiss_coffee_approx: #e3d2d2;
+$tamarillo_approx: #a61717;
+$tapa_approx: #777;
+$teal: #008080;
+$trinidad_approx: #df5000;
+$white: #fff;
 $white_50: rgba(255, 255, 255, 0.5);
-$color_deep_cerulean_approx: #07a;
-$color_cabaret_approx: #dd4a68;
-$color_california_approx: #e90;
-
-//@extend-elements
-//original selectors
-//h1, h2, h3, h4, h5, h6
-%extend_1 {
-  margin-top: 15px;
-  margin-bottom: 15px;
-  line-height: 1.1;
-  position: relative;
-  margin-top: 1em;
-  margin-bottom: 16px;
-  font-weight: bold;
-  line-height: 1.4;
-}
-
-//original selectors
-//h1 .octicon-link, h2 .octicon-link, h3 .octicon-link, h4 .octicon-link, h5 .octicon-link, h6 .octicon-link
-%extend_2 {
-  display: none;
-  color: $black;
-  vertical-align: middle;
-}
-
-//original selectors
-//h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor, h5:hover .anchor, h6:hover .anchor
-%extend_3 {
-  padding-left: 8px;
-  margin-left: -30px;
-  line-height: 1;
-  text-decoration: none;
-}
-
-//original selectors
-//ul, ol
-%extend_4 {
-  padding: 0;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-left: 2em;
-}
-
-//original selectors
-//.highlight pre, pre
-%extend_5 {
-  padding: 16px;
-  overflow: auto;
-  font-size: 85%;
-  line-height: 1.45;
-  background-color: $color_black_haze_approx;
-  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
-  border-radius: 3px;
-}
-
-//original selectors
-//code[class*="language-"], pre[class*="language-"]
-%extend_6 {
-  color: $black;
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
-  text-shadow: 0 1px $white;
-  font-family: Consolas, Monaco, Andale Mono, monospace;
-  direction: ltr;
-  text-align: left;
-  white-space: pre;
-  word-spacing: normal;
-  //Instead of the line below you could use @include word-break($value)
-  word-break: normal;
-  line-height: 1.5;
-  -moz-tab-size: 4;
-  -o-tab-size: 4;
-  tab-size: 4;
-  -webkit-hyphens: none;
-  -moz-hyphens: none;
-  -ms-hyphens: none;
-  //Instead of the line below you could use @include hyphens($value)
-  hyphens: none;
-}
-
-//original selectors
-//.night .highlight, .night pre code, .night pre
-%extend_7 {
-  background-color: $color_mirage_approx;
-  color: $color_spring_wood_approx;
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
-  text-shadow: 0 1px $black;
-}
-
+$wild_sand_approx: #f5f5f5;
 
 @font-face {
   font-family: octicons-anchor;
@@ -156,13 +70,25 @@ h1 {
   padding-bottom: .3em;
   font-size: 2.25em;
   line-height: 1.2;
-  border-bottom: 1px solid $color_gallery_approx;
-  @extend %extend_1;
+  border-bottom: 1px solid $gallery_approx;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
   .octicon-link {
-    @extend %extend_2;
+    display: none;
+    color: $black;
+    vertical-align: middle;
   }
   &:hover .anchor {
-    @extend %extend_3;
+    padding-left: 8px;
+    margin-left: -30px;
+    line-height: 1;
+    text-decoration: none;
     .octicon-link {
       display: inline-block;
     }
@@ -175,13 +101,25 @@ h2 {
   padding-bottom: .3em;
   font-size: 1.75em;
   line-height: 1.225;
-  border-bottom: 1px solid $color_gallery_approx;
-  @extend %extend_1;
+  border-bottom: 1px solid $gallery_approx;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
   .octicon-link {
-    @extend %extend_2;
+    display: none;
+    color: $black;
+    vertical-align: middle;
   }
   &:hover .anchor {
-    @extend %extend_3;
+    padding-left: 8px;
+    margin-left: -30px;
+    line-height: 1;
+    text-decoration: none;
     .octicon-link {
       display: inline-block;
     }
@@ -193,12 +131,24 @@ h3 {
   font-size: 16px;
   font-size: 1.5em;
   line-height: 1.43;
-  @extend %extend_1;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
   .octicon-link {
-    @extend %extend_2;
+    display: none;
+    color: $black;
+    vertical-align: middle;
   }
   &:hover .anchor {
-    @extend %extend_3;
+    padding-left: 8px;
+    margin-left: -30px;
+    line-height: 1;
+    text-decoration: none;
     .octicon-link {
       display: inline-block;
     }
@@ -209,12 +159,24 @@ h4 {
   margin: 1.33em 0;
   font-size: 14px;
   font-size: 1.25em;
-  @extend %extend_1;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
   .octicon-link {
-    @extend %extend_2;
+    display: none;
+    color: $black;
+    vertical-align: middle;
   }
   &:hover .anchor {
-    @extend %extend_3;
+    padding-left: 8px;
+    margin-left: -30px;
+    line-height: 1;
+    text-decoration: none;
     .octicon-link {
       display: inline-block;
     }
@@ -225,12 +187,24 @@ h5 {
   margin: 1.67em 0;
   font-size: 12px;
   font-size: 1em;
-  @extend %extend_1;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
   .octicon-link {
-    @extend %extend_2;
+    display: none;
+    color: $black;
+    vertical-align: middle;
   }
   &:hover .anchor {
-    @extend %extend_3;
+    padding-left: 8px;
+    margin-left: -30px;
+    line-height: 1;
+    text-decoration: none;
     .octicon-link {
       display: inline-block;
     }
@@ -241,22 +215,32 @@ h6 {
   margin: 2.33em 0;
   font-size: 11px;
   font-size: 1em;
-  color: $color_tapa_approx;
-  @extend %extend_1;
+  color: $tapa_approx;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
   .octicon-link {
-    @extend %extend_2;
+    display: none;
+    color: $black;
+    vertical-align: middle;
   }
   &:hover .anchor {
-    @extend %extend_3;
+    padding-left: 8px;
+    margin-left: -30px;
+    line-height: 1;
+    text-decoration: none;
     .octicon-link {
       display: inline-block;
     }
   }
 }
 body {
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  color: $color_mine_shaft_approx;
+  color: $mine_shaft_approx;
   font-family: Helvetica Neue, Helvetica, Segoe UI, Arial, freesans, sans-serif;
   font-size: 16px;
   line-height: 1.6;
@@ -282,7 +266,7 @@ body {
 }
 a {
   background: transparent;
-  color: $color_steel_blue_approx;
+  color: $steel_blue_approx;
   text-decoration: none;
   &:active {
     outline: 0;
@@ -308,7 +292,6 @@ code {
   margin: 0;
   font-size: 85%;
   background-color: $black_4;
-  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
   border-radius: 3px;
   overflow: auto;
   margin-top: 0;
@@ -327,17 +310,16 @@ code {
 kbd {
   font-family: monospace, monospace;
   font-size: 1em;
-  background-color: $color_mercury_approx;
-  background-image: -webkit-linear-gradient($color_romance_approx, $color_mercury_approx);
-  background-image: linear, false, $color_romance_approx, $color_mercury_approx;
+  background-color: $mercury_approx;
+  background-image: -webkit-linear-gradient($romance_approx, $mercury_approx);
+  background-image: linear, false, $romance_approx, $mercury_approx;
   background-repeat: repeat-x;
   display: inline-block;
   padding: 3px 5px;
   font: 11px Consolas, Liberation Mono, Menlo, Courier, monospace;
   line-height: 10px;
   color: $black;
-  border: 1px solid $color_celeste_approx;
-  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+  border: 1px solid $celeste_approx;
   border-radius: 2px;
 }
 pre {
@@ -345,12 +327,16 @@ pre {
   font-size: 1em;
   margin-top: 0;
   margin-bottom: 16px;
-  @extend %extend_5;
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: $black_haze_approx;
+  border-radius: 3px;
   > code {
     padding: 0;
     margin: 0;
     font-size: 100%;
-    //Instead of the line below you could use @include word-break($value)
     word-break: normal;
     white-space: pre;
     background: transparent;
@@ -383,8 +369,6 @@ pre {
   }
 }
 input[type="checkbox"] {
-  -moz-box-sizing: border-box;
-  //Instead of the line below you could use @include box-sizing($bs)
   box-sizing: border-box;
   padding: 0;
 }
@@ -395,8 +379,6 @@ th {
   padding: 0;
 }
 * {
-  -moz-box-sizing: border-box;
-  //Instead of the line below you could use @include box-sizing($bs)
   box-sizing: border-box;
 }
 input {
@@ -407,19 +389,17 @@ input {
   font: 13px/1.4 Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
 }
 hr {
-  -moz-box-sizing: content-box;
-  //Instead of the line below you could use @include box-sizing($bs)
   box-sizing: content-box;
   height: 0;
   margin: 15px 0;
   overflow: hidden;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid $color_alto_approx;
+  border-bottom: 1px solid $alto_approx;
   height: 4px;
   padding: 0;
   margin: 16px 0;
-  background-color: $color_mercury_approx;
+  background-color: $mercury_approx;
   border: 0 none;
   &:before {
     display: table;
@@ -434,7 +414,10 @@ hr {
 ol {
   margin-top: 0;
   margin-bottom: 16px;
-  @extend %extend_4;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 2em;
   margin-bottom: 1em;
   ol {
     list-style-type: lower-roman;
@@ -455,7 +438,10 @@ ol {
 ul {
   margin-top: 0;
   margin-bottom: 16px;
-  @extend %extend_4;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 2em;
   margin-bottom: 1em;
   ol {
     list-style-type: lower-roman;
@@ -481,12 +467,6 @@ dd {
   line-height: 1;
   display: inline-block;
   text-decoration: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  //Instead of the line below you could use @include user-select($select)
   user-select: none;
 }
 .anchor {
@@ -511,8 +491,8 @@ blockquote {
   margin-bottom: 16px;
   margin: 0;
   padding: 0 15px;
-  color: $color_tapa_approx;
-  border-left: 4px solid $color_alto_approx;
+  color: $tapa_approx;
+  border-left: 4px solid $alto_approx;
   > {
     :first-child {
       margin-top: 0;
@@ -546,95 +526,95 @@ table {
   display: block;
   width: 100%;
   overflow: auto;
-  //Instead of the line below you could use @include word-break($value)
   word-break: normal;
-  //Instead of the line below you could use @include word-break($value)
   word-break: keep-all;
   th {
     font-weight: bold;
     padding: 6px 13px;
-    border: 1px solid $color_alto_approx;
+    border: 1px solid $alto_approx;
   }
   td {
     padding: 6px 13px;
-    border: 1px solid $color_alto_approx;
+    border: 1px solid $alto_approx;
   }
   tr {
     background-color: $white;
-    border-top: 1px solid $color_celeste_approx;
+    border-top: 1px solid $celeste_approx;
     &:nth-child(2n) {
-      background-color: $color_desert_storm_approx;
+      background-color: $desert_storm_approx;
     }
   }
 }
 img {
   border: 0;
   max-width: 100%;
-  -moz-box-sizing: border-box;
-  //Instead of the line below you could use @include box-sizing($bs)
   box-sizing: border-box;
 }
 .highlight {
   margin-bottom: 16px;
   background: $white;
   pre {
-    @extend %extend_5;
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: $black_haze_approx;
+    border-radius: 3px;
     margin-bottom: 0;
-    //Instead of the line below you could use @include word-break($value)
     word-break: normal;
   }
   .h {
-    color: $color_mine_shaft_approx;
+    color: $mine_shaft_approx;
     font-style: normal;
     font-weight: normal;
   }
   .mf {
-    color: $color_strikemaster_approx;
+    color: $strikemaster_approx;
   }
   .mh {
-    color: $color_strikemaster_approx;
+    color: $strikemaster_approx;
   }
   .mi {
-    color: $color_strikemaster_approx;
+    color: $strikemaster_approx;
   }
   .mo {
-    color: $color_strikemaster_approx;
+    color: $strikemaster_approx;
   }
   .il {
-    color: $color_strikemaster_approx;
+    color: $strikemaster_approx;
   }
   .m {
-    color: $color_strikemaster_approx;
+    color: $strikemaster_approx;
   }
   .s {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .sb {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .sc {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .sd {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .s2 {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .se {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .sh {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .si {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .sx {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .s1 {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .kc {
     font-weight: bold;
@@ -653,7 +633,7 @@ img {
   }
   .kt {
     font-weight: bold;
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
   }
   .k {
     font-weight: bold;
@@ -662,32 +642,32 @@ img {
     font-weight: bold;
   }
   .c {
-    color: $color_lemon_grass_approx;
+    color: $lemon_grass_approx;
     font-style: italic;
   }
   .cm {
-    color: $color_lemon_grass_approx;
+    color: $lemon_grass_approx;
     font-style: italic;
   }
   .c1 {
-    color: $color_lemon_grass_approx;
+    color: $lemon_grass_approx;
     font-style: italic;
   }
   .cp {
-    color: $color_mountain_mist_approx;
+    color: $mountain_mist_approx;
     font-weight: bold;
     .h {
-      color: $color_mountain_mist_approx;
+      color: $mountain_mist_approx;
       font-weight: bold;
     }
   }
   .cs {
-    color: $color_mountain_mist_approx;
+    color: $mountain_mist_approx;
     font-weight: bold;
     font-style: italic;
   }
   .n {
-    color: $color_mine_shaft_approx;
+    color: $mine_shaft_approx;
   }
   .na {
     color: $teal;
@@ -705,119 +685,119 @@ img {
     color: $teal;
   }
   .nb {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .nc {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
     font-weight: bold;
   }
   .no {
-    color: $color_congress_blue_approx;
+    color: $congress_blue_approx;
   }
   .ni {
-    color: $color_seance_approx;
+    color: $seance_approx;
   }
   .ne {
-    color: $color_red_berry_approx;
+    color: $red_berry_approx;
     font-weight: bold;
   }
   .nf {
-    color: $color_strikemaster_approx;
+    color: $strikemaster_approx;
     font-weight: bold;
   }
   .nn {
-    color: $color_fuscous_gray_approx;
+    color: $fuscous_gray_approx;
   }
   .nt {
     color: $navy_blue;
   }
   .err {
-    color: $color_tamarillo_approx;
-    background-color: $color_swiss_coffee_approx;
+    color: $tamarillo_approx;
+    background-color: $swiss_coffee_approx;
   }
   .gd {
     color: $black;
-    background-color: $color_pippin_approx;
+    background-color: $pippin_approx;
     .x {
       color: $black;
-      background-color: $color_cornflower_lilac_approx;
+      background-color: $cornflower_lilac_approx;
     }
   }
   .ge {
     font-style: italic;
   }
   .gr {
-    color: $color_bright_red_approx;
+    color: $bright_red_approx;
   }
   .gh {
-    color: $color_mountain_mist_approx;
+    color: $mountain_mist_approx;
   }
   .gi {
     color: $black;
-    background-color: $color_snowy_mint_approx;
+    background-color: $snowy_mint_approx;
     .x {
       color: $black;
-      background-color: $color_mint_green_approx;
+      background-color: $mint_green_approx;
     }
   }
   .go {
-    color: $color_suva_gray_approx;
+    color: $suva_gray_approx;
   }
   .gp {
-    color: $color_fuscous_gray_approx;
+    color: $fuscous_gray_approx;
   }
   .gs {
     font-weight: bold;
   }
   .gu {
-    color: $color_seance_approx;
+    color: $seance_approx;
     font-weight: bold;
   }
   .gt {
-    color: $color_bright_red_approx;
+    color: $bright_red_approx;
   }
   .ow {
     font-weight: bold;
   }
   .w {
-    color: $color_pink_swan_approx;
+    color: $pink_swan_approx;
   }
   .sr {
-    color: $color_fun_green_approx;
+    color: $fun_green_approx;
   }
   .ss {
-    color: $color_plum_approx;
+    color: $plum_approx;
   }
   .bp {
-    color: $color_mountain_mist_approx;
+    color: $mountain_mist_approx;
   }
   .gc {
-    color: $color_mountain_mist_approx;
-    background-color: $color_aqua_haze_approx;
+    color: $mountain_mist_approx;
+    background-color: $aqua_haze_approx;
   }
   .pl-coc {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-entm {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-eoa {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-pdv {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-sc {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-sr {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-v {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-vpf {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-eoac {
     color: $teal;
@@ -838,81 +818,81 @@ img {
     color: $teal;
   }
   .pl-c {
-    color: $color_nobel_approx;
+    color: $nobel_approx;
     font-style: italic;
   }
   .pl-pdc {
-    color: $color_nobel_approx;
+    color: $nobel_approx;
     font-style: italic;
   }
   .pl-k {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-ko {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-kolp {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-mc {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-mr {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-ms {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-s {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-sok {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-st {
-    color: $color_affair_approx;
+    color: $affair_approx;
   }
   .pl-ef {
-    color: $color_red_violet_approx;
+    color: $red_violet_approx;
   }
   .pl-enf {
-    color: $color_red_violet_approx;
+    color: $red_violet_approx;
   }
   .pl-enm {
-    color: $color_red_violet_approx;
+    color: $red_violet_approx;
   }
   .pl-entc {
-    color: $color_red_violet_approx;
+    color: $red_violet_approx;
   }
   .pl-eoi {
-    color: $color_red_violet_approx;
+    color: $red_violet_approx;
   }
   .pl-sf {
-    color: $color_red_violet_approx;
+    color: $red_violet_approx;
   }
   .pl-smc {
-    color: $color_red_violet_approx;
+    color: $red_violet_approx;
   }
   .pl-ens {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
   }
   .pl-eoai {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
   }
   .pl-kos {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
   }
   .pl-mp {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
   }
   .pl-pde {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
   }
   .pl-stp {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
   }
   .pl-enti {
-    color: $color_red_violet_approx;
+    color: $red_violet_approx;
     font-weight: bold;
   }
   .pl-cce {
@@ -928,68 +908,68 @@ img {
     color: $neon_carrot;
   }
   .pl-cos {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-ent {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-md {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-mdhf {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-ml {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-pdc1 {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-pds {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-s1 {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-scp {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-sol {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
   }
   .pl-c1 {
-    color: $color_tamarillo_approx;
+    color: $tamarillo_approx;
   }
   .pl-cn {
-    color: $color_tamarillo_approx;
+    color: $tamarillo_approx;
   }
   .pl-pse {
-    color: $color_tamarillo_approx;
+    color: $tamarillo_approx;
     .pl-s2 {
-      color: $color_tamarillo_approx;
+      color: $tamarillo_approx;
     }
   }
   .pl-vi {
-    color: $color_tamarillo_approx;
+    color: $tamarillo_approx;
   }
   .pl-mb {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
     font-weight: bold;
   }
   .pl-pdb {
-    color: $color_trinidad_approx;
+    color: $trinidad_approx;
     font-weight: bold;
   }
   .pl-mi {
-    color: $color_affair_approx;
+    color: $affair_approx;
     font-style: italic;
   }
   .pl-pdi {
-    color: $color_affair_approx;
+    color: $affair_approx;
     font-style: italic;
   }
   .pl-ms1 {
-    background-color: $color_wild_sand_approx;
+    background-color: $wild_sand_approx;
   }
   .pl-mdh {
     font-weight: bold;
@@ -998,37 +978,37 @@ img {
     font-weight: bold;
   }
   .pl-mdr {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
     font-weight: bold;
   }
   .pl-s2 {
-    color: $color_mine_shaft_approx;
+    color: $mine_shaft_approx;
   }
   .pl-ii {
-    background-color: $color_trinidad_approx;
+    background-color: $trinidad_approx;
     color: $white;
   }
   .pl-ib {
     background-color: $neon_carrot;
   }
   .pl-id {
-    background-color: $color_tamarillo_approx;
+    background-color: $tamarillo_approx;
     color: $white;
   }
   .pl-iu {
-    background-color: $color_nobel_approx;
+    background-color: $nobel_approx;
   }
   .pl-mo {
-    color: $color_mountain_mist_approx;
+    color: $mountain_mist_approx;
   }
   .pl-mai .pl-sf {
-    color: $color_bondi_blue_approx;
+    color: $bondi_blue_approx;
   }
   .pl-mh .pl-pdh {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
   }
   .pl-mp1 .pl-sf {
-    color: $color_east_bay_approx;
+    color: $east_bay_approx;
     font-weight: bold;
   }
 }
@@ -1044,54 +1024,64 @@ img {
   }
 }
 code[class*="language-"] {
-  @extend %extend_6;
+  color: $black;
+  text-shadow: 0 1px $white;
+  font-family: Consolas, Monaco, Andale Mono, monospace;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  line-height: 1.5;
+  tab-size: 4;
+  hyphens: none;
 }
 pre[class*="language-"] {
-  @extend %extend_6;
+  color: $black;
+  text-shadow: 0 1px $white;
+  font-family: Consolas, Monaco, Andale Mono, monospace;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  line-height: 1.5;
+  tab-size: 4;
+  hyphens: none;
   padding: 1em;
   margin: .5em 0;
   overflow: auto;
-  background: $color_pampas_approx;
+  background: $pampas_approx;
 }
 pre[class*="language-"]::-moz-selection {
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
   text-shadow: none;
-  background: $color_sail_approx;
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+  background: $sail_approx;
   text-shadow: none;
-  background: $color_sail_approx;
+  background: $sail_approx;
 }
 code[class*="language-"]::-moz-selection {
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
   text-shadow: none;
-  background: $color_sail_approx;
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+  background: $sail_approx;
   text-shadow: none;
-  background: $color_sail_approx;
+  background: $sail_approx;
 }
 pre[class*="language-"]::selection {
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
   text-shadow: none;
-  background: $color_sail_approx;
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+  background: $sail_approx;
   text-shadow: none;
-  background: $color_sail_approx;
+  background: $sail_approx;
 }
 code[class*="language-"]::selection {
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
   text-shadow: none;
-  background: $color_sail_approx;
-  //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+  background: $sail_approx;
   text-shadow: none;
-  background: $color_sail_approx;
+  background: $sail_approx;
 }
 @media print {
   code[class*="language-"] {
-    //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
     text-shadow: none;
   }
   pre[class*="language-"] {
-    //Instead of the line below you could use @include text-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
     text-shadow: none;
   }
 }
@@ -1109,81 +1099,81 @@ code[class*="language-"]::selection {
     color: $slate_gray;
   }
   &.punctuation {
-    color: $color_mountain_mist_approx;
+    color: $mountain_mist_approx;
   }
   &.property {
-    color: $color_cardinal_pink_approx;
+    color: $cardinal_pink_approx;
   }
   &.tag {
-    color: $color_cardinal_pink_approx;
+    color: $cardinal_pink_approx;
   }
   &.boolean {
-    color: $color_cardinal_pink_approx;
+    color: $cardinal_pink_approx;
   }
   &.number {
-    color: $color_cardinal_pink_approx;
+    color: $cardinal_pink_approx;
   }
   &.constant {
-    color: $color_cardinal_pink_approx;
+    color: $cardinal_pink_approx;
   }
   &.symbol {
-    color: $color_cardinal_pink_approx;
+    color: $cardinal_pink_approx;
   }
   &.deleted {
-    color: $color_cardinal_pink_approx;
+    color: $cardinal_pink_approx;
   }
   &.selector {
-    color: $color_limeade_approx;
+    color: $limeade_approx;
   }
   &.attr-name {
-    color: $color_limeade_approx;
+    color: $limeade_approx;
   }
   &.string {
-    color: $color_limeade_approx;
+    color: $limeade_approx;
   }
   &.char {
-    color: $color_limeade_approx;
+    color: $limeade_approx;
   }
   &.builtin {
-    color: $color_limeade_approx;
+    color: $limeade_approx;
   }
   &.inserted {
-    color: $color_limeade_approx;
+    color: $limeade_approx;
   }
   &.operator {
-    color: $color_barley_corn_approx;
+    color: $barley_corn_approx;
     background: $white_50;
   }
   &.entity {
-    color: $color_barley_corn_approx;
+    color: $barley_corn_approx;
     background: $white_50;
     cursor: help;
   }
   &.url {
-    color: $color_barley_corn_approx;
+    color: $barley_corn_approx;
     background: $white_50;
   }
   &.atrule {
-    color: $color_deep_cerulean_approx;
+    color: $deep_cerulean_approx;
   }
   &.attr-value {
-    color: $color_deep_cerulean_approx;
+    color: $deep_cerulean_approx;
   }
   &.keyword {
-    color: $color_deep_cerulean_approx;
+    color: $deep_cerulean_approx;
   }
   &.function {
-    color: $color_cabaret_approx;
+    color: $cabaret_approx;
   }
   &.regex {
-    color: $color_california_approx;
+    color: $california_approx;
   }
   &.important {
-    color: $color_california_approx;
+    color: $california_approx;
     font-weight: bold;
   }
   &.variable {
-    color: $color_california_approx;
+    color: $california_approx;
   }
 }
 .namespace {
@@ -1206,7 +1196,7 @@ code[class*="language-"]::selection {
   width: 50%;
   padding: 40px;
   &:last-child {
-    border-left: 1px solid $color_celeste_approx;
+    border-left: 1px solid $celeste_approx;
   }
 }
 .section__document {
@@ -1222,35 +1212,41 @@ code[class*="language-"]::selection {
   background-color: inherit;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: $color_gallery_approx;
+  background-color: $gallery_approx;
 }
 @media screen {
   .night {
     .highlight {
-      @extend %extend_7;
+      background-color: $mirage_approx;
+      color: $spring_wood_approx;
+      text-shadow: 0 1px $black;
     }
     pre {
-      @extend %extend_7;
+      background-color: $mirage_approx;
+      color: $spring_wood_approx;
+      text-shadow: 0 1px $black;
       code {
-        @extend %extend_7;
+        background-color: $mirage_approx;
+        color: $spring_wood_approx;
+        text-shadow: 0 1px $black;
       }
     }
     blockquote {
-      color: $color_silver_chalice_approx;
+      color: $silver_chalice_approx;
     }
     ::-webkit-scrollbar-thumb {
-      background-color: $color_storm_dust_approx;
+      background-color: $storm_dust_approx;
     }
     body a {
-      color: $color_bali_hai_approx;
+      color: $bali_hai_approx;
     }
   }
   .night::-webkit-scrollbar-thumb {
-    background-color: $color_storm_dust_approx;
+    background-color: $storm_dust_approx;
   }
   body.night {
     color: $gallery;
-    background-color: $color_shark_approx;
+    background-color: $shark_approx;
   }
 }
 html input[disabled] {
@@ -1271,17 +1267,16 @@ li > p {
   margin-top: 16px;
 }
 :not(pre) > code[class*="language-"] {
-  background: $color_pampas_approx;
+  background: $pampas_approx;
   padding: .1em;
-  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
   border-radius: .3em;
 }
 .language-css .token.string {
-  color: $color_barley_corn_approx;
+  color: $barley_corn_approx;
   background: $white_50;
 }
 .style .token.string {
-  color: $color_barley_corn_approx;
+  color: $barley_corn_approx;
   background: $white_50;
 }
 .line-numbers .line-numbers-rows {
@@ -1292,11 +1287,7 @@ li > p {
   left: -3.8em;
   width: 3em;
   letter-spacing: -1px;
-  border-right: 1px solid $color_mountain_mist_approx;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  //Instead of the line below you could use @include user-select($select)
+  border-right: 1px solid $mountain_mist_approx;
   user-select: none;
 }
 .line-numbers-rows > span {
@@ -1305,7 +1296,7 @@ li > p {
   counter-increment: linenumber;
   &:before {
     content: counter(linenumber);
-    color: $color_mountain_mist_approx;
+    color: $mountain_mist_approx;
     display: block;
     padding-right: .8em;
     text-align: right;

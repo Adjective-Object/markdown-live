@@ -1,98 +1,84 @@
 //colors
-$mirage: #1d1f21;
-$gallery: #efefef;
-$woodsmoke: #111111;
-$alto: #dddddd;
-$patina: #5e8d87;
-$white_10: rgba(255,255,255, 0.1);
-$white_8: rgba(255,255,255, 0.08);
-$shark: #2a2a2a;
-$gravel: #4a4a4a;
-$white: #fff;
-$wild_sand: whitesmoke;
-$mercury: #e6e6e6;
-$nobel: #b3b3b3;
-$persian_green: #05b491;
-$black_8: rgba(0, 0, 0, 0.08);
+$alto_approx: #dddddd;
 $black_10: rgba(0, 0, 0, 0.1);
 $black_15: rgba(0,0,0,0.15);
-$deep_cerulean: #0c84b2;
-$sunset_orange: #ff5138;
+$black_8: rgba(0, 0, 0, 0.08);
+$deep_cerulean_approx: #0c84b2;
+$gallery: #efefef;
+$gravel_approx: #4a4a4a;
+$mercury_approx: #e6e6e6;
+$mirage_approx: #1d1f21;
+$nobel_approx: #b3b3b3;
+$patina_approx: #5e8d87;
+$persian_green_approx: #05b491;
+$shark_approx: #2a2a2a;
+$sunset_orange_approx: #ff5138;
+$white: #fff;
+$white_10: rgba(255,255,255, 0.1);
 $white_50: rgba(255,255,255,0.5);
-
-//@extend-elements
-//original selectors
-//ul.nl, ul.nl li
-%extend_1 {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  display: block;
-}
-
-//original selectors
-//html, body
-%extend_2 {
-  height: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-//original selectors
-//ul.fix, ul.fix li
-%extend_3 {
-  display: block;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+$white_8: rgba(255,255,255, 0.08);
+$wild_sand_approx: whitesmoke;
+$woodsmoke_approx: #111111;
 
 ul {
   &.nl {
-    @extend %extend_1;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: block;
     li {
-      @extend %extend_1;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      display: block;
     }
   }
   &.fix {
-    @extend %extend_3;
+    display: block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
     li {
-      @extend %extend_3;
+      display: block;
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
   }
 }
 html {
   font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
   font-size: 62.5%;
-  @extend %extend_2;
+  height: 100%;
+  padding: 0;
+  margin: 0;
 }
 body {
-  @extend %extend_2;
+  height: 100%;
+  padding: 0;
   margin: 0;
-  color: $gravel;
+  color: $gravel_approx;
   background: $white;
-  font-size: 13px;
-  line-height: 19.5px;
   font-size: 1.3rem;
   line-height: 1.95rem;
   font-family: monospace;
+  -webkit-text-size-adjust: none;
+  -webkit-font-smoothing: antialiased;
 }
 * {
-  //Instead of the line below you could use @include box-sizing($bs)
   box-sizing: border-box;
   &:after {
-    //Instead of the line below you could use @include box-sizing($bs)
     box-sizing: border-box;
   }
   &:before {
-    //Instead of the line below you could use @include box-sizing($bs)
     box-sizing: border-box;
   }
 }
 a {
   text-decoration: none;
-  color: $gravel;
-  //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+  color: $gravel_approx;
   transition: color 0.4s ease, border-color 0.4s ease;
 }
 h1 {
@@ -114,7 +100,6 @@ h5 {
   min-height: 100%;
   background: $white;
   padding-left: 240px;
-  //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
   transition: padding 0.25s;
 }
 .collapsed {
@@ -122,10 +107,8 @@ h5 {
     padding-left: 36px;
   }
   .nav {
-    //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
     transform: translate(-206px, 0);
     .dir__content {
-      //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
       transform: translate(-36px, 0);
     }
   }
@@ -133,25 +116,20 @@ h5 {
     color: transparent;
   }
   #button-drawer {
-    //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
     transform: translate(16px);
     button {
       &:nth-of-type(2) {
-        //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
         transform: translate(0, 28px);
       }
       &:nth-of-type(3) {
-        //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
         transform: translate(0, 56px);
       }
       &:nth-of-type(4) {
-        //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
         transform: translate(0, 84px);
       }
     }
   }
   button#toggle-collapse::before {
-    //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
     transform: rotate(180deg);
   }
 }
@@ -163,9 +141,8 @@ h5 {
   z-index: 2;
   width: 240px;
   overflow: hidden;
-  background: $wild_sand;
-  border-right: 1px solid $mercury;
-  //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+  background: $wild_sand_approx;
+  border-right: 1px solid $mercury_approx;
   transition: transform 0.25s;
   h4 {
     font-weight: bold;
@@ -182,14 +159,12 @@ h5 {
     line-height: 12px;
     font-size: 1.2rem;
     line-height: 1.2rem;
-    color: $nobel;
-    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+    color: $nobel_approx;
     transition: color 0.25s;
   }
   .dir__content {
     margin-bottom: 25px;
     position: relative;
-    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
     transition: transform 0.25s;
   }
   a {
@@ -198,10 +173,9 @@ h5 {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
     transition: background-color 0.25s, color 0.25s;
     &.active {
-      background-color: $persian_green;
+      background-color: $persian_green_approx;
       color: $white;
     }
   }
@@ -228,7 +202,6 @@ h5 {
   position: absolute;
   right: 20px;
   top: 20px;
-  //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
   transition: transform 0.25s;
   button {
     width: 24px;
@@ -238,28 +211,24 @@ h5 {
     top: 0;
     border: none;
     background-color: $black_8;
-    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
     transition: background-color 0.25s;
     outline: none;
     appearance: none;
-    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+    -webkit-appearance: none;
     transition: transform 0.25s;
     &:hover {
       background-color: $black_10;
     }
     &:active {
-      background-color: $persian_green;
+      background-color: $persian_green_approx;
     }
     &:nth-of-type(2) {
-      //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
       transform: translate(-28px);
     }
     &:nth-of-type(3) {
-      //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
       transform: translate(-56px);
     }
     &:nth-of-type(4) {
-      //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
       transform: translate(-84px);
     }
   }
@@ -313,9 +282,7 @@ button {
     padding: 1em;
     color: $white;
     overflow: hidden;
-    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
     transition: height 0.2s, padding 0.2s, opacity 0.2s, margin 0.2s;
-    //Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
     box-shadow: 0 4px 4px 0 $black_15;
     margin-bottom: 1em;
     .actions {
@@ -333,24 +300,24 @@ button {
     }
   }
   .notification[data-kind="info"] {
-    background-color: $deep_cerulean;
+    background-color: $deep_cerulean_approx;
     button:active {
       background-color: $white;
-      color: $deep_cerulean;
+      color: $deep_cerulean_approx;
     }
   }
   .notification[data-kind="ok"] {
-    background-color: $persian_green;
+    background-color: $persian_green_approx;
     button:active {
       background-color: $white;
-      color: $persian_green;
+      color: $persian_green_approx;
     }
   }
   .notification[data-kind="error"] {
-    background-color: $sunset_orange;
+    background-color: $sunset_orange_approx;
     button:active {
       background-color: $white;
-      color: $sunset_orange;
+      color: $sunset_orange_approx;
     }
   }
   button {
@@ -359,34 +326,33 @@ button {
     background-color: transparent;
     color: $white;
     outline: none;
-    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
     transition: color 0.2s, background-color 0.2s;
   }
 }
 @media screen {
   .night {
     .content {
-      background-color: $mirage;
+      background-color: $mirage_approx;
       color: $gallery;
-      border-color: $woodsmoke;
-      background-color: $shark;
+      border-color: $woodsmoke_approx;
+      background-color: $shark_approx;
     }
     .nav {
-      background-color: $mirage;
+      background-color: $mirage_approx;
       color: $gallery;
-      border-color: $woodsmoke;
+      border-color: $woodsmoke_approx;
       h4 {
-        color: $alto;
+        color: $alto_approx;
       }
       .author {
-        color: $alto;
+        color: $alto_approx;
       }
       .active {
-        background-color: $patina;
+        background-color: $patina_approx;
       }
     }
     iframe {
-      background-color: $shark;
+      background-color: $shark_approx;
     }
     #button-drawer button {
       background-color: $white_10;
@@ -395,7 +361,7 @@ button {
         background-color: $white_8;
       }
       &:active {
-        background-color: $patina;
+        background-color: $patina_approx;
       }
     }
   }
