@@ -17,7 +17,7 @@ $white: #fff;
 $white_10: rgba(255,255,255, 0.1);
 $white_50: rgba(255,255,255,0.5);
 $white_8: rgba(255,255,255, 0.08);
-$wild_sand_approx: whitesmoke;
+$white_smoke: #f5f5f5;
 $woodsmoke_approx: #111111;
 
 ul {
@@ -81,19 +81,7 @@ a {
   color: $gravel_approx;
   transition: color 0.4s ease, border-color 0.4s ease;
 }
-h1 {
-  font-weight: normal;
-}
-h2 {
-  font-weight: normal;
-}
-h3 {
-  font-weight: normal;
-}
-h4 {
-  font-weight: normal;
-}
-h5 {
+h1, h2, h3, h4, h5 {
   font-weight: normal;
 }
 .content {
@@ -141,7 +129,7 @@ h5 {
   z-index: 2;
   width: 240px;
   overflow: hidden;
-  background: $wild_sand_approx;
+  background: $white_smoke;
   border-right: 1px solid $mercury_approx;
   transition: transform 0.25s;
   h4 {
