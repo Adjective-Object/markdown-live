@@ -25,12 +25,12 @@ dist/public/css/%.css: webpack/webpack.style.js client/css/%.scss
 dist/public/img/%.svg: client/img/%.svg dist/public/img/
 	cp $< $@ 
 
-dist/public/js/client.js: webpack/webpack.client.js \
+dist/public/js/client.js: webpack/webpack.client.js dist/clientlib-manifest.json\
 		client/js/*.js \
 		client/js/templates/*.handlebars
 	webpack --config=$<
 
-dist/public/js/client.lib.js: webpack/webpack.clientlib.js
+dist/clientlib-manifest.json dist/public/js/client.lib.js: webpack/webpack.clientlib.js
 	webpack --config=$<
 
 dist/server.js: webpack/webpack.server.js \
