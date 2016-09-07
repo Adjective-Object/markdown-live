@@ -90,6 +90,10 @@ class Toast extends Framework {
 
     this.elements.dock.appendChild(toast);
     toast.style.height = toast.clientHeight + 'px';
+    toast.classList.add('enter');
+    setTimeout(() => {
+      toast.classList.remove('enter');
+    }, 0);
   }
 
   dismiss(id) {
