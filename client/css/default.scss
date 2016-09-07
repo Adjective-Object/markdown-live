@@ -46,6 +46,7 @@ ul {
     }
   }
 }
+
 html {
   font-size: 100%;
   -webkit-text-size-adjust: 100%;
@@ -55,6 +56,7 @@ html {
   padding: 0;
   margin: 0;
 }
+
 body {
   height: 100%;
   padding: 0;
@@ -67,60 +69,58 @@ body {
   -webkit-text-size-adjust: none;
   -webkit-font-smoothing: antialiased;
 }
-* {
+
+*, *:after, *:before {
   box-sizing: border-box;
-  &:after {
-    box-sizing: border-box;
-  }
-  &:before {
-    box-sizing: border-box;
-  }
 }
+
 a {
   text-decoration: none;
   color: $gravel_approx;
   transition: color 0.4s ease, border-color 0.4s ease;
 }
+
 h1, h2, h3, h4, h5 {
   font-weight: normal;
 }
+
 .content {
   min-height: 100%;
   background: $white;
   padding-left: 240px;
   transition: padding 0.25s;
 }
+
 .collapsed {
   .content {
     padding-left: 36px;
   }
+
   .nav {
     transform: translate(-206px, 0);
     .dir__content {
       transform: translate(-36px, 0);
     }
   }
+
   .dir__title {
     color: transparent;
   }
+
   #button-drawer {
     transform: translate(16px);
-    button {
-      &:nth-of-type(2) {
-        transform: translate(0, 28px);
-      }
-      &:nth-of-type(3) {
-        transform: translate(0, 56px);
-      }
-      &:nth-of-type(4) {
-        transform: translate(0, 84px);
+    @for $i from 1 through 5 {
+      button:nth-of-type(#{$i+1}) {
+        transform: translate(0, $i * 28px);
       }
     }
   }
+
   button#toggle-collapse::before {
     transform: rotate(180deg);
   }
 }
+
 .nav {
   position: fixed;
   top: 0;
@@ -132,10 +132,12 @@ h1, h2, h3, h4, h5 {
   background: $white_smoke;
   border-right: 1px solid $mercury_approx;
   transition: transform 0.25s;
+
   h4 {
     font-weight: bold;
     padding: 0 20px;
   }
+
   .dir__title {
     display: block;
     padding: 0 20px;
@@ -150,11 +152,13 @@ h1, h2, h3, h4, h5 {
     color: $nobel_approx;
     transition: color 0.25s;
   }
+
   .dir__content {
     margin-bottom: 25px;
     position: relative;
     transition: transform 0.25s;
   }
+
   a {
     display: block;
     padding: 5px 20px;
@@ -167,30 +171,36 @@ h1, h2, h3, h4, h5 {
       color: $white;
     }
   }
+
   span {
     display: block;
     padding: 5px 20px;
   }
+
   .author {
     position: absolute;
     left: 0;
     bottom: 20px;
   }
 }
+
 .nav__scroll {
   width: 360px;
   overflow-y: scroll;
   height: 100%;
 }
+
 .nav__inner {
   width: 240px;
   padding: 10px 0;
 }
+
 #button-drawer {
   position: absolute;
   right: 20px;
   top: 20px;
   transition: transform 0.25s;
+
   button {
     width: 24px;
     height: 24px;
@@ -204,34 +214,37 @@ h1, h2, h3, h4, h5 {
     appearance: none;
     -webkit-appearance: none;
     transition: transform 0.25s;
+
     &:hover {
       background-color: $black_10;
     }
+
     &:active {
       background-color: $persian_green_approx;
     }
-    &:nth-of-type(2) {
-      transform: translate(-28px);
+
+    @for $i from 1 through 5 {
+      &:nth-of-type(#{$i+1}) {
+        transform: translate($i * -28px);
+      }
     }
-    &:nth-of-type(3) {
-      transform: translate(-56px);
-    }
-    &:nth-of-type(4) {
-      transform: translate(-84px);
-    }
+
   }
 }
+
 #content {
   display: block;
   position: relative;
   height: 100%;
 }
+
 #docview {
   position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: stretch;
+
   iframe {
     display: block;
     position: absolute;
@@ -244,6 +257,7 @@ h1, h2, h3, h4, h5 {
     }
   }
 }
+
 button {
   &#toggle-collapse::before {
     display: block;
@@ -254,6 +268,7 @@ button {
     content: url(/img/moon.svg);
   }
 }
+
 .section__notifications {
   position: fixed;
   top: 0;
@@ -264,6 +279,7 @@ button {
   overflow-y: auto;
   padding-right: 1em;
   padding-top: 1em;
+
   .notification {
     width: 300px;
     display: block;
@@ -287,6 +303,7 @@ button {
       margin: 0;
     }
   }
+
   .notification[data-kind="info"] {
     background-color: $deep_cerulean_approx;
     button:active {
@@ -294,6 +311,7 @@ button {
       color: $deep_cerulean_approx;
     }
   }
+
   .notification[data-kind="ok"] {
     background-color: $persian_green_approx;
     button:active {
@@ -301,6 +319,7 @@ button {
       color: $persian_green_approx;
     }
   }
+
   .notification[data-kind="error"] {
     background-color: $sunset_orange_approx;
     button:active {
@@ -308,6 +327,7 @@ button {
       color: $sunset_orange_approx;
     }
   }
+
   button {
     appearance: none;
     border: 1px solid $white_50;
@@ -317,65 +337,83 @@ button {
     transition: color 0.2s, background-color 0.2s;
   }
 }
+
 @media screen {
+
   .night {
+    
     .content {
       background-color: $mirage_approx;
       color: $gallery;
       border-color: $woodsmoke_approx;
       background-color: $shark_approx;
     }
+
     .nav {
       background-color: $mirage_approx;
       color: $gallery;
       border-color: $woodsmoke_approx;
+      
       h4 {
         color: $alto_approx;
       }
+
       .author {
         color: $alto_approx;
       }
+
       .active {
         background-color: $patina_approx;
       }
     }
+
     iframe {
       background-color: $shark_approx;
     }
+
     #button-drawer button {
       background-color: $white_10;
       color: $gallery;
+
       &:hover {
         background-color: $white_8;
       }
+
       &:active {
         background-color: $patina_approx;
       }
     }
   }
 }
+
 @media print {
   .section__document {
     border: none;
     margin-top: 0;
   }
+
   .nav {
     display: none;
   }
+
   .content {
     padding: 0 !important;
   }
+
   hr {
     page-break-after: always;
   }
+
   .section__notifications {
     display: none;
   }
 }
+
 .night button {
   &#toggle-collapse::before {
     content: url(/img/chevron-light.svg);
   }
+
   &#toggle-nightmode::before {
     content: url(/img/sun.svg);
   }
