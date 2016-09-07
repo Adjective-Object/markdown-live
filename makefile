@@ -30,7 +30,7 @@ dist/public/css/%.css: webpack/webpack.style.js client/css/%.scss
 dist/public/img/%.svg: client/img/%.svg dist/public/img/
 	cp $< $@ 
 
-dist/package.json: package.json
+dist/%: %
 	cp $< $@ 
 
 dist/public/js/client.js: webpack/webpack.client.js dist/clientlib-manifest.json\
@@ -59,7 +59,7 @@ dist/public/img/:
 watch: bundle
 	webpack --watch -d
 
-md-live.tar: bundle dist/package.json
+md-live.tar: bundle dist/package.json dist/README.md
 	find dist | grep '\.map$$' | xargs rm -f
 	cd dist && tar -c -f ../$@ .
 
