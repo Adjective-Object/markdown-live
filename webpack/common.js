@@ -41,6 +41,17 @@ function exitErrorPlugin() {
     });
 }
 
+const vendor = [
+  'domready',
+  'underscore',
+  'object-hash',
+  'gator',
+  'prismjs',
+  'prismjs/components/prism-handlebars.min.js',
+  'prismjs/components/prism-yaml.min.js',
+  'socket.io-client',
+];
+
 const jsConfig = {
   context: projectRoot,
   module: {
@@ -108,7 +119,10 @@ function extend(extension) {
 // load package.json
 module.exports = {
   js: jsConfig,
+  vendor: vendor,
+  vendorDll: 'dist/clientlib-manifest.json',
   nodeModules: nodeModules,
   projectRoot: projectRoot,
   extend: extend
 };
+
