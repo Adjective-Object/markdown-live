@@ -292,6 +292,13 @@ button {
     .actions {
       text-align: right;
     }
+    &.enter {
+      height: 0 !important;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+      margin-bottom: 0;
+    }
     &.exit {
       height: 0 !important;
       padding-top: 0;
