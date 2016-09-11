@@ -257,19 +257,17 @@ strong {
 }
 
 code {
-  font-family: monospace, monospace;
-  font-size: 1em;
   padding: 0;
   padding-top: .2em;
   padding-bottom: .2em;
   margin: 0;
-  font-size: 85%;
+  font-size: 12px;
   background-color: $black_4;
   border-radius: 3px;
   overflow: auto;
   margin-top: 0;
   margin-bottom: 0;
-  font: 12px Consolas, Liberation Mono, Menlo, Courier, monospace;
+  font-family: Consolas, Liberation Mono, Menlo, Courier, monospace;
   word-wrap: normal;
 
   &:before {
@@ -280,6 +278,10 @@ code {
   &:after {
     letter-spacing: -0.2em;
     content: "\00a0";
+  }
+
+  h1 &, h2 &, h3 &, h4 &, h5 &, h6 & {
+    font-size: 85%;
   }
 }
 
