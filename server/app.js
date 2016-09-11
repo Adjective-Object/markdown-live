@@ -231,9 +231,6 @@ class MarkdownLive {
     const fileIndex = _(this.files).findIndex(
       (file) => file.path === filepath
     );
-    console.log('this', this);
-    console.log(filepath);
-    console.log(fileIndex);
     this.files.splice(fileIndex, 1);
 
     filepath = path.resolve(filepath);
