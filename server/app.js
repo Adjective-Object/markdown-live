@@ -151,7 +151,7 @@ const __ = {
 
     return {
       name: name,
-      dir: dir,
+      dir: path.relative(DIRNAME, dir),
       path: file,
       source: data,
       content: content,
