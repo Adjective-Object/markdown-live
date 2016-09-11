@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const _ = require('underscore');
 const path = require('path');
 const express = require('express');
 const app = express();
@@ -50,11 +51,11 @@ const FileTypes = [
   StructuredDocument,
 ];
 
-const _ = {
+const __ = {
   log: function log(message) {
-    const arr = _.argsToArr(arguments);
+    const arr = __.argsToArr(arguments);
 
-    arr[0] = _.joinArgs('[mdlive] ', message);
+    arr[0] = __.joinArgs('[mdlive] ', message);
     console.log.apply(null, arr);
   },
 
@@ -85,7 +86,7 @@ const _ = {
   },
 
   joinArgs: function joinArgs() {
-    return _.argsToArr(arguments).join('');
+    return __.argsToArr(arguments).join('');
   },
 
   has: function has(obj, key) {
@@ -97,7 +98,7 @@ const _ = {
       const source = arguments[i];
 
       for (const property in source) {
-        if (_.has(source, property)) {
+        if (__.has(source, property)) {
           obj[property] = source[property];
         }
       }
@@ -162,10 +163,10 @@ const _ = {
 class MarkdownLive {
 
   constructor(options) {
-    this.options = _.extend(DefaultArgs, options);
-    this.log = (this.options.verbose) ? _.log : function doNothing() {};
+    this.options = __.extend(DefaultArgs, options);
+    this.log = (this.options.verbose) ? __.log : function doNothing() {};
 
-    this.url = _.joinArgs('http://localhost:', this.options.port);
+    this.url = __.joinArgs('http://localhost:', this.options.port);
 
     this.help();
     this.start();
@@ -176,23 +177,35 @@ class MarkdownLive {
         this.options.dir,
         '*.*'
       ))
-      .on('change', this.emitFileChange.bind(this, 'data'))
-      .on('add',    this.emitFileChange.bind(this, 'push'))
-      .on('unlink', this.emitRemove.bind(this));
+      .on('change', this.onFileChange.bind(this, 'data'))
+      .on('add', this.onFileChange.bind(this, 'push'))
+      .on('unlink', this.onRemove.bind(this));
   }
 
-  emitFileChange(event, filepath) {
-    if(!_.isTracked(filepath)) {
+  onFileChange(event, filepath) {
+    if(!__.isTracked(filepath)) {
       return;
     }
 
     filepath = path.resolve(filepath);
-    fs.readFile(filepath, 'utf8', function readAndEmit(err, data) {
+    fs.readFile(filepath, 'utf8', (err, data) => {
       if (err) return;
 
       try {
-        data = _.buildData(filepath, data);
+        data = __.buildData(filepath, data);
         io.emit(event, data);
+
+        // update the changed file
+        const fileIndex = _(this.files).findIndex(
+          (file) => file.path === filepath
+        );
+        if (fileIndex !== -1) {
+          this.files[fileIndex] = data;
+        }
+        else {
+          this.files.push(data);
+        }
+
       }
       catch (e) {
         if (e instanceof ClientError) {
@@ -208,15 +221,24 @@ class MarkdownLive {
         }
       }
 
-      _.log(Message.emit, filepath);
+      __.log(Message.emit, filepath);
 
     });
   }
 
-  emitRemove(filepath) {
+  onRemove(filepath) {
+    // remove file from list
+    const fileIndex = _(this.files).findIndex(
+      (file) => file.path === filepath
+    );
+    console.log('this', this);
+    console.log(filepath);
+    console.log(fileIndex);
+    this.files.splice(fileIndex, 1);
+
     filepath = path.resolve(filepath);
     io.emit('rm', filepath);
-    _.log(Message.removed, filepath);
+    __.log(Message.removed, filepath);
   }
 
   /**
@@ -238,23 +260,21 @@ class MarkdownLive {
    *  @method start
    */
   start() {
-    const self = this;
-
     /* eslint-disable no-undef */
     app.use(express.static(path.join(DIRNAME, 'public')));
     /* eslint-enable no-undef */
     app.use(express.static(this.options.dir));
 
-    self.prepare();
+    this.prepare();
 
-    app.get('/', function renderIndex(req, res) {
+    app.get('/', (req, res) => {
       res.end(indexTemplate({
-        url: self.url,
+        url: this.url,
       }));
     });
 
     server.listen(this.options.port);
-    _.log(Message.start, this.url);
+    __.log(Message.start, this.url);
   }
 
   /**
@@ -266,25 +286,25 @@ class MarkdownLive {
     const self = this;
     const files = fs.readdirSync(this.options.dir)
       .filter(function removeWatched(file) {
-        return _.isWatched(file);
+        return __.isWatched(file);
       }).map(function addOptionPath(name) {
         return path.join(self.options.dir, name);
       }) || [];
 
     if (this.options.file) {
       this.options.file.split(',').forEach(function addFile(file) {
-        if (fs.existsSync(file) && _.isWatched(file)) {
+        if (fs.existsSync(file) && __.isWatched(file)) {
           files.push(file);
         }
         else {
-          _.log(Message.not_exist, file);
+          __.log(Message.not_exist, file);
         }
       });
     }
 
     this.files = files.map(function readAndBuild(file) {
       const data = fs.readFileSync(file, 'utf8');
-      return _.buildData(file, data, true);
+      return __.buildData(file, data, true);
     });
   }
 
