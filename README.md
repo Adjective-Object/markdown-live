@@ -99,6 +99,10 @@ AVAILABLE STRUCTURED DOCUMENT EXTENSIONS:
 ## Changelog
 
 ```
+2016-09-03    1.2.2    Tracking state changes on the server, various style
+                       tweaks on the frontend
+2016-09-03    1.2.1    Added README.md to the distributed bundle
+                       Added toast messages for errors.
 2016-09-03    1.2.0    Moved document to an iframe srcdoc, added support for
                        structured documents rendered from handlebars templates.
                        Added toast messages for errors.
@@ -106,7 +110,8 @@ AVAILABLE STRUCTURED DOCUMENT EXTENSIONS:
                        collapsable sidebar. Began properly using semver
 2015-01-17    1.0.8    added support for alternate filename extensions
                        added support for setting socket.io hostname  or IP address
-2014-12-09    1.0.6    watch *.md files outside the current directory (option: --file)
+2014-12-09    1.0.6    watch *.md files outside the current directory 
+                       (option: --file)
 2014-12-08    1.0.5    better code highlighting
 2014-12-03    1.0.0    initial version
 ```
