@@ -654,6 +654,14 @@ img {
     body a {
       color: $bali_hai_approx;
     }
+
+    table tr {
+      background-color: $shark_approx;
+
+      &:nth-child(2n) {
+        background-color: lighten($shark_approx, 10%);
+      }
+    }
   }
 
   .night::-webkit-scrollbar-thumb {
