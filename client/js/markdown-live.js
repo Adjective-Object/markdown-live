@@ -18,7 +18,7 @@ function unpackTemplate(html) {
   return template.content.firstChild;
 }
 
-const navTemplate = require('./templates/nav.handlebars');
+const navTemplate = require('./templates/file-list.handlebars');
 const notificationTemplate = require('./templates/notification.handlebars');
 
 // Db is provided by inline script from servers
