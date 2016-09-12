@@ -173,13 +173,43 @@ class MarkdownLive {
     this.socket();
     this.open();
 
-    this.filewatcher = chokidar.watch(path.join(
-        this.options.dir,
+    this.directories = {};
+    this.initDirectory(this.options.dir);
+  }
+
+  initDirectory(directory) {
+    directory = path.resolve(directory);
+
+    var filewatcher = chokidar.watch(path.join(
+        directory,
         '*.*'
       ))
       .on('change', this.onFileChange.bind(this, 'data'))
       .on('add', this.onFileChange.bind(this, 'push'))
       .on('unlink', this.onRemove.bind(this));
+
+    this.directories[path] = {
+      directory,
+      filewatcher
+    };
+  }
+
+  removeDirectory(directory) {
+    directory = path.resolve(directory);
+
+    // remove all files of this directory
+    let ind = 0;
+    for (let file of this.files) {
+      let fpath = path.resolve(file.dir);
+      if (fpath === directory) {
+        file.splice(ind, 1);
+        io.emit('rm', fpath);
+      } else {
+        ind++;
+      }
+    }
+
+    delete this.directories[path];
   }
 
   onFileChange(event, filepath) {
@@ -322,8 +352,17 @@ class MarkdownLive {
    *  @method socket
    */
   socket() {
+    // connection
     io.on('connection', (socket) => {
       io.emit('initialize', this.files);
+    });
+
+    // directory client events
+    io.on('addDir', (dir) => {
+      this.initDirectory(dir);
+    });
+    io.on('rmDir', (dir) => {
+      this.removeDirectory(dir);
     });
   }
 }

@@ -193,7 +193,7 @@ class FilesController extends Framework {
     this.model.files = Models.Files;
 
     this.element = {
-      nav: document.getElementById('nav'),
+      files: document.getElementById('files-listing'),
       documents: document.getElementById('docview'),
     };
 
@@ -214,7 +214,7 @@ class FilesController extends Framework {
     );
 
     const current = this.model.files.getActive();
-    this.element.nav.innerHTML = navTemplate({ dirs, current });
+    this.element.files.innerHTML = navTemplate({ dirs, current });
 
     if (current) {
       const newFrame = document.createElement('iframe');

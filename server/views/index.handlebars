@@ -12,7 +12,27 @@
 
 </body>
     <div id="content" class="content">
-      <nav id="nav" class="nav"></nav>
+        <nav id="nav" class="nav">
+            <section id="button-drawer">
+             <button id="toggle-collapse"></button>
+             <button id="toggle-nightmode"></button>
+            </section>
+            <div class="nav__scroll"> 
+                <div class="nav__inner"> 
+                    <section id="files-listing">
+                    </section>
+                    <section class="nav__add-directory">
+                        <input type="text" name="directory"/>
+                        <button>Add Directory</button>
+                    </section>
+                    <a class="author"
+                        href="https://github.com/Adjective-Object/markdown-live" 
+                        target="_blank">
+                        markdown-live
+                    </a>
+                </div>
+            </div>
+        </nav>
       <section id="docview" class="section__document"></section>
       <section id="notification-dock" class="section__notifications"></section>
     </div>
