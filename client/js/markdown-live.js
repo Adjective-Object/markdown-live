@@ -18,7 +18,7 @@ function unpackTemplate(html) {
   return template.content.firstChild;
 }
 
-const navTemplate = require('./templates/nav.handlebars');
+const navTemplate = require('./templates/file-list.handlebars');
 const notificationTemplate = require('./templates/notification.handlebars');
 
 // Db is provided by inline script from servers
@@ -193,7 +193,7 @@ class FilesController extends Framework {
     this.model.files = Models.Files;
 
     this.element = {
-      nav: document.getElementById('nav'),
+      files: document.getElementById('files-listing'),
       documents: document.getElementById('docview'),
     };
 
@@ -214,7 +214,7 @@ class FilesController extends Framework {
     );
 
     const current = this.model.files.getActive();
-    this.element.nav.innerHTML = navTemplate({ dirs, current });
+    this.element.files.innerHTML = navTemplate({ dirs, current });
 
     if (current) {
       const newFrame = document.createElement('iframe');
@@ -347,8 +347,36 @@ class FilesView extends Framework {
   }
 }
 
+class DirectoriesModel extends Framework {
+  initialize() {
+    this.element = {
+      input: document.querySelector('#input-directory'),
+    };
+  }
+
+  events() {
+    Gator(document).on('click', '#submit-directory', (e) => {
+      socketClient.emit(
+        'addDir',
+        { path: this.element.input.value }
+      );
+    });
+
+    Gator(document).on('click', '.remove-directory', (e) => {
+      const targetDir = e.target.getAttribute('data-dir');
+      socketClient.emit(
+        'rmDir',
+        { path: targetDir }
+      );
+    });
+
+  }
+}
+
 const init = () => {
   Models.Toast = new Toast();
+  Models.Directories = new DirectoriesModel();
+
   Views.Files = new FilesView();
   Models.Files = new FilesModel();
   Controllers.Files = new FilesController();
