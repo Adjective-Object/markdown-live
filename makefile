@@ -23,6 +23,8 @@ bundle: \
 	dist/public/img/chevron.svg \
 	dist/public/img/sun.svg \
 	dist/public/img/moon.svg \
+	dist/public/img/close.svg \
+	dist/public/img/close-light.svg \
 
 dist/public/css/%.css: webpack/webpack.style.js client/css/%.scss
 	webpack --config=$<

@@ -347,8 +347,36 @@ class FilesView extends Framework {
   }
 }
 
+class DirectoriesModel extends Framework {
+  initialize() {
+    this.element = {
+      input: document.querySelector('#input-directory'),
+    };
+  }
+
+  events() {
+    Gator(document).on('click', '#submit-directory', (e) => {
+      socketClient.emit(
+        'addDir',
+        { path: this.element.input.value }
+      );
+    });
+
+    Gator(document).on('click', '.remove-directory', (e) => {
+      const targetDir = e.target.getAttribute('data-dir');
+      socketClient.emit(
+        'rmDir',
+        { path: targetDir }
+      );
+    });
+
+  }
+}
+
 const init = () => {
   Models.Toast = new Toast();
+  Models.Directories = new DirectoriesModel();
+
   Views.Files = new FilesView();
   Models.Files = new FilesModel();
   Controllers.Files = new FilesController();

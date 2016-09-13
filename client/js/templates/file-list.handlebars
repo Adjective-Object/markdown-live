@@ -3,6 +3,11 @@
 {{#each dirs}}
 
     <span class="dir__title" title="{{this.title}}">
+        <a href="#"
+            data-dir="{{@key}}"
+            class="dir__remove remove-directory"
+            />
+        </a>
         {{@key}}
     </span>
 

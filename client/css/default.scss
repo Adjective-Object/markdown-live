@@ -96,6 +96,10 @@ h1, h2, h3, h4, h5 {
     padding-left: 36px;
   }
 
+  .nav__scroll {
+    pointer-events: none;
+  }
+
   .nav {
     transform: translate(-206px, 0);
     .dir__content {
@@ -118,6 +122,11 @@ h1, h2, h3, h4, h5 {
 
   button#toggle-collapse::before {
     transform: rotate(180deg);
+  }
+
+  .nav .dir__remove:before {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
@@ -151,6 +160,24 @@ h1, h2, h3, h4, h5 {
     line-height: 1.2rem;
     color: $nobel_approx;
     transition: color 0.25s;
+  }
+
+  .dir__remove {
+    display: inline-block;
+    float: right;
+    padding: 0;
+    vertical-align: middle;
+
+
+    &:before {
+      opacity: 0.5;
+      content: url(/img/close.svg);
+      transition: opacity 0.25s;
+    }
+
+    &:hover:before {
+      opacity: 1;
+    }
   }
 
   .dir__content {
@@ -192,7 +219,39 @@ h1, h2, h3, h4, h5 {
 
 .nav__inner {
   width: 240px;
-  padding: 10px 0;
+  padding: 10px 0 64px 0;
+  position: relative;
+  min-height: 100%;
+}
+
+.nav__add-directory {
+  padding: 0 20px;
+
+  display: flex;
+
+  input[type="text"], button {
+    appearance: none;
+    display: block;
+    border: none;
+    outline: none;
+
+    padding: 4px 8px;
+  }
+
+  input[type="text"] {
+    flex-grow: 1;
+  }
+
+  button {
+    text-align: center;
+    height: 23px;
+    &:before {
+      content: '+';
+      display: inline-block;
+      position: relative;
+      top: 1px;
+    }
+  }
 }
 
 #button-drawer {
@@ -214,6 +273,8 @@ h1, h2, h3, h4, h5 {
     appearance: none;
     -webkit-appearance: none;
     transition: transform 0.25s;
+
+    z-index: 10000;
 
     &:hover {
       background-color: $black_10;
@@ -371,6 +432,10 @@ button {
 
       .active {
         background-color: $patina_approx;
+      }
+
+      .dir__remove:before {
+        content: url(/img/close-light.svg);
       }
     }
 

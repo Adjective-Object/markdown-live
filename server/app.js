@@ -1,12 +1,16 @@
 'use strict';
 
 const fs = require('fs');
-const _ = require('underscore');
 const path = require('path');
+const process = require('process');
+
+const _ = require('underscore');
 const express = require('express');
 const app = express();
+
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+
 const chokidar = require('chokidar');
 const open = require('open');
 
@@ -151,7 +155,7 @@ const __ = {
 
     return {
       name: name,
-      dir: path.relative(DIRNAME, dir),
+      dir: path.relative(process.cwd(), dir),
       path: file,
       source: data,
       content: content,
@@ -180,7 +184,16 @@ class MarkdownLive {
   initDirectory(directory) {
     directory = path.resolve(directory);
 
-    var filewatcher = chokidar.watch(path.join(
+    if (!fs.existsSync(directory)) {
+      io.emit('toast', {
+        title: 'error',
+        text: `directory ${directory} does not exist`,
+        kind: 'error',
+        timeout: 0,
+      });
+    }
+
+    const filewatcher = chokidar.watch(path.join(
         directory,
         '*.*'
       ))
@@ -190,7 +203,7 @@ class MarkdownLive {
 
     this.directories[path] = {
       directory,
-      filewatcher
+      filewatcher,
     };
   }
 
@@ -199,12 +212,14 @@ class MarkdownLive {
 
     // remove all files of this directory
     let ind = 0;
-    for (let file of this.files) {
-      let fpath = path.resolve(file.dir);
-      if (fpath === directory) {
-        file.splice(ind, 1);
-        io.emit('rm', fpath);
-      } else {
+    while (ind < this.files.length) {
+      const file = this.files[ind];
+      const fileDirectory = path.resolve(file.dir);
+      if (fileDirectory === directory) {
+        this.files.splice(ind, 1);
+        io.emit('rm', file.path);
+      }
+      else {
         ind++;
       }
     }
@@ -355,14 +370,16 @@ class MarkdownLive {
     // connection
     io.on('connection', (socket) => {
       io.emit('initialize', this.files);
-    });
 
-    // directory client events
-    io.on('addDir', (dir) => {
-      this.initDirectory(dir);
-    });
-    io.on('rmDir', (dir) => {
-      this.removeDirectory(dir);
+      // directory client events
+      socket.on('addDir', (evt) => {
+        this.initDirectory(evt.path);
+      });
+
+      socket.on('rmDir', (evt) => {
+        this.removeDirectory(evt.path);
+      });
+
     });
   }
 }
