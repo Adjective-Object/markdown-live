@@ -1,15 +1,10 @@
 'use strict';
 const common = require('./common');
 const fs = require('fs');
+const webpack = require('webpack');
 
-const nodeModules = {};
-fs.readdirSync(common.nodeModules)
-.filter(function filterDotBin(x) {
-  return ['.bin'].indexOf(x) === -1;
-})
-.forEach(function addCommonJs(mod) {
-  nodeModules[mod] = 'commonjs ' + mod;
-});
+// add web as target platform
+common.addPlatform('web');
 
 module.exports = common.extend({
   name: 'server',
@@ -21,5 +16,9 @@ module.exports = common.extend({
     library: 'markdown-live',
     libraryTarget: 'commonjs2',
   },
-  externals: nodeModules,
+  plugins: [
+    new webpack.BannerPlugin('require("source-map-support").install();',
+                           { raw: true, entryOnly: false })
+  ],
+  externals: common.nodeModules,
 });

@@ -4,6 +4,9 @@ const common = require('./common');
 const path = require('path');
 const _ = require('underscore');
 
+// add web as target platform
+common.addPlatform('web');
+
 module.exports = {
   name: 'client',
   context: __dirname,

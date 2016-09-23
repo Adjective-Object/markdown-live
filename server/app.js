@@ -5,14 +5,11 @@ const path = require('path');
 const process = require('process');
 
 const _ = require('underscore');
-const express = require('express');
-const app = express();
-
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
 
 const chokidar = require('chokidar');
 const open = require('open');
+
+import Server from './server-communication';
 
 const MarkdownDocument = require('./document-types/markdown-document');
 const StructuredDocument = require('./document-types/structured-document');
@@ -25,7 +22,6 @@ const docTypes = [
 const _lib = require('./document-types/lib.js');
 const ClientError = _lib.ClientError;
 const errorTemplate = require('./document-types/error-template.handlebars');
-const indexTemplate = require('./views/index.handlebars');
 
 /* eslint-disable camelcase */
 const Message = {
@@ -170,8 +166,6 @@ class MarkdownLive {
     this.options = __.extend(DefaultArgs, options);
     this.log = (this.options.verbose) ? __.log : function doNothing() {};
 
-    this.url = __.joinArgs('http://localhost:', this.options.port);
-
     this.help();
     this.start();
     this.socket();
@@ -185,12 +179,7 @@ class MarkdownLive {
     directory = path.resolve(directory);
 
     if (!fs.existsSync(directory)) {
-      io.emit('toast', {
-        title: 'error',
-        text: `directory ${directory} does not exist`,
-        kind: 'error',
-        timeout: 0,
-      });
+      throw new Exception();
     }
 
     const filewatcher = chokidar.watch(path.join(
@@ -217,7 +206,7 @@ class MarkdownLive {
       const fileDirectory = path.resolve(file.dir);
       if (fileDirectory === directory) {
         this.files.splice(ind, 1);
-        io.emit('rm', file.path);
+        this.server.emit('rm', file.path);
       }
       else {
         ind++;
@@ -238,7 +227,7 @@ class MarkdownLive {
 
       try {
         data = __.buildData(filepath, data);
-        io.emit(event, data);
+        this.server.emit(event, data);
 
         // update the changed file
         const fileIndex = _(this.files).findIndex(
@@ -254,10 +243,10 @@ class MarkdownLive {
       }
       catch (e) {
         if (e instanceof ClientError) {
-          io.emit('toast', e.toast);
+          this.server.emit('toast', e.toast);
         }
         else {
-          io.emit('toast', {
+          this.server.emit('toast', {
             title: 'error',
             text: e.message || e,
             kind: 'error',
@@ -279,7 +268,7 @@ class MarkdownLive {
     this.files.splice(fileIndex, 1);
 
     filepath = path.resolve(filepath);
-    io.emit('rm', filepath);
+    this.server.emit('rm', filepath);
     __.log(Message.removed, filepath);
   }
 
@@ -302,21 +291,12 @@ class MarkdownLive {
    *  @method start
    */
   start() {
-    /* eslint-disable no-undef */
-    app.use(express.static(path.join(DIRNAME, 'public')));
-    /* eslint-enable no-undef */
-    app.use(express.static(this.options.dir));
-
     this.prepare();
+    this.server = new Server(this.options);
+    this.server.listen();
 
-    app.get('/', (req, res) => {
-      res.end(indexTemplate({
-        url: this.url,
-      }));
-    });
-
-    server.listen(this.options.port);
-    __.log(Message.start, this.url);
+    // TODO adress this with a platform object
+    // __.log(Message.start, this.url);
   }
 
   /**
@@ -367,20 +347,30 @@ class MarkdownLive {
    *  @method socket
    */
   socket() {
+    this.server.onStart(() => {
+      this.server.emit('initialize', this.files);
+    })
+
     // connection
-    io.on('connection', (socket) => {
-      io.emit('initialize', this.files);
-
-      // directory client events
-      socket.on('addDir', (evt) => {
+    this.server.on('addDir', (evt) => {
+      try {
         this.initDirectory(evt.path);
-      });
-
-      socket.on('rmDir', (evt) => {
-        this.removeDirectory(evt.path);
-      });
-
+      }
+      catch (e){
+        // TODO make this more granular of an exception
+        this.server.emit('toast', {
+          title: 'error',
+          text: `directory ${evt.path} does not exist`,
+          kind: 'error',
+          timeout: 0,
+        });
+      }
     });
+
+    this.server.on('rmDir', (evt) => {
+      this.removeDirectory(evt.path);
+    });
+
   }
 }
 

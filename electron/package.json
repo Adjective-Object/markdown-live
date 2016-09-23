@@ -1,0 +1,17 @@
+{
+  "name": "md-live-app",
+  "version": "1.0.0",
+  "description": "a live-editing markdown app, now in electron!",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adjective-Object/markdown-live.git"
+  },
+  "keywords": [
+    "Electron",
+    "Markdown"
+  ]
+}

@@ -106,7 +106,7 @@ const defaultMeta = {
   helpers: [],
   template: path.join(
     /* eslint-disable no-undef */
-    DIRNAME,
+    $dirname,
     /* eslint-enable no-undef */
     '/document-types/default-meta.handlebars'
   ),

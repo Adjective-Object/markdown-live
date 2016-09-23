@@ -32,9 +32,13 @@ module.exports = {
       {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract(
-'css-loader?minimize!sass-loader!postcss-loader'
-),
+          'css-loader?minimize!sass-loader!postcss-loader'
+        ),
       },
+      {
+        test: /\.svg$/,
+        loader: 'svg-url-loader'
+      }
     ],
   },
   postcss: function applyPostCss() {

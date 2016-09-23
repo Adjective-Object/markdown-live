@@ -12,8 +12,8 @@ var argv = require('minimist')(process.argv.slice(2), {
     }
 });
 
-global.nodeRequire = require;
-global.DIRNAME = path.join(__dirname, '..');
+global.$dirname = path.join(__dirname, '..' );
+global.$require = require;
 
-var mdlive = require(path.join(DIRNAME, 'server'));
+var mdlive = require(path.join(__dirname, '..', 'server'));
 new mdlive(argv);

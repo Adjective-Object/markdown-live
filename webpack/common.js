@@ -1,18 +1,19 @@
 'use strict';
+const _ = require('underscore');
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 
 const projectRoot = path.join(__dirname, '..');
-const nodeModules = path.join(projectRoot, 'node_modules');
+const nodeModulesDir = path.join(projectRoot, 'node_modules');
 
 const handlebarsLoaderPath = path.join(
-    nodeModules,
+    nodeModulesDir,
     'handlebars-loader/index.js'
 );
 
 const handlebarsRuntimePath = path.join(
-    nodeModules,
+    nodeModulesDir,
     'handlebars/dist/handlebars.runtime.js'
 );
 
@@ -52,6 +53,7 @@ const vendor = [
   'socket.io-client',
 ];
 
+// platform handler
 const jsConfig = {
   context: projectRoot,
   module: {
@@ -68,6 +70,9 @@ const jsConfig = {
       },
     ],
   },
+  resolve: {
+    extensions: ['', '.js', '.handlebars'],
+  },
   plugins: [
     exitErrorPlugin,
     new webpack.optimize.UglifyJsPlugin({
@@ -77,6 +82,11 @@ const jsConfig = {
     }),
   ],
 };
+
+function addPlatform(platform) {
+  jsConfig.resolve.extensions.push( '.' + platform + '.js' );
+}
+
 
 function _extend(source, target) {
   const sourceKeys = Object.keys(source);
@@ -90,7 +100,7 @@ function _extend(source, target) {
   }
 
   if (Array.isArray(target)) {
-    return source + target;
+    return source.concat(target);
   }
 
   for (i = 0; i < sourceKeys.length; i++) {
@@ -116,13 +126,24 @@ function extend(extension) {
   return _extend(extension, jsConfig);
 }
 
+let nodeModules = {};
+fs.readdirSync(nodeModulesDir)
+.filter(function filterDotBin(x) {
+  return ['.bin'].indexOf(x) === -1;
+})
+.forEach(function addCommonJs(mod) {
+  nodeModules[mod] = 'commonjs ' + mod;
+});
+
 // load package.json
 module.exports = {
   js: jsConfig,
   vendor: vendor,
   vendorDll: 'dist/clientlib-manifest.json',
-  nodeModules: nodeModules,
+  electronVendorDll: 'dist/electron/assets/clientlib-manifest.json',
   projectRoot: projectRoot,
-  extend: extend
+  extend: extend,
+  addPlatform: addPlatform,
+  nodeModules: nodeModules
 };
 

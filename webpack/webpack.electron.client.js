@@ -3,6 +3,9 @@ const webpack = require('webpack');
 const common = require('./common');
 const fs = require('fs');
 
+// add web as target platform
+common.addPlatform('electron');
+
 module.exports = common.extend({
   name: 'client',
   entry: './client/js/client.js',
@@ -13,8 +16,9 @@ module.exports = common.extend({
   plugins: [
       new webpack.DllReferencePlugin({
           context: '.',
-          manifest: JSON.parse(fs.readFileSync(common.vendorDll))
+          manifest: JSON.parse(fs.readFileSync(common.electronVendorDll))
       })
-  ]
+  ],
+  target: 'electron'
 });
 
