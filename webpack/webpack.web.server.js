@@ -11,14 +11,14 @@ module.exports = common.extend({
   entry: './server/app.js',
   target: 'node',
   output: {
-    path: 'dist/',
+    path: 'dist/web/',
     filename: 'server.js',
     library: 'markdown-live',
     libraryTarget: 'commonjs2',
   },
-  plugins: [
+  plugins: common.devBuild ? [
     new webpack.BannerPlugin('require("source-map-support").install();',
                            { raw: true, entryOnly: false })
-  ],
+  ] : [],
   externals: common.nodeModules,
 });

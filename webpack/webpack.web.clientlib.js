@@ -14,7 +14,7 @@ module.exports = {
     vendor: common.vendor
   },
   output: {
-    path: path.join(common.projectRoot, 'dist/public/js/'),
+    path: path.join(common.projectRoot, 'dist/web/public/js/'),
     filename: 'client.lib.js',
     library: '[name]_lib'
   },

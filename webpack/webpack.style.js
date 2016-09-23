@@ -21,7 +21,7 @@ module.exports = {
   context: common.projectRoot,
   entry: entry,
   output: {
-    path: 'dist/public/css',
+    path: 'dist/web/public/css',
     filename: '[name].css',
   },
   plugins: [

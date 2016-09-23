@@ -53,6 +53,8 @@ const vendor = [
   'socket.io-client',
 ];
 
+const devBuild = process.env['MD_LIVE_BUILD'] === 'dev';
+
 // platform handler
 const jsConfig = {
   context: projectRoot,
@@ -73,7 +75,7 @@ const jsConfig = {
   resolve: {
     extensions: ['', '.js', '.handlebars'],
   },
-  plugins: [
+  plugins: devBuild ? [] : [
     exitErrorPlugin,
     new webpack.optimize.UglifyJsPlugin({
       compress: {
@@ -139,11 +141,12 @@ fs.readdirSync(nodeModulesDir)
 module.exports = {
   js: jsConfig,
   vendor: vendor,
-  vendorDll: 'dist/clientlib-manifest.json',
+  vendorDll: 'dist/web/clientlib-manifest.json',
   electronVendorDll: 'dist/electron/assets/clientlib-manifest.json',
   projectRoot: projectRoot,
   extend: extend,
   addPlatform: addPlatform,
-  nodeModules: nodeModules
+  nodeModules: nodeModules,
+  devBuild: devBuild
 };
 

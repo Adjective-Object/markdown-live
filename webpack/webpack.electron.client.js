@@ -10,7 +10,7 @@ module.exports = common.extend({
   name: 'client',
   entry: './client/js/client.js',
   output: {
-    path: 'dist/public/js/',
+    path: 'dist/electron/assets/js',
     filename: 'client.js',
   },
   plugins: [
