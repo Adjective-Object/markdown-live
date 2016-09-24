@@ -1,18 +1,24 @@
+#####################
+# Control Variables #
+#####################
+
+WEBPACK_FLAGS=-d
+SUFFIX=-dev
+ifeq ($(MD_LIVE_BUILD),prod)
+	WEBPACK_FLAGS=
+	SUFFIX=
+endif
+
+
+#####################
+# User Target Rules #
+#####################
+
+.PHONY: all clean lint bundle-web web bundle-app app pkg
 
 all: web app
-
-pkg: md-live.tar
 clean:
 	rm -rf dist
-
-.PHONY: lint bundle-web bundle-app
-
-WEBPACK_FLAGS=
-SYFFIX=
-ifeq ($(MD_LIVE_BUILD),dev)
-	WEBPACK_FLAGS=-d
-	SUFFIX=-dev
-endif
 
 lint:
 	eslint client server
@@ -43,6 +49,18 @@ app bundle-app: \
 	dist/electron$(SUFFIX)/assets/js/client.lib.js \
 	dist/electron$(SUFFIX)/assets/js/client.js \
 
+ELECTRON_PACKAGES= \
+	md-live-app-darwin-x64 \
+	md-live-app-linux-armv7l \
+	md-live-app-linux-ia32 \
+	md-live-app-linux-x64 \
+	md-live-app-mas-x64 \
+	md-live-app-win32-ia32 \
+	md-live-app-win32-x64 \
+
+pkg: \
+	$(ELECTRON_PACKAGES) \
+	md-live.tar \
 
 DIRECTORIES=\
 	dist \
@@ -72,12 +90,13 @@ dist/web$(SUFFIX)/public/css/%.css: webpack/webpack.style.js client/css/%.scss
 
 dist/web$(SUFFIX)/public/js/client.js: \
 		webpack/webpack.web.client.js \
-		dist/web$(SUFFIX)/clientlib-manifest.json \
+		dist/web$(SUFFIX)/client.lib.js \
+		client/js/*.web.js \
 		client/js/*.js \
 		client/js/templates/*.handlebars
 	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
 
-dist/web$(SUFFIX)/clientlib-manifest.json dist/web$(SUFFIX)/public/js/client.lib.js: \
+dist/web$(SUFFIX)/public/js/client.lib.js: \
 		webpack/webpack.web.clientlib.js
 	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
 
@@ -98,25 +117,34 @@ dist/web$(SUFFIX)/bin/mdlive: server/bin/mdlive | dist/web$(SUFFIX)/bin
 
 dist/electron$(SUFFIX)/assets/js/client.js: \
 		webpack/webpack.electron.client.js\
-		dist/electron$(SUFFIX)/assets/clientlib-manifest.json \
+		dist/web$(SUFFIX)/client.lib.js \
+		client/js/*.electron.js \
 		client/js/*.js \
-		client/js/templates/*.handlebars | dist/electron$(SUFFIX)/assets
+		client/js/templates/*.handlebars \
+		| dist/electron$(SUFFIX)/assets
 	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
 
-dist/electron$(SUFFIX)/assets/clientlib-manifest.json dist/electron$(SUFFIX)/assets/js/client.lib.js: \
-		webpack/webpack.electron.clientlib.js | dist/electron$(SUFFIX)/assets
+dist/electron$(SUFFIX)/assets/js/client.lib.js: \
+		webpack/webpack.electron.clientlib.js \
+		| dist/electron$(SUFFIX)/assets
 	webpack $(WEBPACK_FLAGS) --config=$<  --output-path $$(dirname $@)
 
 dist/electron$(SUFFIX)/main.js: webpack/webpack.electron.js electron/*.js
 	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
 
-dist/electron$(SUFFIX)/assets/css/%.css: webpack/webpack.style.js client/css/%.scss | dist/electron$(SUFFIX)/assets
-	webpack $(WEBPACK_FLAGS) --config=$< --output-path='dist/electron$(SUFFIX)/assets/css'
+dist/electron$(SUFFIX)/assets/css/%.css: \
+		webpack/webpack.style.js client/css/%.scss \
+		| dist/electron$(SUFFIX)/assets
+	webpack $(WEBPACK_FLAGS) --config=$< \
+		--output-path="$$(dirname $@)"
 
-dist/electron$(SUFFIX)/assets/index.html: electron/index.html | dist/electron$(SUFFIX)/assets/
+dist/electron$(SUFFIX)/assets/index.html: \
+		electron/index.html \
+		| dist/electron$(SUFFIX)/assets/
 	cp $< $@
 
-dist/electron$(SUFFIX)/%: electron/% | dist/electron$(SUFFIX)/
+dist/electron$(SUFFIX)/%: electron/% \
+		| dist/electron$(SUFFIX)/
 	cp $< $@
 
 
@@ -124,6 +152,22 @@ dist/electron$(SUFFIX)/%: electron/% | dist/electron$(SUFFIX)/
 # Output Packages #
 ###################
 
-md-live.tar: bundle-web dist/package.json dist/README.md
-	find dist | grep '\.map$$' | xargs rm -f
-	cd dist && tar -c -f ../$@ .
+$(ELECTRON_PACKAGES): app
+	ifeq ($(MD_LIVE_BUILD),prod)
+		electron-packager dist/electron --all --out=dist --overwrite
+	else
+		echo "You should do a production build when making distributable packages"
+	endif
+
+md-live.tar: web
+	ifeq ($(MD_LIVE_BUILD),prod)
+		find dist | grep '\.map$$' | xargs rm -f
+		cd dist && tar -c -f ../$@ .
+	else
+		echo "You should do a production build when making distributable packages"
+	endif
+
+##################
+# Dev shorthands #
+##################
+

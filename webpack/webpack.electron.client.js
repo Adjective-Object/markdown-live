@@ -16,7 +16,7 @@ module.exports = common.extend({
   plugins: [
       new webpack.DllReferencePlugin({
           context: '.',
-          manifest: JSON.parse(fs.readFileSync(common.electronVendorDll))
+          manifest: JSON.parse(fs.readFileSync(common.vendorDll))
       })
   ],
   target: 'electron'

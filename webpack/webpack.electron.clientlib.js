@@ -20,7 +20,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DllPlugin({
-        path: common.electronVendorDll,
+        path: common.vendorDll,
         name: '[name]_lib'
     })
   ],

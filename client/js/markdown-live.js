@@ -285,7 +285,7 @@ class FilesView extends Framework {
   events() {
     Gator(document).on('click', '[data-file]', (e) => {
       e.preventDefault();
-      network.emit('switchFile', e.target.getAttribute('data-file') | 0);
+      this.emit('switchFile', e.target.getAttribute('data-file') | 0);
     });
 
     Gator(document).on('click', '#toggle-collapse', (e) => {

@@ -53,7 +53,7 @@ const vendor = [
   'socket.io-client',
 ];
 
-const devBuild = process.env['MD_LIVE_BUILD'] === 'dev';
+const devBuild = process.env['MD_LIVE_BUILD'] !== 'prod';
 
 // platform handler
 const jsConfig = {
@@ -141,8 +141,7 @@ fs.readdirSync(nodeModulesDir)
 module.exports = {
   js: jsConfig,
   vendor: vendor,
-  vendorDll: 'dist/web/clientlib-manifest.json',
-  electronVendorDll: 'dist/electron/assets/clientlib-manifest.json',
+  vendorDll: 'clientlib-manifest.json',
   projectRoot: projectRoot,
   extend: extend,
   addPlatform: addPlatform,

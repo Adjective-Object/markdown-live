@@ -23,10 +23,16 @@ class IpcServer {
   }
 
   listen() {
+    // on any message, call queued handlers
     ipcMain.on("mdlive-ipc-socket", (event, evtclass, payload)=> {
       console.log('server got', evtclass);
-      // iterate through registered handlers and bind them
+        console.log(this.handlers, this.handlers[evtclass]);
+        if (!this.handlers[evtclass]) return;
+        console.log('using handlers');
+
+        // iterate through registered handlers and call them
         for (let handler of this.handlers[evtclass]) {
+          console.log(evtclass, 'on', payload);
           handler(payload);
         }
       });
