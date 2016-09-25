@@ -2,7 +2,6 @@ import { ipcRenderer } from 'electron';
 
 const handlers = {};
 ipcRenderer.on('mdlive-ipc-socket', (event, evt, payload) => {
-  console.log('ipcRenderer.on', evt, payload);
   if (!Object.prototype.hasOwnProperty.call(handlers, evt)) {
     return;
   }
@@ -25,7 +24,6 @@ const network = {
 };
 
 const init = (Models, Views, Controllers) => {
-  console.log('try to init connection');
   network.emit('connection');
 };
 

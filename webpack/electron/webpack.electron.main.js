@@ -6,7 +6,6 @@ const path = require('path');
 const electronExec = path.resolve(
   path.join(__dirname, "../node_modules/electron/dist/electron")
 );
-console.log(electronExec);
 
 // add web as target platform
 common.addPlatform('electron');
