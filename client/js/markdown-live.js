@@ -4,7 +4,7 @@ import 'prismjs/components/prism-handlebars.min.js';
 import 'prismjs/components/prism-yaml.min.js';
 import _ from 'underscore';
 
-import {network, init as platformInit} from './platform'
+import {network, init as platformInit} from './platform';
 import Framework from './Framework';
 
 const libraries = { Prism, Gator, Framework, _ };
@@ -134,7 +134,6 @@ class FilesModel extends Framework {
         this.update(existingFile._id, file);
       }
     };
-
 
     network.on('push', pushUpdate);
     network.on('data', pushUpdate);

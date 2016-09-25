@@ -1,5 +1,5 @@
 'use strict';
-const common = require('./common');
+const common = require('../common/common.js');
 const fs = require('fs');
 const webpack = require('webpack');
 
@@ -11,7 +11,7 @@ module.exports = common.extend({
   entry: './server/app.js',
   target: 'node',
   output: {
-    path: 'dist/web/',
+    path: common.dist('web/'),
     filename: 'server.js',
     library: 'markdown-live',
     libraryTarget: 'commonjs2',

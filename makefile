@@ -2,11 +2,13 @@
 # Control Variables #
 #####################
 
-WEBPACK_FLAGS=-d
-SUFFIX=-dev
+WEBPACK_LIBRARY_FLAGS+= -d
+WEBPACK_APPLICATION_FLAGS+= -d
+BUILD_TYPE=dev
 ifeq ($(MD_LIVE_BUILD),prod)
-	WEBPACK_FLAGS=
-	SUFFIX=
+	WEBPACK_LIBRARY_FLAGS=
+	WEBPACK_APPLICATION_FLAGS=
+	BUILD_TYPE=prod
 endif
 
 
@@ -14,160 +16,136 @@ endif
 # User Target Rules #
 #####################
 
-.PHONY: all clean lint bundle-web web bundle-app app pkg
+.PHONY: \
+	all clean lint fixlint \
+	web watch-web prod-web phony-web\
+	app watch-app prod-app phony-app\
+	prod-pkg
 
-all: web app
+all: pkg
 clean:
 	rm -rf dist
 
-lint:
-	eslint client server
-
-web bundle-web: \
-	dist/web$(SUFFIX)/README.md \
-	dist/web$(SUFFIX)/package.json \
-	\
-	dist/web$(SUFFIX)/server.js \
-	dist/web$(SUFFIX)/public/js/client.js \
-	dist/web$(SUFFIX)/public/js/client.lib.js \
-	dist/web$(SUFFIX)/bin/mdlive \
-	dist/web$(SUFFIX)/public/css/default.css \
-	\
-	dist/web$(SUFFIX)/public/css/markdown-document.css \
-	dist/web$(SUFFIX)/public/css/structured-document.css \
-
-app bundle-app: \
-	dist/electron$(SUFFIX)/package.json \
-	dist/electron$(SUFFIX)/main.js \
-	\
-	dist/electron$(SUFFIX)/assets/index.html \
-	\
-	dist/electron$(SUFFIX)/assets/css/default.css \
-	dist/electron$(SUFFIX)/assets/css/markdown-document.css \
-	dist/electron$(SUFFIX)/assets/css/structured-document.css \
-	\
-	dist/electron$(SUFFIX)/assets/js/client.lib.js \
-	dist/electron$(SUFFIX)/assets/js/client.js \
-
-ELECTRON_PACKAGES= \
-	md-live-app-darwin-x64 \
-	md-live-app-linux-armv7l \
-	md-live-app-linux-ia32 \
-	md-live-app-linux-x64 \
-	md-live-app-mas-x64 \
-	md-live-app-win32-ia32 \
-	md-live-app-win32-x64 \
-
 pkg: \
-	$(ELECTRON_PACKAGES) \
-	md-live.tar \
+	dist/$(BUILD_TYPE)/md-live-linux-x64 \
+	dist/$(BUILD_TYPE)/pkg/md-live.tar
 
-DIRECTORIES=\
-	dist \
-	dist/web$(SUFFIX)/bin \
-	dist/web$(SUFFIX) \
-	dist/electron$(SUFFIX) \
-	dist/electron$(SUFFIX)/assets \
-	dist/web$(SUFFIX)public/css \
-	dist/electron$(SUFFIX)/assets/css \
+lint:
+	eslint client server electron
 
-$(DIRECTORIES):
-	mkdir -p $@
+fixlint:
+	eslint --fix client server electron
+
+web: dist/$(BUILD_TYPE)/web/server.js
+
+app: dist/$(BUILD_TYPE)/electron/main.js
+
+# Setting environment variables is hard, so we have these convenicne aliases
+# for watching during dev and making prod builds
+
+watch-web:
+	WEBPACK_APPLICATION_FLAGS=--watch make phony-web
+
+watch-app:
+	WEBPACK_APPLICATION_FLAGS=--watch make phony-app
+
+prod-web:
+	MD_LIVE_BUILD=prod make web
+
+prod-app:
+	MD_LIVE_BUILD=prod make app
+
+prod-pkg:
+	MD_LIVE_BUILD=prod make pkg
+
+##########################
+# Packaging Applications #
+##########################
+
+# As with the application below, we only track the build status of the linux
+# package, and assume the remainder of them are produced as side-effects.
+dist/$(BUILD_TYPE)/md-live-linux-x64: \
+		dist/$(BUILD_TYPE)/electron/main.js \
+		dist/$(BUILD_TYPE)/electron/package.json \
+		dist/$(BUILD_TYPE)/electron/README.md
+	mkdir -p $$(dirname $@)
+	electron-packager dist/$(BUILD_TYPE)/electron \
+		--all \
+		--out=dist/$(BUILD_TYPE) \
+		--overwrite
+
+dist/$(BUILD_TYPE)/pkg/md-live.tar: \
+		dist/$(BUILD_TYPE)/web/server.js \
+		dist/$(BUILD_TYPE)/web/package.json \
+		dist/$(BUILD_TYPE)/web/README.md
+	mkdir -p $$(dirname $@)
+	cd dist/$(BUILD_TYPE) && tar -c -f pkg/md-live.tar web
 
 
-##############
-# Web Client #
-##############
+###########################################
+# Webpack the Application, after the libs #
+###########################################
 
-dist/web$(SUFFIX)/README.md: README.md | dist/web$(SUFFIX)/
-	cp $< $@
-
-dist/web$(SUFFIX)/package.json: package.json | dist/web$(SUFFIX)/
-	cp $< $@
-
-dist/web$(SUFFIX)/public/css/%.css: webpack/webpack.style.js client/css/%.scss
-	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
-
-dist/web$(SUFFIX)/public/js/client.js: \
-		webpack/webpack.web.client.js \
-		dist/web$(SUFFIX)/client.lib.js \
-		client/js/*.web.js \
-		client/js/*.js \
-		client/js/templates/*.handlebars
-	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
-
-dist/web$(SUFFIX)/public/js/client.lib.js: \
-		webpack/webpack.web.clientlib.js
-	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
-
-dist/web$(SUFFIX)/server.js: webpack/webpack.web.server.js \
+# we don't want to track all the js files that are built in the same build step
+# because we don't use the separate webpack subbundles in the makefile, so we
+# track if it has run based on server.js
+phony-web dist/$(BUILD_TYPE)/web/server.js: \
+		webpack/webpack.web.js \
+		\
+		dist/$(BUILD_TYPE)/web/public/js/client.lib.js \
 		server/*.js \
 		server/views/*.handlebars \
 		server/document-types/*.js \
 		server/document-types/*.handlebars
-	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
 
-dist/web$(SUFFIX)/bin/mdlive: server/bin/mdlive | dist/web$(SUFFIX)/bin
+	webpack $(WEBPACK_APPLICATION_FLAGS) --config=$<
+
+# same as above
+phony-app dist/$(BUILD_TYPE)/electron/main.js: \
+		webpack/webpack.electron.js \
+		\
+		dist/$(BUILD_TYPE)/electron/assets/js/client.lib.js \
+		server/*.js \
+		server/views/*.handlebars \
+		server/document-types/*.js \
+		server/document-types/*.handlebars
+
+	webpack $(WEBPACK_APPLICATION_FLAGS) --config=$<
+
+
+##############################
+# Webpack the Client Library #
+##############################
+
+dist/$(BUILD_TYPE)/web/public/js/client.lib.js: \
+		webpack/web/webpack.web.clientlib.js
+	webpack $(WEBPACK_LIBRARY_FLAGS) --config=$<
+
+dist/$(BUILD_TYPE)/electron/assets/js/client.lib.js: \
+		webpack/electron/webpack.electron.clientlib.js
+	webpack $(WEBPACK_LIBRARY_FLAGS) --config=$<
+
+
+##################################################
+# Files copied directly (not managed by webpack) #
+##################################################
+
+# readme
+dist/$(BUILD_TYPE)/%/README.md: README.md
+	mkdir -p $$(dirname $@)
 	cp $< $@
 
-
-############
-# Electron #
-############
-
-dist/electron$(SUFFIX)/assets/js/client.js: \
-		webpack/webpack.electron.client.js\
-		dist/web$(SUFFIX)/client.lib.js \
-		client/js/*.electron.js \
-		client/js/*.js \
-		client/js/templates/*.handlebars \
-		| dist/electron$(SUFFIX)/assets
-	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
-
-dist/electron$(SUFFIX)/assets/js/client.lib.js: \
-		webpack/webpack.electron.clientlib.js \
-		| dist/electron$(SUFFIX)/assets
-	webpack $(WEBPACK_FLAGS) --config=$<  --output-path $$(dirname $@)
-
-dist/electron$(SUFFIX)/main.js: webpack/webpack.electron.js electron/*.js
-	webpack $(WEBPACK_FLAGS) --config=$< --output-path $$(dirname $@)
-
-dist/electron$(SUFFIX)/assets/css/%.css: \
-		webpack/webpack.style.js client/css/%.scss \
-		| dist/electron$(SUFFIX)/assets
-	webpack $(WEBPACK_FLAGS) --config=$< \
-		--output-path="$$(dirname $@)"
-
-dist/electron$(SUFFIX)/assets/index.html: \
-		electron/index.html \
-		| dist/electron$(SUFFIX)/assets/
+# package.json
+dist/$(BUILD_TYPE)/%/package.json: package.json
+	mkdir -p $$(dirname $@)
 	cp $< $@
 
-dist/electron$(SUFFIX)/%: electron/% \
-		| dist/electron$(SUFFIX)/
+# html index used by electron
+dist/$(BUILD_TYPE)/electron/assets/index.html: electron/index.html
+	mkdir -p $$(dirname $@)
 	cp $< $@
 
-
-###################
-# Output Packages #
-###################
-
-$(ELECTRON_PACKAGES): app
-	ifeq ($(MD_LIVE_BUILD),prod)
-		electron-packager dist/electron --all --out=dist --overwrite
-	else
-		echo "You should do a production build when making distributable packages"
-	endif
-
-md-live.tar: web
-	ifeq ($(MD_LIVE_BUILD),prod)
-		find dist | grep '\.map$$' | xargs rm -f
-		cd dist && tar -c -f ../$@ .
-	else
-		echo "You should do a production build when making distributable packages"
-	endif
-
-##################
-# Dev shorthands #
-##################
-
+# mdlive 'executable' for launching the web server from cli
+dist/$(BUILD_TYPE)/web/bin/mdlive: server/bin/mdlive
+	mkdir -p $$(dirname $@)
+	cp $< $@

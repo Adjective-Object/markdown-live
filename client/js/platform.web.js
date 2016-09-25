@@ -5,14 +5,14 @@ const socketHost = Db.socket || 'http://localhost';
 /* eslint-enable no-undef */
 const socketClient = io.connect(socketHost);
 const network = {
-  emit: function(evt, payload) {
-    socketClient.emit(evt, payload)
+  emit: (evt, payload) => {
+    socketClient.emit(evt, payload);
   },
-  on: function(evt, callback) {
-    socketClient.on(evt, function (payload) {
+  on: (evt, callback) => {
+    socketClient.on(evt, function(payload) {
       callback(payload);
     });
-  }
+  },
 };
 
 function init(Models, Views, Controllers) {

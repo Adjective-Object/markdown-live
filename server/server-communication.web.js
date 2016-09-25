@@ -17,7 +17,7 @@ class SocketServer {
     app.use(express.static(options.dir));
     app.get('/', (req, res) => {
       res.end(indexTemplate({
-      url: this.url,
+        url: this.url,
       }));
     });
 
@@ -29,9 +29,9 @@ class SocketServer {
       this.initFn();
 
       // iterate through registered handlers and bind them
-      for (let name in this.handlers) {
+      for (const name in this.handlers) {
         socket.on(name, (event) => {
-          for (let handler of this.handlers[name]) {
+          for (const handler of this.handlers[name]) {
             handler(event);
           }
         });
@@ -43,11 +43,11 @@ class SocketServer {
     if (!Object.hasOwnProperty(this.handlers, evtclass)) {
       this.handlers[evtclass] = [];
     }
-    this.handlers[evtclass].push(callback)
+    this.handlers[evtclass].push(callback);
   }
 
   emit(evtclass, payload) {
-    io.emit(evtclass, payload)
+    io.emit(evtclass, payload);
   }
 
   listen() {

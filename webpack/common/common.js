@@ -4,8 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 
-const projectRoot = path.join(__dirname, '..');
+const projectRoot = path.join(__dirname, '..', '..');
 const nodeModulesDir = path.join(projectRoot, 'node_modules');
+
+const devBuild = process.env['MD_LIVE_BUILD'] !== 'prod';
+const distFolder = path.join(projectRoot, devBuild ? 'dist/dev' : 'dist/prod');
+function dist(distPath) {
+  return path.join(distFolder, distPath);
+}
 
 const handlebarsLoaderPath = path.join(
     nodeModulesDir,
@@ -16,31 +22,6 @@ const handlebarsRuntimePath = path.join(
     nodeModulesDir,
     'handlebars/dist/handlebars.runtime.js'
 );
-
-// exit with error and remove build products if the build fails
-function exitErrorPlugin() {
-    this.plugin("done", function(stats)
-    {
-        if (stats.compilation.errors &&
-            stats.compilation.errors.length)
-        {
-            for(let x of stats.compilation.errors) {
-                console.log(x.message);
-            }
-
-            for (let a in stats.compilation.assets) {
-                console.log('unlinking', stats.compilation.assets[a].existsAt);
-                fs.unlink(stats.compilation.assets[a].existsAt);
-            }
-
-            // recurseKeys(stats, 'stats')
-
-            if (! stats.compilation.compiler.options.watch) {
-                process.exit(1);
-            }
-        }
-    });
-}
 
 const vendor = [
   'domready',
@@ -53,9 +34,6 @@ const vendor = [
   'socket.io-client',
 ];
 
-const devBuild = process.env['MD_LIVE_BUILD'] !== 'prod';
-
-// platform handler
 const jsConfig = {
   context: projectRoot,
   module: {
@@ -76,7 +54,6 @@ const jsConfig = {
     extensions: ['', '.js', '.handlebars'],
   },
   plugins: devBuild ? [] : [
-    exitErrorPlugin,
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,
@@ -89,7 +66,7 @@ function addPlatform(platform) {
   jsConfig.resolve.extensions.push( '.' + platform + '.js' );
 }
 
-
+// custom deep extend function
 function _extend(source, target) {
   const sourceKeys = Object.keys(source);
   const targetKeys = Object.keys(target);
@@ -128,6 +105,7 @@ function extend(extension) {
   return _extend(extension, jsConfig);
 }
 
+// populate list of nodemodules as an externals array for webpack
 let nodeModules = {};
 fs.readdirSync(nodeModulesDir)
 .filter(function filterDotBin(x) {
@@ -141,11 +119,13 @@ fs.readdirSync(nodeModulesDir)
 module.exports = {
   js: jsConfig,
   vendor: vendor,
-  vendorDll: 'clientlib-manifest.json',
+  vendorDll: dist('clientlib-manifest.json'),
   projectRoot: projectRoot,
   extend: extend,
   addPlatform: addPlatform,
   nodeModules: nodeModules,
-  devBuild: devBuild
+  devBuild: devBuild,
+  distFolder: distFolder,
+  dist: dist
 };
 

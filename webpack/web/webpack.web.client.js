@@ -1,16 +1,16 @@
 'use strict';
+const common = require('../common/common');
 const webpack = require('webpack');
-const common = require('./common');
 const fs = require('fs');
 
 // add web as target platform
-common.addPlatform('electron');
+common.addPlatform('web');
 
 module.exports = common.extend({
   name: 'client',
   entry: './client/js/client.js',
   output: {
-    path: 'dist/electron/assets/js',
+    path: common.dist('web/public/js'),
     filename: 'client.js',
   },
   plugins: [
@@ -18,7 +18,6 @@ module.exports = common.extend({
           context: '.',
           manifest: JSON.parse(fs.readFileSync(common.vendorDll))
       })
-  ],
-  target: 'electron'
+  ]
 });
 

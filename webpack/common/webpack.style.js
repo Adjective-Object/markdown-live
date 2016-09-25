@@ -9,7 +9,7 @@ const precss = require('precss');
 const autoprefixer = require('autoprefixer');
 
 // figure out the entrypoints
-const entryPoints = glob.sync(path.join(__dirname, '../client/css/*.scss'));
+const entryPoints = glob.sync(path.join(common.projectRoot, 'client/css/*.scss'));
 const keys = _(entryPoints).map((p) => {
   const base = path.relative(path.dirname(p), p);
   return base.substring(0, base.length - path.extname(base).length);

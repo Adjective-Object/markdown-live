@@ -1,40 +1,11 @@
-'use strict';
-const webpack = require('webpack');
-const common = require('./common');
-const fs = require('fs');
-const path = require('path');
-const electronExec = path.resolve(
-  path.join(__dirname, "../node_modules/electron/dist/electron")
-);
-console.log(electronExec);
+// electron configs
+const electronClient = [
+  require('./electron/webpack.electron.client.js'),
+  require('./electron/webpack.electron.style.js'),
+];
 
-// add web as target platform
-common.addPlatform('electron');
+const electronServer = [
+  require('./electron/webpack.electron.main.js'),
+];
 
-module.exports = common.extend({
-  name: 'electron',
-  entry: './electron/app.js',
-  output: {
-    path: 'dist/electron',
-    filename: 'main.js',
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      $dirname: '__dirname',
-      $require: 'require',
-    }) ].concat(common.devBuild ? [
-      new webpack.BannerPlugin('require("source-map-support").install();',
-       { raw: true, entryOnly: false }),
-      new webpack.BannerPlugin(
-        'require("electron-reload")(__dirname, {main: "main.js", electron: "' + electronExec + '"});', { 
-          raw: true,
-          entryOnly: false
-      })
-    ] : []),
-  electron: {
-    __filename: true,
-    __dirname: true
-  },
-  target: 'electron',
-  externals: common.nodeModules,
-});
+module.exports = electronClient.concat(electronServer);

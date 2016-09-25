@@ -4,4 +4,3 @@ import MarkdownLive from './markdown-live';
 domready(() => {
   MarkdownLive();
 });
-

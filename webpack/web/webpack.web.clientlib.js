@@ -1,11 +1,11 @@
 'use strict';
 const webpack = require('webpack');
-const common = require('./common');
+const common = require('../common/common.js');
 const path = require('path');
 const _ = require('underscore');
 
 // add web as target platform
-common.addPlatform('electron');
+common.addPlatform('web');
 
 module.exports = {
   name: 'client',
@@ -14,7 +14,7 @@ module.exports = {
     vendor: common.vendor
   },
   output: {
-    path: path.join(common.projectRoot, 'dist/electron/assets/js'),
+    path: common.dist('web/public/js'),
     filename: 'client.lib.js',
     library: '[name]_lib'
   },

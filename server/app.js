@@ -349,14 +349,14 @@ class MarkdownLive {
   socket() {
     this.server.onStart(() => {
       this.server.emit('initialize', this.files);
-    })
+    });
 
     // connection
     this.server.on('addDir', (evt) => {
       try {
         this.initDirectory(evt.path);
       }
-      catch (e){
+      catch (e) {
         // TODO make this more granular of an exception
         this.server.emit('toast', {
           title: 'error',
