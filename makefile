@@ -136,7 +136,7 @@ dist/$(BUILD_TYPE)/%/README.md: README.md
 	cp $< $@
 
 # package.json
-dist/$(BUILD_TYPE)/%/package.json: package.json
+dist/$(BUILD_TYPE)/%/package.json: %/package.json
 	mkdir -p $$(dirname $@)
 	cp $< $@
 
