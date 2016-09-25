@@ -300,6 +300,7 @@ class FilesView extends Framework {
 
   // hijacks a same-origin iframe element's links
   hijackIframe(iframe) {
+    console.log('hijacking iframe');
     // redirect links
     const anchors =
       Array.prototype.slice.call(
@@ -307,10 +308,11 @@ class FilesView extends Framework {
       );
 
     anchors.forEach((a) => {
-      if (a.href.startsWith(window.location.origin + '/#')) {
+      if (a.href.startsWith(window.location.href + '#')) {
         // hijack hash links to scroll the iframe
         const targetId = a.href.substring(a.href.indexOf('#') + 1);
         a.href = a.addEventListener('click', (e) => {
+          console.log('hijacked ;)');
           e.preventDefault();
           iframe.contentWindow.scrollTo(
             0,
