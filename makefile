@@ -109,6 +109,7 @@ phony-app dist/$(BUILD_TYPE)/electron/main.js: \
 		server/views/*.handlebars \
 		server/document-types/*.js \
 		server/document-types/*.handlebars \
+		dist/$(BUILD_TYPE)/electron/package.json \
 		dist/$(BUILD_TYPE)/electron/assets/index.html
 
 	webpack $(WEBPACK_APPLICATION_FLAGS) --config=$<
