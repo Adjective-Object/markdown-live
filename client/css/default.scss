@@ -171,7 +171,7 @@ h1, h2, h3, h4, h5 {
 
     &:before {
       opacity: 0.5;
-      content: url(/img/close.svg);
+      content: url(../img/close.svg);
       transition: opacity 0.25s;
     }
 
@@ -323,10 +323,10 @@ button {
   &#toggle-collapse::before {
     display: block;
     position: relative;
-    content: url(/img/chevron.svg);
+    content: url(../img/chevron.svg);
   }
   &#toggle-nightmode::before {
-    content: url(/img/moon.svg);
+    content: url(../img/moon.svg);
   }
 }
 
@@ -435,7 +435,7 @@ button {
       }
 
       .dir__remove:before {
-        content: url(/img/close-light.svg);
+        content: url(../img/close-light.svg);
       }
     }
 
@@ -483,10 +483,10 @@ button {
 
 .night button {
   &#toggle-collapse::before {
-    content: url(/img/chevron-light.svg);
+    content: url(../img/chevron-light.svg);
   }
 
   &#toggle-nightmode::before {
-    content: url(/img/sun.svg);
+    content: url(../img/sun.svg);
   }
 }

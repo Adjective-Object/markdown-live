@@ -2,9 +2,9 @@ import Gator from 'gator';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-handlebars.min.js';
 import 'prismjs/components/prism-yaml.min.js';
-import io from 'socket.io-client';
 import _ from 'underscore';
 
+import {network, init as platformInit} from './platform';
 import Framework from './Framework';
 
 const libraries = { Prism, Gator, Framework, _ };
@@ -21,12 +21,6 @@ function unpackTemplate(html) {
 const navTemplate = require('./templates/file-list.handlebars');
 const notificationTemplate = require('./templates/notification.handlebars');
 
-// Db is provided by inline script from servers
-/* eslint-disable no-undef */
-const socketHost = Db.socket || 'http://localhost';
-/* eslint-enable no-undef */
-const socketClient = io.connect(socketHost);
-
 // initializers
 const Models = {};
 const Controllers = {};
@@ -40,7 +34,7 @@ class Toast extends Framework {
   }
 
   events() {
-    socketClient.on('toast', (msg) => {
+    network.on('toast', (msg) => {
       this.notify(
         msg.title,
         msg.text || '',
@@ -89,7 +83,7 @@ class Toast extends Framework {
     });
 
     this.elements.dock.appendChild(toast);
-    toast.style.height = toast.clientHeight + 'px';
+    toast.style.height = toast.networkHeight + 'px';
     toast.classList.add('enter');
     setTimeout(() => {
       toast.classList.remove('enter');
@@ -118,7 +112,7 @@ class FilesModel extends Framework {
   }
 
   events() {
-    socketClient.on('initialize', (files) => {
+    network.on('initialize', (files) => {
       this.clear();
       if (files) {
         this.push(files);
@@ -141,10 +135,10 @@ class FilesModel extends Framework {
       }
     };
 
-    socketClient.on('push', pushUpdate);
-    socketClient.on('data', pushUpdate);
+    network.on('push', pushUpdate);
+    network.on('data', pushUpdate);
 
-    socketClient.on('rm', (path) => {
+    network.on('rm', (path) => {
       const killedFile = this.find(path);
       if (killedFile) {
         this.remove((x) => x._id === killedFile._id);
@@ -198,6 +192,9 @@ class FilesController extends Framework {
     };
 
     this.view = Views.Files;
+
+    // perform initial render
+    this.render();
   }
 
   events() {
@@ -356,7 +353,7 @@ class DirectoriesModel extends Framework {
 
   events() {
     Gator(document).on('click', '#submit-directory', (e) => {
-      socketClient.emit(
+      network.emit(
         'addDir',
         { path: this.element.input.value }
       );
@@ -364,7 +361,7 @@ class DirectoriesModel extends Framework {
 
     Gator(document).on('click', '.remove-directory', (e) => {
       const targetDir = e.target.getAttribute('data-dir');
-      socketClient.emit(
+      network.emit(
         'rmDir',
         { path: targetDir }
       );
@@ -381,25 +378,7 @@ const init = () => {
   Models.Files = new FilesModel();
   Controllers.Files = new FilesController();
 
-  socketClient.on('disconnect', () => {
-    Models.Toast.notify(
-      'disconnect',
-      'socket connection to server was lost',
-      'error',
-      [],
-      2000
-    );
-  });
-
-  socketClient.on('reconnect', () => {
-    Models.Toast.notify(
-      'reconnect',
-      'socket connection restored',
-      'ok',
-      [],
-      2000
-    );
-  });
+  platformInit();
 };
 
 export default init;

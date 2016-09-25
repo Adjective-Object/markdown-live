@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width minimum-scale=0, maximum-scale=1.0" />
+
+    <title>MarkdownLive</title>
+    <link href="./css/default.css" media="all" rel="stylesheet"/>
+  </head>
+<body>
+
+</body>
+    <div id="content" class="content">
+        <nav id="nav" class="nav">
+            <section id="button-drawer">
+             <button id="toggle-collapse"></button>
+             <button id="toggle-nightmode"></button>
+            </section>
+            <div class="nav__scroll"> 
+                <div class="nav__inner"> 
+                    <section id="files-listing">
+                    </section>
+                    <section class="nav__add-directory">
+                      <input id="input-directory"
+                          placeholder="add a directory"
+                          type="text"
+                          name="directory"
+                          />
+                        <button id="submit-directory"></button>
+                    </section>
+                    <a class="author"
+                        href="https://github.com/Adjective-Object/markdown-live" 
+                        target="_blank">
+                        markdown-live
+                    </a>
+                </div>
+            </div>
+        </nav>
+      <section id="docview" class="section__document"></section>
+      <section id="notification-dock" class="section__notifications"></section>
+    </div>
+    <script type="text/javascript" src="./js/client.lib.js">
+</script>
+    <script type="text/javascript" src="./js/client.js">
+    </script>
+</html>

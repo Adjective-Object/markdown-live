@@ -1,45 +1,27 @@
 'use strict';
+const _ = require('underscore');
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 
-const projectRoot = path.join(__dirname, '..');
-const nodeModules = path.join(projectRoot, 'node_modules');
+const projectRoot = path.join(__dirname, '..', '..');
+const nodeModulesDir = path.join(projectRoot, 'node_modules');
+
+const devBuild = process.env['MD_LIVE_BUILD'] !== 'prod';
+const distFolder = path.join(projectRoot, devBuild ? 'dist/dev' : 'dist/prod');
+function dist(distPath) {
+  return path.join(distFolder, distPath);
+}
 
 const handlebarsLoaderPath = path.join(
-    nodeModules,
+    nodeModulesDir,
     'handlebars-loader/index.js'
 );
 
 const handlebarsRuntimePath = path.join(
-    nodeModules,
+    nodeModulesDir,
     'handlebars/dist/handlebars.runtime.js'
 );
-
-// exit with error and remove build products if the build fails
-function exitErrorPlugin() {
-    this.plugin("done", function(stats)
-    {
-        if (stats.compilation.errors &&
-            stats.compilation.errors.length)
-        {
-            for(let x of stats.compilation.errors) {
-                console.log(x.message);
-            }
-
-            for (let a in stats.compilation.assets) {
-                console.log('unlinking', stats.compilation.assets[a].existsAt);
-                fs.unlink(stats.compilation.assets[a].existsAt);
-            }
-
-            // recurseKeys(stats, 'stats')
-
-            if (! stats.compilation.compiler.options.watch) {
-                process.exit(1);
-            }
-        }
-    });
-}
 
 const vendor = [
   'domready',
@@ -68,8 +50,10 @@ const jsConfig = {
       },
     ],
   },
-  plugins: [
-    exitErrorPlugin,
+  resolve: {
+    extensions: ['', '.js', '.handlebars'],
+  },
+  plugins: devBuild ? [] : [
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,
@@ -78,6 +62,11 @@ const jsConfig = {
   ],
 };
 
+function addPlatform(platform) {
+  jsConfig.resolve.extensions.push( '.' + platform + '.js' );
+}
+
+// custom deep extend function
 function _extend(source, target) {
   const sourceKeys = Object.keys(source);
   const targetKeys = Object.keys(target);
@@ -90,7 +79,7 @@ function _extend(source, target) {
   }
 
   if (Array.isArray(target)) {
-    return source + target;
+    return source.concat(target);
   }
 
   for (i = 0; i < sourceKeys.length; i++) {
@@ -116,13 +105,27 @@ function extend(extension) {
   return _extend(extension, jsConfig);
 }
 
+// populate list of nodemodules as an externals array for webpack
+let nodeModules = {};
+fs.readdirSync(nodeModulesDir)
+.filter(function filterDotBin(x) {
+  return ['.bin'].indexOf(x) === -1;
+})
+.forEach(function addCommonJs(mod) {
+  nodeModules[mod] = 'commonjs ' + mod;
+});
+
 // load package.json
 module.exports = {
   js: jsConfig,
   vendor: vendor,
-  vendorDll: 'dist/clientlib-manifest.json',
-  nodeModules: nodeModules,
+  vendorDll: dist('clientlib-manifest.json'),
   projectRoot: projectRoot,
-  extend: extend
+  extend: extend,
+  addPlatform: addPlatform,
+  nodeModules: nodeModules,
+  devBuild: devBuild,
+  distFolder: distFolder,
+  dist: dist
 };
 

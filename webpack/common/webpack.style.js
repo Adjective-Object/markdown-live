@@ -9,7 +9,7 @@ const precss = require('precss');
 const autoprefixer = require('autoprefixer');
 
 // figure out the entrypoints
-const entryPoints = glob.sync(path.join(__dirname, '../client/css/*.scss'));
+const entryPoints = glob.sync(path.join(common.projectRoot, 'client/css/*.scss'));
 const keys = _(entryPoints).map((p) => {
   const base = path.relative(path.dirname(p), p);
   return base.substring(0, base.length - path.extname(base).length);
@@ -21,7 +21,7 @@ module.exports = {
   context: common.projectRoot,
   entry: entry,
   output: {
-    path: 'dist/public/css',
+    path: 'dist/web/public/css',
     filename: '[name].css',
   },
   plugins: [
@@ -32,9 +32,13 @@ module.exports = {
       {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract(
-'css-loader?minimize!sass-loader!postcss-loader'
-),
+          'css-loader?minimize!sass-loader!postcss-loader'
+        ),
       },
+      {
+        test: /\.svg$/,
+        loader: 'svg-url-loader'
+      }
     ],
   },
   postcss: function applyPostCss() {

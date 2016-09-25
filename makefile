@@ -1,67 +1,153 @@
+#####################
+# Control Variables #
+#####################
 
-all: bundle
-dist: md-live.tar
+WEBPACK_LIBRARY_FLAGS+= -d
+WEBPACK_APPLICATION_FLAGS+= -d
+BUILD_TYPE=dev
+ifeq ($(MD_LIVE_BUILD),prod)
+	WEBPACK_LIBRARY_FLAGS=
+	WEBPACK_APPLICATION_FLAGS=
+	BUILD_TYPE=prod
+endif
+
+
+#####################
+# User Target Rules #
+#####################
+
+.PHONY: \
+	all clean lint fixlint \
+	web watch-web prod-web phony-web\
+	app watch-app prod-app phony-app\
+	prod-pkg
+
+all: pkg
 clean:
 	rm -rf dist
 
-.PHONY: lint bundle
+pkg: \
+	dist/$(BUILD_TYPE)/md-live-linux-x64 \
+	dist/$(BUILD_TYPE)/pkg/md-live.tar
 
 lint:
-	eslint client server
+	eslint client server electron
 
-bundle: \
-	dist/server.js \
-	dist/public/js/client.js \
-	dist/public/js/client.lib.js \
-	dist/bin/mdlive \
-	dist/public/css/default.css \
-	\
-	dist/public/css/markdown-document.css \
-	dist/public/css/structured-document.css \
-	\
-	dist/public/img/chevron-light.svg \
-	dist/public/img/chevron.svg \
-	dist/public/img/sun.svg \
-	dist/public/img/moon.svg \
-	dist/public/img/close.svg \
-	dist/public/img/close-light.svg \
+fixlint:
+	eslint --fix client server electron
 
-dist/public/css/%.css: webpack/webpack.style.js client/css/%.scss
-	webpack --config=$<
+web: dist/$(BUILD_TYPE)/web/server.js
 
-dist/public/img/%.svg: client/img/%.svg dist/public/img/
-	cp $< $@ 
+app: dist/$(BUILD_TYPE)/electron/main.js
 
-dist/%: %
-	cp $< $@ 
+# Setting environment variables is hard, so we have these convenicne aliases
+# for watching during dev and making prod builds
 
-dist/public/js/client.js: webpack/webpack.client.js dist/clientlib-manifest.json\
-		client/js/*.js \
-		client/js/templates/*.handlebars
-	webpack --config=$<
+watch-web:
+	WEBPACK_APPLICATION_FLAGS=--watch make phony-web
 
-dist/clientlib-manifest.json dist/public/js/client.lib.js: webpack/webpack.clientlib.js
-	webpack --config=$<
+watch-app:
+	WEBPACK_APPLICATION_FLAGS=--watch make phony-app
 
-dist/server.js: webpack/webpack.server.js \
+prod-web:
+	MD_LIVE_BUILD=prod make web
+
+prod-app:
+	MD_LIVE_BUILD=prod make app
+
+prod-pkg:
+	MD_LIVE_BUILD=prod make pkg
+
+##########################
+# Packaging Applications #
+##########################
+
+# As with the application below, we only track the build status of the linux
+# package, and assume the remainder of them are produced as side-effects.
+dist/$(BUILD_TYPE)/md-live-linux-x64: \
+		dist/$(BUILD_TYPE)/electron/main.js \
+		dist/$(BUILD_TYPE)/electron/package.json \
+		dist/$(BUILD_TYPE)/electron/README.md
+	mkdir -p $$(dirname $@)
+	electron-packager dist/$(BUILD_TYPE)/electron \
+		--all \
+		--out=dist/$(BUILD_TYPE) \
+		--overwrite
+
+dist/$(BUILD_TYPE)/pkg/md-live.tar: \
+		dist/$(BUILD_TYPE)/web/server.js \
+		dist/$(BUILD_TYPE)/web/package.json \
+		dist/$(BUILD_TYPE)/web/README.md
+	mkdir -p $$(dirname $@)
+	cd dist/$(BUILD_TYPE) && tar -c -f pkg/md-live.tar web
+
+
+###########################################
+# Webpack the Application, after the libs #
+###########################################
+
+# we don't want to track all the js files that are built in the same build step
+# because we don't use the separate webpack subbundles in the makefile, so we
+# track if it has run based on server.js
+phony-web dist/$(BUILD_TYPE)/web/server.js: \
+		webpack/webpack.web.js \
+		\
+		dist/$(BUILD_TYPE)/web/public/js/client.lib.js \
 		server/*.js \
 		server/views/*.handlebars \
 		server/document-types/*.js \
 		server/document-types/*.handlebars
 
-	webpack --config=$<
+	webpack $(WEBPACK_APPLICATION_FLAGS) --config=$<
 
-dist/bin/mdlive: server/bin/mdlive
-	mkdir -p dist/bin
-	cp server/bin/mdlive dist/bin/mdlive
+# same as above
+phony-app dist/$(BUILD_TYPE)/electron/main.js: \
+		webpack/webpack.electron.js \
+		\
+		dist/$(BUILD_TYPE)/electron/assets/js/client.lib.js \
+		server/*.js \
+		server/views/*.handlebars \
+		server/document-types/*.js \
+		server/document-types/*.handlebars \
+		dist/$(BUILD_TYPE)/electron/package.json \
+		dist/$(BUILD_TYPE)/electron/assets/index.html
 
-dist/public/img/:
-	mkdir -p $@
+	webpack $(WEBPACK_APPLICATION_FLAGS) --config=$<
 
-watch: bundle
-	webpack --watch -d
 
-md-live.tar: bundle dist/package.json dist/README.md
-	find dist | grep '\.map$$' | xargs rm -f
-	cd dist && tar -c -f ../$@ .
+##############################
+# Webpack the Client Library #
+##############################
 
+dist/$(BUILD_TYPE)/web/public/js/client.lib.js: \
+		webpack/web/webpack.web.clientlib.js
+	webpack $(WEBPACK_LIBRARY_FLAGS) --config=$<
+
+dist/$(BUILD_TYPE)/electron/assets/js/client.lib.js: \
+		webpack/electron/webpack.electron.clientlib.js
+	webpack $(WEBPACK_LIBRARY_FLAGS) --config=$<
+
+
+##################################################
+# Files copied directly (not managed by webpack) #
+##################################################
+
+# readme
+dist/$(BUILD_TYPE)/%/README.md: README.md
+	mkdir -p $$(dirname $@)
+	cp $< $@
+
+# package.json
+dist/$(BUILD_TYPE)/%/package.json: %/package.json
+	mkdir -p $$(dirname $@)
+	cp $< $@
+
+# html index used by electron
+dist/$(BUILD_TYPE)/electron/assets/index.html: electron/index.html
+	mkdir -p $$(dirname $@)
+	cp $< $@
+
+# mdlive 'executable' for launching the web server from cli
+dist/$(BUILD_TYPE)/web/bin/mdlive: server/bin/mdlive
+	mkdir -p $$(dirname $@)
+	cp $< $@
