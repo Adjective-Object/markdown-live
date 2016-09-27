@@ -228,6 +228,14 @@ class FilesController extends Framework {
 
       this.element.documents.appendChild(newFrame);
     }
+    else {
+        Array.prototype.forEach.call(
+            this.element.documents.children,
+            function(item) {
+                item.remove();
+            }
+		);
+    }
   }
 
   postRender() {
