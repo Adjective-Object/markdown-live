@@ -224,7 +224,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   word-wrap: break-word;
-  
+
   > h1, h2, h3, h4, h5, h6 {
     &:first-child {
       margin-top: 0;
@@ -492,9 +492,8 @@ p {
 }
 
 blockquote {
-  margin-top: 0;
-  margin-bottom: 16px;
   margin: 0;
+  margin-bottom: 16px;
   padding: 0 15px;
   color: $tapa_approx;
   border-left: 4px solid $alto_approx;
