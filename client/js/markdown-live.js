@@ -231,9 +231,7 @@ class FilesController extends Framework {
     else {
       Array.prototype.forEach.call(
         this.element.documents.children,
-        function(item) {
-          item.remove();
-        }
+        (item) => item.remove()
       );
     }
   }
