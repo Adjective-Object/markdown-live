@@ -14,7 +14,6 @@ const MarkdownDocument = {
   },
   render: (path: string, data: string): string => {
     const content = marked(data, { renderer: renderer });
-    console.log(config.toString());
     return markdownTemplate({
       content,
       userStyles: config.read('user-markdown.css'),
