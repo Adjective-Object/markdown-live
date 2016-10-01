@@ -17,7 +17,7 @@ endif
 #####################
 
 .PHONY: \
-	all clean lint fixlint \
+	all clean lint fixlint lintfix\
 	web watch-web prod-web phony-web\
 	app watch-app prod-app phony-app\
 	prod-pkg
@@ -33,7 +33,7 @@ pkg: \
 lint:
 	eslint client server electron
 
-fixlint:
+fixlint lintfix:
 	eslint --fix client server electron
 
 web: dist/$(BUILD_TYPE)/web/server.js
@@ -93,10 +93,11 @@ phony-web dist/$(BUILD_TYPE)/web/server.js: \
 		webpack/webpack.web.js \
 		\
 		dist/$(BUILD_TYPE)/web/public/js/client.lib.js \
+		dist/$(BUILD_TYPE)/web/bin/mdlive \
 		server/*.js \
 		server/views/*.handlebars \
 		server/document-types/*.js \
-		server/document-types/*.handlebars
+		server/document-types/*.handlebars \
 
 	webpack $(WEBPACK_APPLICATION_FLAGS) --config=$<
 

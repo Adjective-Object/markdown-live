@@ -34,7 +34,7 @@ const vendor = [
   'socket.io-client',
 ];
 
-const jsConfig = {
+const baseConfig = {
   context: projectRoot,
   module: {
     loaders: [
@@ -46,21 +46,36 @@ const jsConfig = {
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader?presets[]=es2015',
+        loader: 'babel-loader',
+        query: {
+          'presets': ['es2015'],
+          'plugins': ['transform-flow-strip-types'],
+        },
       },
     ],
   },
   resolve: {
     extensions: ['', '.js', '.handlebars'],
   },
-  plugins: devBuild ? [] : [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-      },
-    }),
-  ],
 };
+
+const devJsConfig = _extend({
+    devtool: '#inline-source-map',
+  }, baseConfig);
+
+const prodJsConfig = _extend({
+    plugins: [
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false,
+        }
+      })
+    ]
+  }, baseConfig);
+
+const jsConfig = devBuild
+  ? devJsConfig
+  : prodJsConfig;
 
 function addPlatform(platform) {
   jsConfig.resolve.extensions.push( '.' + platform + '.js' );
@@ -124,6 +139,7 @@ module.exports = {
   extend: extend,
   addPlatform: addPlatform,
   nodeModules: nodeModules,
+  nodeModulesDir: nodeModulesDir,
   devBuild: devBuild,
   distFolder: distFolder,
   dist: dist

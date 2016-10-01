@@ -51,7 +51,9 @@ class Toast extends Framework {
       if (typeof a.action === 'string') {
         return {
           text: a.text,
+          /* eslint-disable no-eval */
           action: eval('(function() {' + a.action + '})'),
+          /* eslint-enable no-eval */
         };
       }
 

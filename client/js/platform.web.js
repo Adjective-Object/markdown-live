@@ -9,7 +9,7 @@ const network = {
     socketClient.emit(evt, payload);
   },
   on: (evt, callback) => {
-    socketClient.on(evt, function(payload) {
+    socketClient.on(evt, (payload) => {
       callback(payload);
     });
   },

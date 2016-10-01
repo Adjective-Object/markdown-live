@@ -52,6 +52,7 @@ class SocketServer {
 
   listen() {
     server.listen(this.port);
+    console.log(`server listening on ${this.url}`);
   }
 
   onStart(callback) {

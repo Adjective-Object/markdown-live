@@ -59,9 +59,9 @@ const __ = {
     console.log.apply(null, arr);
   },
 
-  isWatched: function isWatched(filepath) {
+  isWatched: function isWatched(filePath) {
     for (const kind of FileTypes) {
-      if (kind.isDoc(filepath)) {
+      if (kind.isDoc(filePath)) {
         return true;
       }
     }
@@ -117,45 +117,45 @@ const __ = {
     return false;
   },
 
-  buildData: function buildData(file, data, fallback) {
+  getDocType: function getDocType(filePath) {
+    for (const types of docTypes) {
+      if (types.isDoc(filePath)) {
+        return types;
+      }
+    }
+    return null;
+  },
+
+  buildData: function buildData(filePath, data, fallback) {
     fallback = fallback || false;
 
-    const name = path.basename(file);
-    const dir = file.replace(name, '');
+    const name = path.basename(filePath);
+    const dir = filePath.replace(name, '');
 
     let content = '';
-    let type = 'unknown';
+    const docType = __.getDocType(filePath);
 
-    for (const kind of docTypes) {
-      if (kind.isDoc(file)) {
-        type = kind.type;
-
-        if (fallback) {
-          try {
-            content = kind.render(file, data);
-          }
-          catch (e) {
-            content = errorTemplate({
-              msg: e.stack,
-            });
-          }
-        }
-
-        else {
-          content = kind.render(file, data);
-        }
-
-        break;
+    try {
+      content = docType.render(filePath, data);
+    }
+    catch (e) {
+      if (fallback) {
+        content = errorTemplate({
+          msg: e.stack,
+        });
+      }
+      else {
+        throw e;
       }
     }
 
     return {
       name: name,
       dir: path.relative(process.cwd(), dir),
-      path: file,
+      path: filePath,
       source: data,
       content: content,
-      type: type,
+      type: (docType ? docType.type : 'unknown'),
     };
   },
 };
@@ -179,15 +179,14 @@ class MarkdownLive {
     directory = path.resolve(directory);
 
     if (!fs.existsSync(directory)) {
-      throw new Exception();
+      throw new Error(`directory ${directory} does not exist`);
     }
 
     const filewatcher = chokidar.watch(path.join(
         directory,
         '*.*'
       ))
-      .on('change', this.onFileChange.bind(this, 'data'))
-      .on('add', this.onFileChange.bind(this, 'push'))
+      .on('add', this.initFile.bind(this))
       .on('unlink', this.onRemove.bind(this));
 
     this.directories[path] = {
@@ -216,22 +215,39 @@ class MarkdownLive {
     delete this.directories[path];
   }
 
-  onFileChange(event, filepath) {
-    if(!__.isTracked(filepath)) {
+  initFile(filePath) {
+    if(!__.isTracked(filePath)) {
       return;
     }
 
-    filepath = path.resolve(filepath);
-    fs.readFile(filepath, 'utf8', (err, data) => {
+    const docType = __.getDocType(filePath);
+    const dependencies = docType.dependencies(filePath);
+    this.dependencyWatchers[filePath] = chokidar.watch(dependencies)
+      .on('change', (depPath) => {
+        this.renderAndSend('data', filePath);
+      })
+      .on('add', (depPath) => {
+        this.renderAndSend('data', filePath);
+      })
+      .on('unlink', (depPath) => {
+        this.renderAndSend('data', filePath);
+      });
+
+    this.renderAndSend('push', filePath);
+  }
+
+  renderAndSend(event, filePath) {
+    filePath = path.resolve(filePath);
+    fs.readFile(filePath, 'utf8', (err, data) => {
       if (err) return;
 
       try {
-        data = __.buildData(filepath, data);
+        data = __.buildData(filePath, data);
         this.server.emit(event, data);
 
         // update the changed file
         const fileIndex = _(this.files).findIndex(
-          (file) => file.path === filepath
+          (file) => file.path === filePath
         );
         if (fileIndex !== -1) {
           this.files[fileIndex] = data;
@@ -255,28 +271,29 @@ class MarkdownLive {
         }
       }
 
-      __.log(Message.emit, filepath);
+      __.log(Message.emit, filePath);
 
     });
   }
 
-  onRemove(filepath) {
+  onRemove(filePath) {
     // remove file from list
     const fileIndex = _(this.files).findIndex(
-      (file) => file.path === filepath
+      (file) => file.path === filePath
     );
     this.files.splice(fileIndex, 1);
 
-    filepath = path.resolve(filepath);
-    this.server.emit('rm', filepath);
-    __.log(Message.removed, filepath);
+    filePath = path.resolve(filePath);
+
+    if (Object.prototype.hasOwnProperty(this.dependencyWatchers, filePath)) {
+      this.dependencyWatchers[filePath].close();
+      delete this.dependencyWatchers[filePath];
+    }
+
+    this.server.emit('rm', filePath);
+    __.log(Message.removed, filePath);
   }
 
-  /**
-   *  Show help.
-   *
-   *  @method help
-   */
   help() {
     if (!this.options.help) return;
 
@@ -285,25 +302,12 @@ class MarkdownLive {
     stream.on('end', process.exit);
   }
 
-  /**
-   *  Start a server.
-   *
-   *  @method start
-   */
   start() {
     this.prepare();
     this.server = new Server(this.options);
     this.server.listen();
-
-    // TODO adress this with a platform object
-    // __.log(Message.start, this.url);
   }
 
-  /**
-   *  Find all *.md files and create new array.
-   *
-   *  @method prepare
-   */
   prepare() {
     const self = this;
     const files = fs.readdirSync(this.options.dir)
@@ -328,24 +332,16 @@ class MarkdownLive {
       const data = fs.readFileSync(file, 'utf8');
       return __.buildData(file, data, true);
     });
+
+    this.dependencyWatchers = {};
   }
 
-  /**
-   *  Open a browser.
-   *
-   *  @method open
-   */
   open() {
     if (this.options.browser) {
       open(this.url);
     }
   }
 
-  /**
-   *  Create websocket events.
-   *
-   *  @method socket
-   */
   socket() {
     this.server.onStart(() => {
       this.server.emit('initialize', this.files);
@@ -357,7 +353,6 @@ class MarkdownLive {
         this.initDirectory(evt.path);
       }
       catch (e) {
-        // TODO make this more granular of an exception
         this.server.emit('toast', {
           title: 'error',
           text: `directory ${evt.path} does not exist`,

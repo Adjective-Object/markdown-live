@@ -135,6 +135,10 @@ const StructuredDocument = {
     return (/\.doc\.(yaml|yml)$/).test(filePath);
   },
 
+  dependencies: (filePath) => {
+    return [filePath];
+  },
+
   render: (filePath, data) => {
     const docs = loadDocs(data);
     if (docs.length !== 1 && docs.length !== 2) {
