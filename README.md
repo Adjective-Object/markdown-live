@@ -125,6 +125,8 @@ configuration directory.
 | macOS       | `~/Library/Preferences`
 | Windows     | `~/AppData/markdown-live`
 
+e.g. on Linux, the file would be at `~/.config/markdown-live/user-markdown.css`
+
 If `$HOME` is unset on Linux or macOS, `/var/local/markdown-live` will be used
 instead.
 
