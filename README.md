@@ -100,6 +100,12 @@ built with `MDLIVE_BUILD=prod`
 | `make lint`       | lint codebase
 | `make lintfix`    | lint codebase & fix automatically fixable issues
 
+To run the electron app, use
+
+```
+electron dist/dev/electron
+```
+
 The electron app runs with auto-restart on change when in dev mode. To get the
 same behavior on the webserver, It is suggested to run it with `nodemon`, i.e.
 

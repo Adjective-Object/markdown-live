@@ -225,6 +225,12 @@ class MarkdownLive {
     this.dependencyWatchers[filePath] = chokidar.watch(dependencies)
       .on('change', (depPath) => {
         this.renderAndSend('data', filePath);
+      })
+      .on('add', (depPath) => {
+        this.renderAndSend('data', filePath);
+      })
+      .on('unlink', (depPath) => {
+        this.renderAndSend('data', filePath);
       });
 
     this.renderAndSend('push', filePath);
@@ -279,7 +285,7 @@ class MarkdownLive {
 
     filePath = path.resolve(filePath);
 
-    if (Object.prototype.hasOwnProp(this.dependencyWatchers, filePath)) {
+    if (Object.prototype.hasOwnProperty(this.dependencyWatchers, filePath)) {
       this.dependencyWatchers[filePath].close();
       delete this.dependencyWatchers[filePath];
     }

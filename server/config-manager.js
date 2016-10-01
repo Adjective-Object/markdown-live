@@ -99,16 +99,14 @@ function initConfigDir(): null {
     // watch for changes update the cache
     chokidar.watch(configDirectory)
       .on('add', (filename: string) => {
-        console.log('add', filename);
         loadConfigFile(filename);
       })
       .on('change', (filename: string) => {
-        console.log('change in', filename);
         loadConfigFile(filename);
       })
       .on('unlink', (filename: string) => {
-        console.log('unlink of', filename);
-        delete configCache[filename];
+        const configPath = path.relative(configDirectory, filename);
+        delete configCache[configPath];
       });
   }
   return;
