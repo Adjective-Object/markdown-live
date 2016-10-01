@@ -3,6 +3,11 @@
 <head>
     <title></title>
     <link href="./css/markdown-document.css" rel="stylesheet" type="text/css"/>
+    {{#if userStyles}}
+    <style type="text/css">
+        {{{userStyles}}}
+    </style>
+    {{/if}}
 </head>
 <body>
     {{{content}}}
