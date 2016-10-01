@@ -10,6 +10,8 @@ to inactivity
 * [Installation](#installation)
 * [Usage](#usage)
 * [CLI](#cli)
+* [Developing](#developing)
+* [Configuration](#configuration)
 * [Contributions](#contributions)
 * [Contact](#contact)
 * [Changelog](#changelog)
@@ -23,39 +25,39 @@ to inactivity
 
 ## Installation
 
-```shell
-$ npm install -g markdown-live
+```bash
+$ npm install -g md-live
 ```
 
 ## Usage
 
 To list all available options:
 
-```shell
+```bash
 $ mdlive --help
 ```
 
 To run with custom port and directory:
 
-```shell
+```bash
 $ mdlive --port 1024 --dir [PATH]
 ```
 
 To watch markdown files outside the current directory:
 
-```shell
+```bash
 $ mdlive --file [, FILE]
 ```
 
 To set another socket.io hostname:
 
-```shell
+```bash
 $ mdlive --socket "http://127.0.0.1:8080"
 ```
 
 ## CLI
 
-```shell
+```bash
 USAGE: mdlive [OPTIONS]
 
 OPTIONS:
@@ -68,7 +70,7 @@ OPTIONS:
   -s, --socket       Specifies the socket.io hostname or IP address (default: http://localhost)
 ```
 
-```shell
+```bash
 AVAILABLE MARKDOWN EXTENSIONS:
   
   *.markdown
@@ -84,11 +86,47 @@ AVAILABLE STRUCTURED DOCUMENT EXTENSIONS:
   *.doc.yaml
 ```
 
+## Developing
+
+All make rules build debug versions by default. Production versions can be
+built with `MDLIVE_BUILD=prod`
+
+| Make Command      | Usage
+| :--               | :--
+| `make web`        | build webserver
+| `make app`        | build electron app
+| `make watch-web`  | build webserver & watch for changes
+| `make watch-app`  | build electron app & watch for changes
+| `make lint`       | lint codebase
+| `make lintfix`    | lint codebase & fix automatically fixable issues
+
+The electron app runs with auto-restart on change when in dev mode. To get the
+same behavior on the webserver, It is suggested to run it with `nodemon`, i.e.
+
+```
+nodemon -w dist/dev/web/ dist/dev/web/bin/mdlive
+```
+
+## Configuration
+
+Markdown styles can be configured with a `user-markdown.css` file, which will
+be added to the head of all markdown documents. This file is in the user's
+configuration directory.
+
+| Platform    | Config Directory
+| :--         | :--
+| Linux       | `${XDG_CONFIG_HOME}/markdown-live`, or if not set, `~/.config/markdown-live`
+| macOS       | `~/Library/Preferences`
+| Windows     | `~/AppData/markdown-live`
+
+If `$HOME` is unset on Linux or macOS, `/var/local/markdown-live` will be used
+instead.
+
 ## Contributions
 
  - Fork repository
  - Create feature- or bugfix-branch
- - Create pull request
+ - Create pull request (to develop)
  - Use Github Issues
 
 ## Contact
