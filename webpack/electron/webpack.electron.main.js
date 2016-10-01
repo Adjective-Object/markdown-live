@@ -4,7 +4,7 @@ const common = require('../common/common.js');
 const fs = require('fs');
 const path = require('path');
 const electronExec = path.resolve(
-  path.join(__dirname, "../node_modules/electron/dist/electron")
+  path.join(common.nodeModulesDir, "electron/dist/electron")
 );
 
 // add web as target platform
