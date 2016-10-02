@@ -38,7 +38,7 @@
     "eslint": "^3.3.1",
     "eslint-cli": "^1.1.0",
     "eslint-plugin-flowtype": "^2.19.0",
-    "eslint-plugin-flowtype-errors": "^1.2.4",
+    "eslint-plugin-flowtype-errors": "git+https://github.com/Adjective-Object/eslint-plugin-flowtype-errors.git#postinstallable",
     "extract-text-webpack-plugin": "^1.0.1",
     "flow-bin": "^0.33.0",
     "gator": "^1.2.4",

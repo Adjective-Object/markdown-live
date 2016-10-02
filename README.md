@@ -1,5 +1,7 @@
 # markdown-live
 
+[![Build Status](https://travis-ci.org/Adjective-Object/markdown-live.svg?branch=travis)](https://travis-ci.org/Adjective-Object/markdown-live)
+
 > Markdown preview with live update
 
 Forked from [mobily/markdown-live](https://github.com/mobily/markdown-live) due
