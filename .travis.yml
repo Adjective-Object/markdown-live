@@ -1,6 +1,10 @@
 language: node_js
 node_js:
   - "6"
+  - "6.1"
+  - "5.11"
+  - "4.4"
+  - "0.12"
 before_script:
   # install dev dependnecies
   - npm install
@@ -9,6 +13,8 @@ script:
   - make lint
 
   # build the web app
-  - make web app
-  - MD_LIVE_BUILD=prod make web app
+  # deferred until there is a reason to build the app (webpack does not exit
+  # with error on partial failure).
+  # - make web app
+  # - MD_LIVE_BUILD=prod make web app
 
