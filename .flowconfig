@@ -1,0 +1,2 @@
+[options]
+module.name_mapper.extension='handlebars' -> '<PROJECT_ROOT>/flow/HandlebarsStub.js.flow'

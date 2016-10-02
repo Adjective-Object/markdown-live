@@ -1,0 +1,2 @@
+declare function handlebarsTemplate(locals: Object): string;
+export default handlebarsTemplate;

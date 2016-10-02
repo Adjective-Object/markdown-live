@@ -3,101 +3,130 @@ const chokidar = require('chokidar');
 const path = require('path');
 const fs = require('fs');
 
-function getUserConfigDir(): string {
-  // windows
-  if (process.env.APPDATA) {
-    return process.env.APPDATA;
+type StringMap = {[key:string]: ?string};
+
+export class ConfigManager {
+  environment: StringMap;
+  platform: string;
+
+  configDirectory: string;
+  configCache: StringMap;
+  configInitialized: boolean;
+
+  constructor(environment: ?StringMap = null, platform: ?string) {
+    this.environment = environment || process.env;
+    this.platform = platform || process.platform;
+
+    this.configDirectory = this.getApplicationConfigDir();
+    this.configCache = {};
+    this.configInitialized = false;
   }
 
-  // osx or linux, somehow userless
-  if (!process.env.HOME) {
-    return '/var/local';
-  }
-
-  // osx
-  else if (process.platform === 'darwin') {
-    return path.join(process.env.HOME, 'Library', 'Preferences');
-  }
-
-  // linux, with XDG
-  else if (process.env.XDG_CONFIG_HOME) {
-    return process.env.XDG_CONFIG_HOME;
-  }
-
-  // default to $HOME/.config
-  const xdgDefaultPath = path.join(
-    process.env.HOME,
-    '.config'
-  );
-
-  return xdgDefaultPath;
-}
-
-function getApplicationConfigDir(): string {
-  return path.join(
-    getUserConfigDir(),
-    'markdown-live'
-  );
-}
-
-const configDirectory:string = getApplicationConfigDir();
-let configCache:?object = null;
-let configInitialized = false;
-
-// write default config options to the configuration directory
-function initConfigDir(): null {
-  if (configInitialized) return;
-  let useFs = true;
-
-  // create the directory if it does not exist
-  if (!fs.existsSync(configDirectory)) {
-    try {
-      fs.mkdirSync(configDirectory);
+  getPlatformUserConfigDir(): string {
+    // windows
+    if (this.environment.APPDATA) {
+      return this.environment.APPDATA;
     }
-    catch (e) {
-      useFs = false;
-      console.log(
-        `error creating ${configDirectory}` +
-        ', defaulting to in-memory cache');
+
+    // osx or linux, somehow userless
+    if (!this.environment.HOME) {
+      return '/var/local';
+    }
+
+    // osx
+    else if (this.platform === 'darwin') {
+      return path.join(this.environment.HOME, 'Library', 'Preferences');
+    }
+
+    // linux, with XDG
+    else if (this.environment.XDG_CONFIG_HOME) {
+      return this.environment.XDG_CONFIG_HOME;
+    }
+
+    // default to $HOME/.config
+    const xdgDefaultPath = path.join(
+      this.environment.HOME,
+      '.config'
+    );
+
+    return xdgDefaultPath;
+  }
+
+  getApplicationConfigDir(): string {
+    // platform-independant user override
+    if (this.environment.MD_LIVE_CONFIG) {
+      return this.environment.MD_LIVE_CONFIG;
+    }
+
+    // otheerwise attach markdown-live to the platform-depenant user directory
+    return path.join(
+      this.getPlatformUserConfigDir(this.environment),
+      'markdown-live'
+    );
+  }
+
+  // write default config options to the configuration directory
+  initConfigDir() {
+    if (this.configInitialized) return;
+    const useFs = this.createConfigDir();
+    this.configInitialized = true;
+
+    if (useFs) {
+      this.initializeConfigFileWatchers();
     }
   }
 
-  // if it already exists, check it is a directory. If it is not, log an error
-  else {
-    const existingConfigStat = fs.statSync(configDirectory);
-    if (!existingConfigStat.isDirectory()) {
-      useFs = false;
-      console.log(
-        `config directory '${configDirectory} already exists,` +
-        'and is not a directory. Defaulting to in-memory config'
-      );
+  createConfigDir(): boolean {
+    // create the directory if it does not exist
+    if (!fs.existsSync(this.configDirectory)) {
+      try {
+        fs.mkdirSync(this.configDirectory);
+      }
+      catch (e) {
+        console.log(
+          `error creating ${this.configDirectory}` +
+          ', defaulting to in-memory cache');
+        return false;
+      }
     }
+
+    // if it already exists, check it is a directory. If it is not, log an error
+    else {
+      const existingConfigStat = fs.statSync(this.configDirectory);
+      if (!existingConfigStat.isDirectory()) {
+        console.log(
+          `config directory '${this.configDirectory} already exists,` +
+          'and is not a directory. Defaulting to in-memory config'
+        );
+        return false;
+      }
+    }
+
+    return true;
   }
 
-  configInitialized = true;
-  configCache = {};
-  if (useFs) {
+  initializeConfigFileWatchers() {
     const loadConfigFile = (fileName: string) => {
-      const configFile = path.relative(configDirectory, fileName);
-      const configFileFull = path.resolve(configDirectory, configFile);
-      console.log(configFile, configFileFull);
+      const configFile: string = path.relative(this.configDirectory, fileName);
+      const configFileFull: string = path.resolve(this.configDirectory, configFile);
 
       fs.readFile(
-        configFileFull, 'utf8',
-        (err: string, body: string) => {
+        configFileFull,
+        'utf8',
+        (err: ?ErrnoError, body: string) => {
           if (err) return;
 
           if (configFile.endsWith('.json')) {
-            configCache[configFile] = JSON.parse(body);
+            this.configCache[configFile] = JSON.parse(body);
           }
           else {
-            configCache[configFile] = body;
+            this.configCache[configFile] = body;
           }
         });
     };
 
     // watch for changes update the cache
-    chokidar.watch(configDirectory)
+    chokidar.watch(this.configDirectory)
       .on('add', (filename: string) => {
         loadConfigFile(filename);
       })
@@ -105,61 +134,45 @@ function initConfigDir(): null {
         loadConfigFile(filename);
       })
       .on('unlink', (filename: string) => {
-        const configPath = path.relative(configDirectory, filename);
-        delete configCache[configPath];
+        const configPath = path.relative(this.configDirectory, filename);
+        delete this.configCache[configPath];
       });
   }
-  return;
-}
 
-function readFile(filePath: string): string {
-  initConfigDir();
-  if (configCache) return configCache[filePath];
+  read(filePath: string): ?string | Object {
+    this.initConfigDir();
+    if (this.configCache) return this.configCache[filePath];
 
-  const configPath = path.join(configDirectory, filePath);
-  try {
-    return fs.readFileSync(configPath);
+    const configPath = path.join(this.configDirectory, filePath);
+    try {
+      const fileContent = fs.readFileSync(configPath, 'utf-8');
+      return (filePath.endsWith('.json'))
+        ? JSON.parse(fileContent)
+        : fileContent;
+    }
+    catch (err) {
+      return '';
+    }
   }
-  catch (err) {
-    return '';
+
+  write(filePath: string, content: string | Object) {
+    const stringContent:string =
+      (typeof content === 'object')
+        ? JSON.toString(content)
+        : content;
+
+    this.initConfigDir();
+    if (this.configCache) this.configCache[filePath] = stringContent;
+
+    const configPath = path.join(this.configDirectory, filePath);
+    fs.writeFile(configPath, stringContent);
   }
-}
 
-function readJson(filePath: string): object {
-  const configStr = fs.readFileSync(filePath);
-  return JSON.parse(configStr);
-}
-
-function writeFile(filePath: string, content: string) {
-  initConfigDir();
-  if (configCache) configCache[filePath] = content;
-
-  const configPath = path.join(configDirectory, filePath);
-  fs.writeFile(configPath, content);
-}
-
-function writeObject(filePath: string, content: object) {
-  writeFile(JSON.toString(content));
-}
-
-function writeSmart(filePath: string, content: string | object) {
-  if (typeof content === 'object') {
-    writeObject(filePath, content);
+  path(filePath: string): string {
+    return path.resolve(this.configDirectory, filePath);
   }
-  else {
-    writeFile(filePath, content);
-  }
+
 }
 
-function getConfigPath(filePath: string): string {
-  return path.resolve(configDirectory, filePath);
-}
-
-export default {
-  write: writeSmart,
-  writeFile: writeFile,
-  writeObject: writeObject,
-  read: readFile,
-  readJson: readJson,
-  path: getConfigPath,
-};
+const defaultManager: ConfigManager = new ConfigManager();
+export default defaultManager;
