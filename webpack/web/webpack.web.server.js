@@ -1,6 +1,5 @@
 'use strict';
 const common = require('../common/common.js');
-const fs = require('fs');
 const webpack = require('webpack');
 
 // add web as target platform
@@ -18,7 +17,7 @@ module.exports = common.extend({
   },
   plugins: common.devBuild ? [
     new webpack.BannerPlugin('require("source-map-support").install();',
-                           { raw: true, entryOnly: false })
+                           { raw: true, entryOnly: false }),
   ] : [],
   externals: common.nodeModules,
 });

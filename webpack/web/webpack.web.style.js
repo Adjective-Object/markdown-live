@@ -1,12 +1,12 @@
-'use strict'
+'use strict';
 const common = require('../common/common.js');
-var _ = require('underscore');
-var styleConfig = require('../common/webpack.style');
+const _ = require('underscore');
+const styleConfig = require('../common/webpack.style');
 
-var webStyleConfig = _.clone(styleConfig)
+const webStyleConfig = _.clone(styleConfig);
 webStyleConfig.output = {
-    path: common.dist('web/public/css'),
-    filename: '[name].css',
-},
+  path: common.dist('web/public/css'),
+  filename: '[name].css',
+};
 
 module.exports = webStyleConfig;

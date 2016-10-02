@@ -1,8 +1,6 @@
 'use strict';
 const webpack = require('webpack');
 const common = require('../common/common.js');
-const path = require('path');
-const _ = require('underscore');
 
 // add web as target platform
 common.addPlatform('web');
@@ -11,17 +9,17 @@ module.exports = {
   name: 'client',
   context: __dirname,
   entry: {
-    vendor: common.vendor
+    vendor: common.vendor,
   },
   output: {
     path: common.dist('web/public/js'),
     filename: 'client.lib.js',
-    library: '[name]_lib'
+    library: '[name]_lib',
   },
   plugins: [
     new webpack.DllPlugin({
-        path: common.vendorDll,
-        name: '[name]_lib'
-    })
+      path: common.vendorDll,
+      name: '[name]_lib',
+    }),
   ],
-}
+};

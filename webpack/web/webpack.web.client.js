@@ -11,13 +11,13 @@ module.exports = common.extend({
   entry: './client/js/client.js',
   output: {
     path: common.dist('web/public/js'),
-    filename: 'client.js',
+    filename: '[name].js',
   },
   plugins: [
-      new webpack.DllReferencePlugin({
-          context: '.',
-          manifest: JSON.parse(fs.readFileSync(common.vendorDll))
-      })
-  ]
+    new webpack.DllReferencePlugin({
+      context: '.',
+      manifest: JSON.parse(fs.readFileSync(common.vendorDll)),
+    }),
+  ],
 });
 

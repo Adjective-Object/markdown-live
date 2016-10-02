@@ -32,9 +32,11 @@ pkg: \
 
 lint:
 	eslint client server electron
+	eslint -c webpack/.eslintrc webpack
 
 fixlint lintfix:
 	eslint --fix client server electron
+	eslint --fix -c webpack/.eslintrc webpack
 
 web: dist/$(BUILD_TYPE)/web/server.js
 
