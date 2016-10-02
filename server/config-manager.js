@@ -3,15 +3,17 @@ const chokidar = require('chokidar');
 const path = require('path');
 const fs = require('fs');
 
+type StringMap = {[key:string]: ?string};
+
 export class ConfigManager {
-  environment: object;
+  environment: StringMap;
   platform: string;
 
   configDirectory: string;
-  configCache: object;
+  configCache: StringMap;
   configInitialized: boolean;
 
-  constructor(environment: ?object = null, platform: string) {
+  constructor(environment: ?StringMap = null, platform: ?string) {
     this.environment = environment || process.env;
     this.platform = platform || process.platform;
 
@@ -64,7 +66,7 @@ export class ConfigManager {
   }
 
   // write default config options to the configuration directory
-  initConfigDir(): null {
+  initConfigDir() {
     if (this.configInitialized) return;
     const useFs = this.createConfigDir();
     this.configInitialized = true;
@@ -74,7 +76,7 @@ export class ConfigManager {
     }
   }
 
-  createConfigDir(): null {
+  createConfigDir(): boolean {
     // create the directory if it does not exist
     if (!fs.existsSync(this.configDirectory)) {
       try {
@@ -103,14 +105,15 @@ export class ConfigManager {
     return true;
   }
 
-  initializeConfigFileWatchers(): null {
+  initializeConfigFileWatchers() {
     const loadConfigFile = (fileName: string) => {
-      const configFile = path.relative(this.configDirectory, fileName);
-      const configFileFull = path.resolve(this.configDirectory, configFile);
+      const configFile: string = path.relative(this.configDirectory, fileName);
+      const configFileFull: string = path.resolve(this.configDirectory, configFile);
 
       fs.readFile(
-        configFileFull, 'utf8',
-        (err: string, body: string) => {
+        configFileFull,
+        'utf8',
+        (err: ?ErrnoError, body: string) => {
           if (err) return;
 
           if (configFile.endsWith('.json')) {
@@ -136,13 +139,13 @@ export class ConfigManager {
       });
   }
 
-  read(filePath: string): string {
+  read(filePath: string): ?string | Object {
     this.initConfigDir();
     if (this.configCache) return this.configCache[filePath];
 
     const configPath = path.join(this.configDirectory, filePath);
     try {
-      const fileContent = fs.readFileSync(configPath);
+      const fileContent = fs.readFileSync(configPath, 'utf-8');
       return (filePath.endsWith('.json'))
         ? JSON.parse(fileContent)
         : fileContent;
@@ -152,7 +155,7 @@ export class ConfigManager {
     }
   }
 
-  write(filePath: string, content: string | object) {
+  write(filePath: string, content: string | Object) {
     const stringContent:string =
       (typeof content === 'object')
         ? JSON.toString(content)
@@ -171,5 +174,5 @@ export class ConfigManager {
 
 }
 
-const defaultManager = new ConfigManager();
+const defaultManager: ConfigManager = new ConfigManager();
 export default defaultManager;
