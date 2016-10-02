@@ -140,7 +140,6 @@ export class ConfigManager {
     this.initConfigDir();
     if (this.configCache) return this.configCache[filePath];
 
-    
     const configPath = path.join(this.configDirectory, filePath);
     try {
       const fileContent = fs.readFileSync(configPath);
@@ -151,11 +150,6 @@ export class ConfigManager {
     catch (err) {
       return '';
     }
-  }
-
-  readJson(filePath: string): object {
-    const configStr = fs.readFileSync(filePath);
-    return JSON.parse(configStr);
   }
 
   write(filePath: string, content: string | object) {
