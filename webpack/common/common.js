@@ -1,5 +1,4 @@
 'use strict';
-const _ = require('underscore');
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
@@ -7,10 +6,45 @@ const webpack = require('webpack');
 const projectRoot = path.join(__dirname, '..', '..');
 const nodeModulesDir = path.join(projectRoot, 'node_modules');
 
-const devBuild = process.env['MD_LIVE_BUILD'] !== 'prod';
+const devBuild = process.env.MD_LIVE_BUILD !== 'prod';
 const distFolder = path.join(projectRoot, devBuild ? 'dist/dev' : 'dist/prod');
 function dist(distPath) {
   return path.join(distFolder, distPath);
+}
+
+// custom deep extend function
+function _extend(source, target) {
+  const sourceKeys = Object.keys(source);
+  const targetKeys = Object.keys(target);
+  const n = {};
+  let key;
+  let i;
+
+  if (typeof(source) !== typeof(target)) {
+    throw new Error('mismatched types in _extend');
+  }
+
+  if (Array.isArray(target)) {
+    return source.concat(target);
+  }
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    n[key] = source[key];
+  }
+
+  for (i = 0; i < targetKeys.length; i++) {
+    key = targetKeys[i];
+    if (source.hasOwnProperty(key) &&
+            typeof(n[key]) === 'object') {
+      n[key] = _extend(source[key], target[key]);
+    }
+    else {
+      n[key] = target[key];
+    }
+  }
+
+  return n;
 }
 
 const handlebarsLoaderPath = path.join(
@@ -60,60 +94,25 @@ const baseConfig = {
 };
 
 const devJsConfig = _extend({
-    devtool: '#inline-source-map',
-  }, baseConfig);
+  devtool: '#inline-source-map',
+}, baseConfig);
 
 const prodJsConfig = _extend({
-    plugins: [
-      new webpack.optimize.UglifyJsPlugin({
-        compress: {
-          warnings: false,
-        }
-      })
-    ]
-  }, baseConfig);
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false,
+      },
+    }),
+  ],
+}, baseConfig);
 
 const jsConfig = devBuild
   ? devJsConfig
   : prodJsConfig;
 
 function addPlatform(platform) {
-  jsConfig.resolve.extensions.push( '.' + platform + '.js' );
-}
-
-// custom deep extend function
-function _extend(source, target) {
-  const sourceKeys = Object.keys(source);
-  const targetKeys = Object.keys(target);
-  const n = {};
-  let key;
-  let i;
-
-  if (typeof(source) !== typeof(target)) {
-    throw new Error('mismatched types in _extend');
-  }
-
-  if (Array.isArray(target)) {
-    return source.concat(target);
-  }
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    n[key] = source[key];
-  }
-
-  for (i = 0; i < targetKeys.length; i++) {
-    key = targetKeys[i];
-    if (source.hasOwnProperty(key) &&
-            typeof(n[key]) === 'object') {
-      n[key] = _extend(source[key], target[key]);
-    }
-    else {
-      n[key] = target[key];
-    }
-  }
-
-  return n;
+  jsConfig.resolve.extensions.push('.' + platform + '.js');
 }
 
 function extend(extension) {
@@ -121,7 +120,7 @@ function extend(extension) {
 }
 
 // populate list of nodemodules as an externals array for webpack
-let nodeModules = {};
+const nodeModules = {};
 fs.readdirSync(nodeModulesDir)
 .filter(function filterDotBin(x) {
   return ['.bin'].indexOf(x) === -1;
@@ -142,6 +141,6 @@ module.exports = {
   nodeModulesDir: nodeModulesDir,
   devBuild: devBuild,
   distFolder: distFolder,
-  dist: dist
+  dist: dist,
 };
 

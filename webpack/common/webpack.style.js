@@ -37,8 +37,8 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        loader: 'svg-url-loader'
-      }
+        loader: 'svg-url-loader',
+      },
     ],
   },
   postcss: function applyPostCss() {

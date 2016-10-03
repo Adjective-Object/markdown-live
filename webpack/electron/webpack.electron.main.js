@@ -1,10 +1,9 @@
 'use strict';
 const webpack = require('webpack');
 const common = require('../common/common.js');
-const fs = require('fs');
 const path = require('path');
 const electronExec = path.resolve(
-  path.join(common.nodeModulesDir, "electron/dist/electron")
+  path.join(common.nodeModulesDir, 'electron/dist/electron')
 );
 
 // add web as target platform
@@ -21,18 +20,18 @@ module.exports = common.extend({
     new webpack.DefinePlugin({
       $dirname: '__dirname',
       $require: 'require',
-    }) ].concat(common.devBuild ? [
+    })].concat(common.devBuild ? [
       new webpack.BannerPlugin('require("source-map-support").install();',
        { raw: true, entryOnly: false }),
       new webpack.BannerPlugin(
-        'require("electron-reload")(__dirname, {main: "main.js", electron: "' + electronExec + '"});', { 
+        'require("electron-reload")(__dirname, {main: "main.js", electron: "' + electronExec + '"});', {
           raw: true,
-          entryOnly: false
-      })
+          entryOnly: false,
+        }),
     ] : []),
   electron: {
     __filename: true,
-    __dirname: true
+    __dirname: true,
   },
   target: 'electron',
   externals: common.nodeModules,
