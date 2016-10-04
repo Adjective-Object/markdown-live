@@ -17,7 +17,7 @@ endif
 #####################
 
 .PHONY: \
-	all clean lint fixlint lintfix\
+	all clean lint fixlint lintfix test\
 	web watch-web prod-web phony-web\
 	app watch-app prod-app phony-app\
 	prod-pkg
@@ -33,6 +33,24 @@ pkg: \
 lint:
 	eslint client server electron
 	eslint -c webpack/.eslintrc webpack
+
+OUTPUT_WEB_TESTS=\
+	$(addprefix \
+		dist/$(BUILD_TYPE)/tests/web/, \
+		$(notdir $(wildcard */tests/*.js)) \
+	)
+
+OUTPUT_ELECTRON_TESTS=\
+	$(addprefix \
+		dist/$(BUILD_TYPE)/tests/electron/, \
+		$(notdir $(wildcard */tests/*.js)) \
+	)
+
+test: \
+		dist/$(BUILD_TYPE)/tests/web/test-update\
+		dist/$(BUILD_TYPE)/tests/electron/test-update
+	# mocha dist/$(BUILD_TYPE)/tests/electron/index.js
+	mocha dist/$(BUILD_TYPE)/tests/web/*.js
 
 fixlint lintfix:
 	eslint --fix client server electron
@@ -154,3 +172,17 @@ dist/$(BUILD_TYPE)/electron/assets/index.html: electron/index.html
 dist/$(BUILD_TYPE)/web/bin/mdlive: server/bin/mdlive
 	mkdir -p $$(dirname $@)
 	cp $< $@
+
+dist/$(BUILD_TYPE)/tests/electron/test-update: \
+		webpack/webpack.electron.tests.js \
+		client/tests/*.js \
+		server/tests/*.js
+	webpack --config=$< --bail
+	touch $@
+
+dist/$(BUILD_TYPE)/tests/web/test-update: \
+		webpack/webpack.web.tests.js \
+		client/tests/*.js \
+		server/tests/*.js
+	webpack --config=$< --bail
+	touch $@

@@ -13,6 +13,8 @@ export class ConfigManager {
   configCache: StringMap;
   configInitialized: boolean;
 
+  watchers: Array<Object>;
+
   constructor(environment: ?StringMap = null, platform: ?string) {
     this.environment = environment || process.env;
     this.platform = platform || process.platform;
@@ -20,6 +22,14 @@ export class ConfigManager {
     this.configDirectory = this.getApplicationConfigDir();
     this.configCache = {};
     this.configInitialized = false;
+
+    this.watchers = [];
+  }
+
+  destructor() {
+    this.watchers.forEach((watcher: Object) => {
+      watcher.close();
+    });
   }
 
   getPlatformUserConfigDir(): string {
@@ -126,7 +136,7 @@ export class ConfigManager {
     };
 
     // watch for changes update the cache
-    chokidar.watch(this.configDirectory)
+    const newWatcher = chokidar.watch(this.configDirectory)
       .on('add', (filename: string) => {
         loadConfigFile(filename);
       })
@@ -137,6 +147,8 @@ export class ConfigManager {
         const configPath = path.relative(this.configDirectory, filename);
         delete this.configCache[configPath];
       });
+
+    this.watchers.push(newWatcher);
   }
 
   read(filePath: string): ?string | Object {
