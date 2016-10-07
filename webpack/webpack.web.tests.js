@@ -7,7 +7,7 @@ common.addPlatform('web');
 
 module.exports = common.extend({
   name: 'server',
-  entry: common.entryGlob("./server/tests/!(_)*.js"),
+  entry: common.entryGlob('./server/tests/!(_)*.js'),
   target: 'node',
   output: {
     path: common.dist('tests/web'),

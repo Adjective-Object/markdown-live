@@ -4,19 +4,20 @@ const path = require('path');
 import {fs} from 'mz';
 
 type StringMap = {[key:string]: ?string};
+type Config = {[key:string]: ?(string | Object)};
 
 export class ConfigManager {
   environment: StringMap;
   platform: string;
 
   configDirectory: string;
-  configCache: StringMap;
+  configCache: Config;
   configInitialized: boolean;
 
   watchers: Object[]; // FSWatcher[];
   updateTriggers: Function[];
 
-  constructor(environment: ?StringMap = null, platform: ?string) {
+  constructor(environment: ?StringMap, platform: ?string) {
     this.environment = environment || process.env;
     this.platform = platform || process.platform;
 
@@ -78,15 +79,15 @@ export class ConfigManager {
   }
 
   // write default config options to the configuration directory
-  init(): Promise<void> {
+  init(): ?Promise<?null> {
     return (
       this.createConfigDir()
-
-        .then((useFilesystem: boolean): ?Promise<void> => {
+        .then((useFilesystem: boolean): ?Promise<null> => {
           if (!useFilesystem) return null;
           return (
             this.loadExistingConfigs()
               .then(this.initializeConfigFileWatchers.bind(this))
+              .then((): null => null)
           );
         })
     );
@@ -125,12 +126,12 @@ export class ConfigManager {
 
   }
 
-  loadExistingConfigs(): Promise<void> {
+  loadExistingConfigs(): Promise<(?(string | Object))[]> {
     return (
       fs.readdir(this.configDirectory)
-      .then((fileList: string[]): Promise<void[]> => {
+      .then((fileList: string[]): Promise<(?(string | Object))[]> => {
 
-        const loaders: Promise<void>[] = [];
+        const loaders: Promise<?(string | Object)>[] = [];
         for (const file: string of fileList) {
           loaders.push(this.loadConfigFile(file));
         }
@@ -140,13 +141,13 @@ export class ConfigManager {
     );
   }
 
-  loadConfigFile(fileName: string): Promise<?string | ?Object> {
+  loadConfigFile(fileName: string): Promise<?(string | Object)> {
     const configFileFull: string = path.resolve(this.configDirectory, fileName);
     const configFile: string = path.relative(this.configDirectory, configFileFull);
 
     return (
       fs.readFile(configFileFull, 'utf8')
-      .then((body: string): string => {
+      .then((body: string): ?(string | Object) => {
         if (configFile.endsWith('.json')) {
           this.configCache[configFile] = JSON.parse(body);
         }
@@ -155,8 +156,9 @@ export class ConfigManager {
         }
         return this.configCache[configFile];
       })
-      .catch((e: Error) => {
+      .catch((e: Error): null => {
         console.error('unable to read file', configFileFull, e);
+        return null;
       })
     );
   }
@@ -186,7 +188,7 @@ export class ConfigManager {
     });
   }
 
-  read(filePath: string): Promise<?string | ?Object> {
+  read(filePath: string): ?(string | Object) | Promise<?(string | Object)> {
     if (this.configCache) return this.configCache[filePath];
     return this.loadConfigFile(filePath);
   }

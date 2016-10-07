@@ -4,10 +4,9 @@ import rmdir from 'rmdir';
 
 function mkdirp(dirname) {
   return fs.exists(dirname)
-    .then((exists) => {
-      if (!exists) {
-        return fs.mkdir(dirname);
-      }
+    .then((exists): ?Promise<void> => {
+      if (!exists) return fs.mkdir(dirname);
+      return null;
     });
 }
 

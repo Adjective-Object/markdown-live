@@ -11,6 +11,9 @@ script:
   # check linting and type annotation pass
   - make lint
 
+  # run test suites
+  - make test
+
   # build the web app
   # deferred until there is a reason to build the app (webpack does not exit
   # with error on partial failure).
