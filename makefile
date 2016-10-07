@@ -17,7 +17,8 @@ endif
 #####################
 
 .PHONY: \
-	all clean lint fixlint lintfix test\
+	all clean lint fixlint lintfix lint-prod prod-lint\
+	test watch-test run-test runtest\
 	web watch-web prod-web phony-web\
 	app watch-app prod-app phony-app\
 	prod-pkg
@@ -31,8 +32,11 @@ pkg: \
 	dist/$(BUILD_TYPE)/pkg/md-live.tar
 
 lint:
-	eslint client server electron
-	eslint -c webpack/.eslintrc webpack
+	eslint $(ESLINT_FLAGS) client server electron
+	eslint $(ESLINT_FLAGS) -c webpack/.eslintrc webpack
+
+lint-prod prod-lint:
+	ESLINT_FLAGS='--max-warnings=0' make lint
 
 # in order to run the tests, we compile the entire project with babel
 TEST_PLATFORM=web

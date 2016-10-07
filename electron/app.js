@@ -28,4 +28,7 @@ const argv = require('minimist')(process.argv.slice(2), {
   },
 });
 
+/* eslint-disable no-new */
+// TODO break side-effects out of constructor
 new mdliveServer(argv);
+/* eslint-enable no-new */
