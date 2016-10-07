@@ -10,6 +10,7 @@ const chokidar = require('chokidar');
 const open = require('open');
 
 import Server from './server-communication';
+import config from './config-manager';
 
 const MarkdownDocument = require('./document-types/markdown-document');
 const StructuredDocument = require('./document-types/structured-document');
@@ -167,12 +168,14 @@ class MarkdownLive {
     this.log = (this.options.verbose) ? __.log : function doNothing() {};
 
     this.help();
-    this.start();
-    this.socket();
-    this.open();
+    config.init()
+      .then(() => {
+        this.start();
+        this.socket();
+        this.open();
 
-    this.directories = {};
-    this.initDirectory(this.options.dir);
+        this.directories = {};
+      });
   }
 
   initDirectory(directory) {

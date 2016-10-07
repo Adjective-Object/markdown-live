@@ -1,7 +1,7 @@
 // @flow
 const chokidar = require('chokidar');
 const path = require('path');
-const fs = require('mz/fs');
+import {fs} from 'mz';
 
 type StringMap = {[key:string]: ?string};
 

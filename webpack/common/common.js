@@ -72,6 +72,9 @@ const vendor = [
 
 const baseConfig = {
   context: projectRoot,
+  node: {
+    fs: 'empty',
+  },
   module: {
     loaders: [
       {
