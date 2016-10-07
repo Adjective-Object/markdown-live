@@ -1,6 +1,8 @@
 'use strict';
 const fs = require('fs');
+const _ = require('underscore');
 const path = require('path');
+const glob = require('glob');
 const webpack = require('webpack');
 
 const projectRoot = path.join(__dirname, '..', '..');
@@ -70,6 +72,9 @@ const vendor = [
 
 const baseConfig = {
   context: projectRoot,
+  node: {
+    fs: 'empty',
+  },
   module: {
     loaders: [
       {
@@ -129,6 +134,45 @@ fs.readdirSync(nodeModulesDir)
   nodeModules[mod] = 'commonjs ' + mod;
 });
 
+// turn a glob into an object of entry points
+function entryGlob() {
+  let entryPoints = [];
+  for(const map of arguments) {
+    const mapEntry = glob.sync(path.join(projectRoot, map));
+    entryPoints = entryPoints.concat(mapEntry);
+  }
+
+  const keys = _(entryPoints).map((p) => {
+    const base = path.relative(path.dirname(p), p);
+    return base.substring(0, base.length - path.extname(base).length);
+  });
+  return _.object(keys, entryPoints);
+}
+
+// remove from entry objects
+function compileLazy(config) {
+  for (const name in config.entry) {
+    const outputPath = path.join(
+      config.output.path,
+      config.output.filename.replace('[name]', name)
+    );
+
+    const inputPath = path.join(
+      config.entry[name]
+    );
+
+    if (fs.existsSync(outputPath)) {
+      const inTime = fs.statSync(inputPath).mtime;
+      const outTime = fs.statSync(outputPath).mtime;
+
+      if (inTime < outTime) {
+        delete config.entry[name];
+      }
+    }
+  }
+  return config;
+}
+
 // load package.json
 module.exports = {
   js: jsConfig,
@@ -142,5 +186,7 @@ module.exports = {
   devBuild: devBuild,
   distFolder: distFolder,
   dist: dist,
+  entryGlob: entryGlob,
+  compileLazy: compileLazy,
 };
 

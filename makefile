@@ -17,7 +17,7 @@ endif
 #####################
 
 .PHONY: \
-	all clean lint fixlint lintfix\
+	all clean lint fixlint lintfix test\
 	web watch-web prod-web phony-web\
 	app watch-app prod-app phony-app\
 	prod-pkg
@@ -33,6 +33,18 @@ pkg: \
 lint:
 	eslint client server electron
 	eslint -c webpack/.eslintrc webpack
+
+# in order to run the tests, we compile the entire project with babel
+TEST_PLATFORM=web
+
+phony-test test:
+	webpack $(WEBPACK_APPLICATION_FLAGS) --config=webpack/webpack.tests.js
+	make runtest
+
+run-test runtest:
+	for x in $$(find dist/$(BUILD_TYPE)/tests/ |grep '\.js$$'); do \
+		mocha $$x; \
+	done;
 
 fixlint lintfix:
 	eslint --fix client server electron
@@ -50,6 +62,9 @@ watch-web:
 
 watch-app:
 	WEBPACK_APPLICATION_FLAGS=--watch make phony-app
+
+watch-test:
+	WEBPACK_APPLICATION_FLAGS='--watch' make phony-test
 
 prod-web:
 	MD_LIVE_BUILD=prod make web
@@ -154,3 +169,10 @@ dist/$(BUILD_TYPE)/electron/assets/index.html: electron/index.html
 dist/$(BUILD_TYPE)/web/bin/mdlive: server/bin/mdlive
 	mkdir -p $$(dirname $@)
 	cp $< $@
+
+dist/$(BUILD_TYPE)/tests/electron/test-update: \
+		webpack/webpack.electron.tests.js \
+		client/tests/*.js \
+		server/tests/*.js
+	webpack --config=$< --bail
+	touch $@

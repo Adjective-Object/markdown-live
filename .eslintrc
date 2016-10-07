@@ -129,7 +129,7 @@
     "no-shadow": 1,
     "no-undef-init": 1,
     "no-undef": 1,
-    "no-undefined": 1,
+    /* "no-undefined": 1, */
     "no-unused-vars": [1, { "vars": "local", "args": "none" }],
     "no-use-before-define": 1,
 

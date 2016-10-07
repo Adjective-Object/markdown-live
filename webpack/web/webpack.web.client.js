@@ -8,7 +8,9 @@ common.addPlatform('web');
 
 module.exports = common.extend({
   name: 'client',
-  entry: './client/js/client.js',
+  entry: {
+    'client': './client/js/client.js',
+  },
   output: {
     path: common.dist('web/public/js'),
     filename: '[name].js',

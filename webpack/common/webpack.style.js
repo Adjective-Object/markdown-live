@@ -1,25 +1,14 @@
 'use strict';
 const common = require('./common');
-const _ = require('underscore');
-const glob = require('glob');
-const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const precss = require('precss');
 const autoprefixer = require('autoprefixer');
 
-// figure out the entrypoints
-const entryPoints = glob.sync(path.join(common.projectRoot, 'client/css/*.scss'));
-const keys = _(entryPoints).map((p) => {
-  const base = path.relative(path.dirname(p), p);
-  return base.substring(0, base.length - path.extname(base).length);
-});
-const entry = _.object(keys, entryPoints);
-
 module.exports = {
   name: 'style',
   context: common.projectRoot,
-  entry: entry,
+  entry: common.entryGlob('client/css/*.scss'),
   output: {
     path: 'dist/web/public/css',
     filename: '[name].css',
