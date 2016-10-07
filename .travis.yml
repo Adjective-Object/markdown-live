@@ -9,7 +9,7 @@ before_script:
   - npm install
 script:
   # check linting and type annotation pass
-  - make lint
+  - make lint-prod
 
   # run test suites
   - make test

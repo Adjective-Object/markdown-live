@@ -111,7 +111,7 @@
     "no-throw-literal": 1,
     "no-unused-expressions": 0,
     "no-void": 0,
-    "no-warning-comments": [1, { "terms": ["todo", "tofix"], "location": "start" }],
+    "no-warning-comments": [1, { "terms": ["tofix"], "location": "start" }],
     "no-with": 1,
     "radix": 1,
     "vars-on-top": 1,
