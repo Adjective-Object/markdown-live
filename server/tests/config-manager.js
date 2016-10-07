@@ -1,8 +1,8 @@
-import assert from 'better-assert';
-import {isEqual} from 'underscore';
+/* eslint-env mocha */
+import {expect} from 'chai';
 
 import * as test from './_lib.js';
-import ConfigManager from '../config-manager.js';
+import { ConfigManager } from '../config-manager.js';
 
 describe('ConfigManager', () => {
   describe('#read', () => {
@@ -11,24 +11,32 @@ describe('ConfigManager', () => {
       'bar.txt': 'Got that text',
     };
 
-    test.initDir('./test-config-read', testData)
-      .then(() => {
-        const manager = new ConfigManager({
-          MD_LIVE_CONFIG: './test-config-read',
-        });
+    let manager = null;
+    beforeEach(function prepReadTest(done) {
+      test.initDir('./test-config-read', testData)
+        .then(() => {
+          manager = new ConfigManager({
+            MD_LIVE_CONFIG: './test-config-read',
+          });
+          return manager.init();
+        })
+        .then(() => {done();})
+        .catch((e) => {done(e);});
+    });
 
-        assert(
-          'reading a json file should return a js object',
-          isEqual(manager.read('foo.json'), {content: 'Got that json'})
-        );
+    it('should return a js object when reading a json file',
+      test._try((done) => {
+        expect(manager.read('foo.json')).to.deep.equal({content: 'Got that json'});
+        done();
+      }));
 
-        assert(
-          'reading any other file should return a utf8 string of its content',
-          manager.read('bar.txt;') === 'Got that text'
-        );
+    it('should return a utf-8 encoded string when reading any other file',
+      test._try((done) => {
+        expect(manager.read('bar.txt')).to.equal('Got that text');
+        done();
+      })
+    );
 
-      });
   });
-
 });
 

@@ -34,23 +34,17 @@ lint:
 	eslint client server electron
 	eslint -c webpack/.eslintrc webpack
 
-OUTPUT_WEB_TESTS=\
-	$(addprefix \
-		dist/$(BUILD_TYPE)/tests/web/, \
-		$(notdir $(wildcard */tests/*.js)) \
-	)
+# in order to run the tests, we compile the entire project with babel
+TEST_PLATFORM=web
 
-OUTPUT_ELECTRON_TESTS=\
-	$(addprefix \
-		dist/$(BUILD_TYPE)/tests/electron/, \
-		$(notdir $(wildcard */tests/*.js)) \
-	)
+test:
+	# webpack --config=webpack/webpack.
+	babel -s inline -d dist/tests/$(TEST_PLATFORM) $(BABEL_FLAGS) \
+		$$(find client server | grep '/[^.]*\.js$$')
+	mocha dist/tests/*/tests/*.js
 
-test: \
-		dist/$(BUILD_TYPE)/tests/web/test-update\
-		dist/$(BUILD_TYPE)/tests/electron/test-update
-	# mocha dist/$(BUILD_TYPE)/tests/electron/index.js
-	mocha dist/$(BUILD_TYPE)/tests/web/*.js
+watch-test:
+	BABEL_FLAGS='--watch' make test
 
 fixlint lintfix:
 	eslint --fix client server electron
@@ -175,13 +169,6 @@ dist/$(BUILD_TYPE)/web/bin/mdlive: server/bin/mdlive
 
 dist/$(BUILD_TYPE)/tests/electron/test-update: \
 		webpack/webpack.electron.tests.js \
-		client/tests/*.js \
-		server/tests/*.js
-	webpack --config=$< --bail
-	touch $@
-
-dist/$(BUILD_TYPE)/tests/web/test-update: \
-		webpack/webpack.web.tests.js \
 		client/tests/*.js \
 		server/tests/*.js
 	webpack --config=$< --bail

@@ -1,7 +1,7 @@
 // @flow
 const chokidar = require('chokidar');
 const path = require('path');
-const fs = require('fs');
+const fs = require('mz/fs');
 
 type StringMap = {[key:string]: ?string};
 
@@ -13,7 +13,7 @@ export class ConfigManager {
   configCache: StringMap;
   configInitialized: boolean;
 
-  watchers: Array<Object>;
+  watchers: FSWatcher[];
 
   constructor(environment: ?StringMap = null, platform: ?string) {
     this.environment = environment || process.env;
@@ -76,95 +76,111 @@ export class ConfigManager {
   }
 
   // write default config options to the configuration directory
-  initConfigDir() {
-    if (this.configInitialized) return;
-    const useFs = this.createConfigDir();
-    this.configInitialized = true;
+  init(): Promise<void> {
+    return (
+      this.createConfigDir()
 
-    if (useFs) {
-      this.initializeConfigFileWatchers();
-    }
+        .then((useFilesystem: boolean): ?Promise<void> => {
+          if (!useFilesystem) return null;
+          return (
+            this.loadExistingConfigs()
+              .then(this.initializeConfigFileWatchers.bind(this))
+          );
+        })
+    );
   }
 
-  createConfigDir(): boolean {
+  createConfigDir(): Promise<boolean> {
     // create the directory if it does not exist
-    if (!fs.existsSync(this.configDirectory)) {
-      try {
-        fs.mkdirSync(this.configDirectory);
-      }
-      catch (e) {
-        console.log(
+    return fs.exists(this.configDirectory)
+      .then((exists: boolean): Promise<void> => {
+        // if the directory does not exist, try to make it
+        if (!exists) return (fs.mkdir(this.configDirectory));
+
+        // if it does exist, check that it is a directory. If it is not, throw
+        // an exception
+        return (
+          fs.stat(this.configDirectory)
+            .then((stat: fs.Stats) => {
+              if (!stat.isDirectory()) {
+                throw new Error(
+                  'config directory path already exists and is not a dir'
+                );
+              }
+            })
+          );
+      })
+      // if the promise chain resolves correctly, we exit with 'true'
+      .then((): boolean => true)
+
+      // otherwise we log an error and exit with false
+      .catch((e: Error): boolean => {
+        console.error(
           `error creating ${this.configDirectory}` +
           ', defaulting to in-memory cache');
         return false;
-      }
-    }
+      });
 
-    // if it already exists, check it is a directory. If it is not, log an error
-    else {
-      const existingConfigStat = fs.statSync(this.configDirectory);
-      if (!existingConfigStat.isDirectory()) {
-        console.log(
-          `config directory '${this.configDirectory} already exists,` +
-          'and is not a directory. Defaulting to in-memory config'
-        );
-        return false;
-      }
-    }
+  }
 
-    return true;
+  loadExistingConfigs(): Promise<void> {
+    return (
+      fs.readdir(this.configDirectory)
+      .then((fileList: string[]): Promise<void[]> => {
+        
+        const loaders: Promise<void>[] = [];
+        for (const file: string of fileList) {
+          loaders.push(this.loadConfigFile(file));
+        }
+
+        return Promise.all(loaders);
+      })
+    );
+  }
+
+  loadConfigFile(fileName: string): Promise<?string | ?Object> {
+    const configFileFull: string = path.resolve(this.configDirectory, fileName);
+    const configFile: string = path.relative(this.configDirectory, configFileFull);
+
+    return (
+      fs.readFile(configFileFull, 'utf8')
+      .then((body: string): string => {
+        if (configFile.endsWith('.json')) {
+          this.configCache[configFile] = JSON.parse(body);
+        }
+        else {
+          this.configCache[configFile] = body;
+        }
+        return this.configCache[configFile];
+      })
+      .catch((e: Error) => {
+        console.error('unable to read file', configFileFull, e);
+      })
+    );
   }
 
   initializeConfigFileWatchers() {
-    const loadConfigFile = (fileName: string) => {
-      const configFile: string = path.relative(this.configDirectory, fileName);
-      const configFileFull: string = path.resolve(this.configDirectory, configFile);
-
-      fs.readFile(
-        configFileFull,
-        'utf8',
-        (err: ?ErrnoError, body: string) => {
-          if (err) return;
-
-          if (configFile.endsWith('.json')) {
-            this.configCache[configFile] = JSON.parse(body);
-          }
-          else {
-            this.configCache[configFile] = body;
-          }
-        });
-    };
-
     // watch for changes update the cache
-    const newWatcher = chokidar.watch(this.configDirectory)
+    const configDirWatcher = chokidar.watch(this.configDirectory,{
+      ignoreInitial: true
+    })
       .on('add', (filename: string) => {
-        loadConfigFile(filename);
+        this.loadConfigFile(filename);
       })
       .on('change', (filename: string) => {
-        loadConfigFile(filename);
+        this.loadConfigFile(filename);
       })
       .on('unlink', (filename: string) => {
         const configPath = path.relative(this.configDirectory, filename);
         delete this.configCache[configPath];
       });
 
-    this.watchers.push(newWatcher);
+    this.watchers.push(configDirWatcher);
   }
 
-  read(filePath: string): ?string | Object {
-    this.initConfigDir();
+  read(filePath: string): Promise<?string | ?Object> {
     if (this.configCache) return this.configCache[filePath];
-
-    const configPath = path.join(this.configDirectory, filePath);
-    try {
-      const fileContent = fs.readFileSync(configPath, 'utf-8');
-      return (filePath.endsWith('.json'))
-        ? JSON.parse(fileContent)
-        : fileContent;
-    }
-    catch (err) {
-      return '';
-    }
+    return this.loadConfigFile(filePath);
   }
 
   write(filePath: string, content: string | Object) {
@@ -173,9 +189,7 @@ export class ConfigManager {
         ? JSON.toString(content)
         : content;
 
-    this.initConfigDir();
     if (this.configCache) this.configCache[filePath] = stringContent;
-
     const configPath = path.join(this.configDirectory, filePath);
     fs.writeFile(configPath, stringContent);
   }
