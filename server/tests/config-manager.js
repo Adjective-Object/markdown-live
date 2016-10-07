@@ -20,8 +20,15 @@ describe('ConfigManager', () => {
           });
           return manager.init();
         })
-        .then(() => {done();})
-        .catch((e) => {done(e);});
+        .then(done)
+        .catch(done);
+    });
+
+    afterEach(function destroyReadTest(done) {
+      manager.destructor();
+      test.rmDir('./test-config-read')
+        .then(done)
+        .catch(done);
     });
 
     it('should return a js object when reading a json file',
@@ -34,6 +41,18 @@ describe('ConfigManager', () => {
       test._try((done) => {
         expect(manager.read('bar.txt')).to.equal('Got that text');
         done();
+      })
+    );
+
+    it('should update when a new file is added to the directory',
+      test._try((done) => {
+
+        manager.onNextUpdate(() => {
+          expect(manager.read('newfile')).to.equal('This is a new file');
+          done();
+        });
+
+        return test.write('./test-config-read/newfile', 'This is a new file');
       })
     );
 

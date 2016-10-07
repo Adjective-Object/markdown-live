@@ -37,14 +37,14 @@ lint:
 # in order to run the tests, we compile the entire project with babel
 TEST_PLATFORM=web
 
-test:
-	# webpack --config=webpack/webpack.
-	babel -s inline -d dist/tests/$(TEST_PLATFORM) $(BABEL_FLAGS) \
-		$$(find client server | grep '/[^.]*\.js$$')
-	mocha dist/tests/*/tests/*.js
+phony-test test:
+	webpack $(WEBPACK_APPLICATION_FLAGS) --config=webpack/webpack.tests.js
+	make runtest
 
-watch-test:
-	BABEL_FLAGS='--watch' make test
+run-test runtest:
+	for x in $$(find dist/$(BUILD_TYPE)/tests/ |grep '\.js$$'); do \
+		mocha $$x; \
+	done;
 
 fixlint lintfix:
 	eslint --fix client server electron
@@ -62,6 +62,9 @@ watch-web:
 
 watch-app:
 	WEBPACK_APPLICATION_FLAGS=--watch make phony-app
+
+watch-test:
+	WEBPACK_APPLICATION_FLAGS='--watch' make phony-test
 
 prod-web:
 	MD_LIVE_BUILD=prod make web

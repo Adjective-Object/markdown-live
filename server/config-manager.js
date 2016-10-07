@@ -13,7 +13,8 @@ export class ConfigManager {
   configCache: StringMap;
   configInitialized: boolean;
 
-  watchers: FSWatcher[];
+  watchers: Object[]; // FSWatcher[];
+  updateTriggers: Function[];
 
   constructor(environment: ?StringMap = null, platform: ?string) {
     this.environment = environment || process.env;
@@ -24,6 +25,7 @@ export class ConfigManager {
     this.configInitialized = false;
 
     this.watchers = [];
+    this.updateTriggers = [];
   }
 
   destructor() {
@@ -127,7 +129,7 @@ export class ConfigManager {
     return (
       fs.readdir(this.configDirectory)
       .then((fileList: string[]): Promise<void[]> => {
-        
+
         const loaders: Promise<void>[] = [];
         for (const file: string of fileList) {
           loaders.push(this.loadConfigFile(file));
@@ -159,23 +161,29 @@ export class ConfigManager {
     );
   }
 
-  initializeConfigFileWatchers() {
+  initializeConfigFileWatchers(): Promise<void> {
     // watch for changes update the cache
-    const configDirWatcher = chokidar.watch(this.configDirectory,{
-      ignoreInitial: true
-    })
-      .on('add', (filename: string) => {
-        this.loadConfigFile(filename);
+    return new Promise((resolve: Function, reject: Function) => {
+      const configDirWatcher = chokidar.watch(this.configDirectory, {
+        ignoreInitial: true,
       })
-      .on('change', (filename: string) => {
-        this.loadConfigFile(filename);
-      })
-      .on('unlink', (filename: string) => {
-        const configPath = path.relative(this.configDirectory, filename);
-        delete this.configCache[configPath];
-      });
+        .on('ready', resolve)
+        .on('add', (filename: string) => {
+          this.loadConfigFile(path.relative(this.configDirectory, filename))
+            .then(this.processUpdateTriggers.bind(this));
+        })
+        .on('change', (filename: string) => {
+          this.loadConfigFile(path.relative(this.configDirectory, filename))
+            .then(this.processUpdateTriggers.bind(this));
+        })
+        .on('unlink', (filename: string) => {
+          const configPath = path.relative(this.configDirectory, filename);
+          delete this.configCache[configPath];
+        });
 
-    this.watchers.push(configDirWatcher);
+      this.watchers.push(configDirWatcher);
+
+    });
   }
 
   read(filePath: string): Promise<?string | ?Object> {
@@ -196,6 +204,19 @@ export class ConfigManager {
 
   path(filePath: string): string {
     return path.resolve(this.configDirectory, filePath);
+  }
+
+  onNextUpdate(callback: Function) {
+    this.updateTriggers.push(callback);
+  }
+
+  processUpdateTriggers() {
+    for (const trigger of this.updateTriggers) {
+      trigger();
+    }
+
+    // clear the update triggers
+    this.updateTriggers.length = 0;
   }
 
 }

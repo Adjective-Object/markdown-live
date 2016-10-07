@@ -1,9 +1,0 @@
-{
-    "presets": ["es2015"],
-    "plugins": [
-        "transform-flow-strip-types",
-        ["inject-banner", {
-            "bannerCode": "require('source-map-support').install();"
-        }]
-    ]
-}
