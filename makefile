@@ -11,6 +11,8 @@ ifeq ($(MD_LIVE_BUILD),prod)
 	BUILD_TYPE=prod
 endif
 
+NAME=md-live
+APP_NAME=$(NAME)-app
 
 #####################
 # User Target Rules #
@@ -21,15 +23,20 @@ endif
 	test watch-test run-test runtest\
 	web watch-web prod-web phony-web\
 	app watch-app prod-app phony-app\
-	prod-pkg
+	pkg, prod-pkg
 
 all: pkg
 clean:
 	rm -rf dist
 
 pkg: \
-	dist/$(BUILD_TYPE)/md-live-linux-x64 \
-	dist/$(BUILD_TYPE)/pkg/md-live.tar
+	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-linux-x64.tar.gz \
+	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-linux-ia32.tar.gz \
+	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-linux-armv7l.tar.gz \
+	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-win32-x64.zip \
+	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-win32-ia32.zip \
+	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-darwin-x64.app.zip \
+	dist/$(BUILD_TYPE)/pkg/$(NAME).tar
 
 lint:
 	eslint $(ESLINT_FLAGS) client server electron
@@ -83,11 +90,18 @@ prod-pkg:
 # Packaging Applications #
 ##########################
 
-# As with the application below, we only track the build status of the linux
-# package, and assume the remainder of them are produced as side-effects.
-dist/$(BUILD_TYPE)/md-live-linux-x64: \
+# we need to use pattern rules here to inform make that a
+# single invocation of the rule builds all the packages
+dist/$(BUILD_TYPE)/%-linux-x64 \
+dist/$(BUILD_TYPE)/%-linux-ia32 \
+dist/$(BUILD_TYPE)/%-linux-armv7l \
+dist/$(BUILD_TYPE)/%-mas-x64 \
+dist/$(BUILD_TYPE)/%-darwin-x64 \
+dist/$(BUILD_TYPE)/%-win32-ia32 \
+dist/$(BUILD_TYPE)/%-win32-x64: \
 		dist/$(BUILD_TYPE)/electron/main.js \
 		dist/$(BUILD_TYPE)/electron/package.json \
+		dist/$(BUILD_TYPE)/electron/node_modules \
 		dist/$(BUILD_TYPE)/electron/README.md
 	mkdir -p $$(dirname $@)
 	electron-packager dist/$(BUILD_TYPE)/electron \
@@ -95,12 +109,28 @@ dist/$(BUILD_TYPE)/md-live-linux-x64: \
 		--out=dist/$(BUILD_TYPE) \
 		--overwrite
 
-dist/$(BUILD_TYPE)/pkg/md-live.tar: \
+dist/$(BUILD_TYPE)/pkg/%.tar.gz: dist/$(BUILD_TYPE)/%
+	mkdir -p $$(dirname $@)
+	cd $$(dirname $<) && tar -czf pkg/$$(basename $@) $$(basename $<)
+
+dist/$(BUILD_TYPE)/pkg/%.zip: dist/$(BUILD_TYPE)/%
+	mkdir -p $$(dirname $@)
+	cd $$(dirname $<) && zip pkg/$$(basename $@) $$(basename $<)
+
+dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-darwin-x64.app.zip: \
+		dist/$(BUILD_TYPE)/$(APP_NAME)-darwin-x64/$(APP_NAME).app
+	mkdir -p $$(dirname $@)
+	cd dist/$(BUILD_TYPE) && zip \
+		pkg/$(APP_NAME).app.zip \
+		$(APP_NAME)-darwin-x64/$(APP_NAME).app
+
+
+dist/$(BUILD_TYPE)/pkg/$(NAME).tar: \
 		dist/$(BUILD_TYPE)/web/server.js \
 		dist/$(BUILD_TYPE)/web/package.json \
 		dist/$(BUILD_TYPE)/web/README.md
 	mkdir -p $$(dirname $@)
-	cd dist/$(BUILD_TYPE) && tar -c -f pkg/md-live.tar web
+	cd dist/$(BUILD_TYPE) && tar -c -f pkg/$(NAME).tar web
 
 
 ###########################################
@@ -131,7 +161,6 @@ phony-app dist/$(BUILD_TYPE)/electron/main.js: \
 		server/views/*.handlebars \
 		server/document-types/*.js \
 		server/document-types/*.handlebars \
-		dist/$(BUILD_TYPE)/electron/package.json \
 		dist/$(BUILD_TYPE)/electron/assets/index.html
 
 	webpack $(WEBPACK_APPLICATION_FLAGS) --config=$<
@@ -163,6 +192,10 @@ dist/$(BUILD_TYPE)/%/README.md: README.md
 dist/$(BUILD_TYPE)/%/package.json: %/package.json
 	mkdir -p $$(dirname $@)
 	cp $< $@
+
+dist/$(BUILD_TYPE)/electron/node_modules: \
+	dist/$(BUILD_TYPE)/electron/package.json
+	cd $$(dirname $<) && npm install
 
 # html index used by electron
 dist/$(BUILD_TYPE)/electron/assets/index.html: electron/index.html
