@@ -1,0 +1,6 @@
+declare const platform = {
+	network: {
+
+	},
+};
+export default platform;
