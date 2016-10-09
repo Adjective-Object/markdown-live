@@ -96,6 +96,14 @@ const baseConfig = {
   resolve: {
     extensions: ['', '.js', '.handlebars'],
   },
+  externals: [
+    function(context, request, callback) {
+      if (/^flowtype\/.*$/.test(request)) {
+        return callback(null, "var null");
+      }
+      callback();
+    }
+  ],
 };
 
 const devJsConfig = _extend({
@@ -181,7 +189,7 @@ module.exports = {
   projectRoot: projectRoot,
   extend: extend,
   addPlatform: addPlatform,
-  nodeModules: nodeModules,
+  nodeModules: [nodeModules],
   nodeModulesDir: nodeModulesDir,
   devBuild: devBuild,
   distFolder: distFolder,

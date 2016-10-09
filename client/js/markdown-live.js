@@ -7,105 +7,19 @@ import _ from 'underscore';
 import {network, init as platformInit} from './platform';
 import Framework from './Framework';
 
+import Toast from './toasts';
+
 const libraries = { Prism, Gator, Framework, _ };
 function provideLibrary(name) {
   return libraries[name];
 }
 
-function unpackTemplate(html) {
-  const template = document.createElement('template');
-  template.innerHTML = html;
-  return template.content.firstChild;
-}
-
 const navTemplate = require('./templates/file-list.handlebars');
-const notificationTemplate = require('./templates/notification.handlebars');
 
 // initializers
 const Models = {};
 const Controllers = {};
 const Views = {};
-
-class Toast extends Framework {
-  initialize() {
-    this.elements = {
-      dock: document.getElementById('notification-dock'),
-    };
-  }
-
-  events() {
-    network.on('toast', (msg) => {
-      this.notify(
-        msg.title,
-        msg.text || '',
-        msg.kind || 'info',
-        msg.actions || [],
-        msg.timeout || null);
-    });
-  }
-
-  notify(title, text, kind = 'info', actions = [], timeout = 0) {
-    let id = null;
-
-    actions = actions.map((a) => {
-      if (typeof a.action === 'string') {
-        return {
-          text: a.text,
-          /* eslint-disable no-eval */
-          action: eval('(function() {' + a.action + '})'),
-          /* eslint-enable no-eval */
-        };
-      }
-
-      return a;
-    });
-
-    actions.push({
-      text: 'ok',
-      action: (e) => this.dismiss(id),
-    });
-
-    // create the element, bind the actions
-    const toast = unpackTemplate(notificationTemplate({
-      title, text, kind, actions,
-    }));
-
-    _.each(
-        toast.querySelectorAll('button[notification-action]'),
-        (button, i) => {
-          button.addEventListener('click', actions[i].action);
-        });
-
-    id = this.push({
-      text, kind, actions,
-      timeoutHandle: timeout
-        ? setTimeout((e) => { this.dismiss(id); }, timeout)
-        : null,
-      element: toast,
-    });
-
-    this.elements.dock.appendChild(toast);
-    toast.style.height = toast.networkHeight + 'px';
-    toast.classList.add('enter');
-    setTimeout(() => {
-      toast.classList.remove('enter');
-    }, 0);
-  }
-
-  dismiss(id) {
-    const tokill = this.data[id];
-    if (tokill.timeoutHandle) {
-      clearTimeout(tokill.timeoutHandle);
-    }
-
-    this.rm(id);
-
-    tokill.element.classList.add('exit');
-    setTimeout(() => {
-      tokill.element.remove();
-    }, 200);
-  }
-}
 
 // This class is responsible for handling socket events from the server, as well
 // as keeping track of the list of files currently being edited

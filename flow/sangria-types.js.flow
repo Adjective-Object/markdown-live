@@ -1,0 +1,18 @@
+export type ToastKind = enum('info', 'error', '');
+export type ToastMessage = {
+	action: string,
+	text: string
+};
+export type EvaluatedToastMessage = {
+	action: Function,
+	text: string
+};
+export type Toast = {
+	title: string,
+	text: string,
+	kind: ToastKind,
+	actions: ToastMessage[],
+	timeout ?number,
+};
+
+export default platform;
