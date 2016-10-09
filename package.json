@@ -1,6 +1,6 @@
 {
   "name": "sangria",
-  "version": "1.3.0-alpha.0",
+  "version": "1.3.0-alpha.1",
   "author": "Maxwell Huang-Hobbs <mhuan13@gmail.com>",
   "description": "Markdown preview with live update.",
   "main": "app.js",
