@@ -1,24 +1,28 @@
 // @flow
-import types from 'flowtype/sangria-types';
+import * as types from 'flowtype/sangria-types';
 
 import Framework from './Framework';
-import {network} from './platform';
+import {network} from '../platform';
 import notificationTemplate from './templates/notification.handlebars';
 import _ from 'underscore';
 
 function htmlToDomNodes(html: string): HTMLElement {
-  const template: HTMLElement = // HTMLTemplateElement
+  const template = // HTMLTemplateElement
     document.createElement('template');
   template.innerHTML = html;
   return template.content.firstChild;
 }
 
-export default class Toasts extends Framework {
+class ToastController extends Framework {
   elements: {
     dock: HTMLElement
   };
 
-  initialize() {
+  initialize(
+      Models: types.SangriaModels,
+      Views: types.SangriaViews,
+      Controllers: types.SangriaController
+      ) {
     this.elements = {
       dock: document.getElementById('notification-dock'),
     };
@@ -105,4 +109,8 @@ export default class Toasts extends Framework {
       tokill.element.remove();
     }, 200);
   }
+}
+
+export default {
+  Controller: ToastController,
 }

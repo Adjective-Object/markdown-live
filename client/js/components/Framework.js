@@ -7,9 +7,6 @@ export default class Framework {
     this.data = {};
     this.hashes = {};
     this.listeners = {};
-
-    this.initialize();
-    this.events();
   }
 
   push(val, emit = true) {
