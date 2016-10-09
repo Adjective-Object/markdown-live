@@ -5,13 +5,19 @@
 WEBPACK_LIBRARY_FLAGS+= -d
 WEBPACK_APPLICATION_FLAGS+= -d
 BUILD_TYPE=dev
+ELECTRON_PACKAGER_FLAGS=--no-prune
 ifeq ($(MD_LIVE_BUILD),prod)
 	WEBPACK_LIBRARY_FLAGS=
 	WEBPACK_APPLICATION_FLAGS=
 	BUILD_TYPE=prod
+	NPM_INSTALL_FLAGS=--prod
+	ELECTRON_PACKAGER_FLAGS=
 endif
 
-NAME=md-live
+PROJECT_ROOT=$(shell pwd)
+NODE_BIN=$(PROJECT_ROOT)/node_modules/.bin
+
+NAME=sangria
 APP_NAME=$(NAME)-app
 
 #####################
@@ -29,6 +35,14 @@ all: pkg
 clean:
 	rm -rf dist
 
+.PRECIOUS: \
+	dist/$(BUILD_TYPE)/$(APP_NAME)-linux-x64 \
+	dist/$(BUILD_TYPE)/$(APP_NAME)-linux-ia32 \
+	dist/$(BUILD_TYPE)/$(APP_NAME)-linux-armv7l \
+	dist/$(BUILD_TYPE)/$(APP_NAME)-win32-x64 \
+	dist/$(BUILD_TYPE)/$(APP_NAME)-win32-ia32 \
+	dist/$(BUILD_TYPE)/$(APP_NAME)-darwin-x64 \
+
 pkg: \
 	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-linux-x64.tar.gz \
 	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-linux-ia32.tar.gz \
@@ -36,7 +50,8 @@ pkg: \
 	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-win32-x64.zip \
 	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-win32-ia32.zip \
 	dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-darwin-x64.app.zip \
-	dist/$(BUILD_TYPE)/pkg/$(NAME).tar
+	dist/$(BUILD_TYPE)/pkg/$(APP_NAME).tar.gz \
+	dist/$(BUILD_TYPE)/pkg/$(NAME).tar.gz
 
 lint:
 	eslint $(ESLINT_FLAGS) client server electron
@@ -61,9 +76,20 @@ fixlint lintfix:
 	eslint --fix client server electron
 	eslint --fix -c webpack/.eslintrc webpack
 
-web: dist/$(BUILD_TYPE)/web/server.js
+WEB_TARGETS=\
+	dist/$(BUILD_TYPE)/web/server.js \
+	dist/$(BUILD_TYPE)/web/server.js \
+	dist/$(BUILD_TYPE)/web/package.json \
+	dist/$(BUILD_TYPE)/web/README.md
+web: $(WEB_TARGETS)
 
-app: dist/$(BUILD_TYPE)/electron/main.js
+APP_TARGETS=\
+	dist/$(BUILD_TYPE)/electron/main.js \
+	dist/$(BUILD_TYPE)/electron/package.json \
+	dist/$(BUILD_TYPE)/electron/README.md \
+	# dist/$(BUILD_TYPE)/electron/node_modules
+	
+app: $(APP_TARGETS)
 
 # Setting environment variables is hard, so we have these convenicne aliases
 # for watching during dev and making prod builds
@@ -98,16 +124,14 @@ dist/$(BUILD_TYPE)/%-linux-armv7l \
 dist/$(BUILD_TYPE)/%-mas-x64 \
 dist/$(BUILD_TYPE)/%-darwin-x64 \
 dist/$(BUILD_TYPE)/%-win32-ia32 \
-dist/$(BUILD_TYPE)/%-win32-x64: \
-		dist/$(BUILD_TYPE)/electron/main.js \
-		dist/$(BUILD_TYPE)/electron/package.json \
-		dist/$(BUILD_TYPE)/electron/node_modules \
-		dist/$(BUILD_TYPE)/electron/README.md
+dist/$(BUILD_TYPE)/%-win32-x64: $(APP_TARGETS)
 	mkdir -p $$(dirname $@)
-	electron-packager dist/$(BUILD_TYPE)/electron \
-		--all \
-		--out=dist/$(BUILD_TYPE) \
-		--overwrite
+	cd dist/$(BUILD_TYPE)/electron &&\
+		$(NODE_BIN)/electron-packager . \
+			$(ELECTRON_PACKAGER_FLAGS) \
+			--all \
+			--out=.. \
+			--overwrite \
 
 dist/$(BUILD_TYPE)/pkg/%.tar.gz: dist/$(BUILD_TYPE)/%
 	mkdir -p $$(dirname $@)
@@ -115,22 +139,23 @@ dist/$(BUILD_TYPE)/pkg/%.tar.gz: dist/$(BUILD_TYPE)/%
 
 dist/$(BUILD_TYPE)/pkg/%.zip: dist/$(BUILD_TYPE)/%
 	mkdir -p $$(dirname $@)
-	cd $$(dirname $<) && zip pkg/$$(basename $@) $$(basename $<)
+	cd $$(dirname $<) && zip -r pkg/$$(basename $@) $$(basename $<)
 
 dist/$(BUILD_TYPE)/pkg/$(APP_NAME)-darwin-x64.app.zip: \
 		dist/$(BUILD_TYPE)/$(APP_NAME)-darwin-x64/$(APP_NAME).app
 	mkdir -p $$(dirname $@)
-	cd dist/$(BUILD_TYPE) && zip \
-		pkg/$(APP_NAME).app.zip \
+	cd dist/$(BUILD_TYPE) && zip -r \
+		pkg/$(APP_NAME)-darwin-x64.app.zip \
 		$(APP_NAME)-darwin-x64/$(APP_NAME).app
 
 
-dist/$(BUILD_TYPE)/pkg/$(NAME).tar: \
-		dist/$(BUILD_TYPE)/web/server.js \
-		dist/$(BUILD_TYPE)/web/package.json \
-		dist/$(BUILD_TYPE)/web/README.md
+dist/$(BUILD_TYPE)/pkg/$(NAME).tar.gz: $(WEB_TARGETS)
 	mkdir -p $$(dirname $@)
-	cd dist/$(BUILD_TYPE) && tar -c -f pkg/$(NAME).tar web
+	cd dist/$(BUILD_TYPE) && tar -czf pkg/$(NAME).tar.gz web
+
+dist/$(BUILD_TYPE)/pkg/$(APP_NAME).tar.gz: $(APP_TARGETS)
+	mkdir -p $$(dirname $@)
+	cd dist/$(BUILD_TYPE) && tar -czf pkg/$(APP_NAME).tar.gz electron
 
 
 ###########################################
@@ -144,7 +169,7 @@ phony-web dist/$(BUILD_TYPE)/web/server.js: \
 		webpack/webpack.web.js \
 		\
 		dist/$(BUILD_TYPE)/web/public/js/client.lib.js \
-		dist/$(BUILD_TYPE)/web/bin/mdlive \
+		dist/$(BUILD_TYPE)/web/bin/sangria \
 		server/*.js \
 		server/views/*.handlebars \
 		server/document-types/*.js \
@@ -157,6 +182,7 @@ phony-app dist/$(BUILD_TYPE)/electron/main.js: \
 		webpack/webpack.electron.js \
 		\
 		dist/$(BUILD_TYPE)/electron/assets/js/client.lib.js \
+		dist/$(BUILD_TYPE)/electron/bin/sangria-app \
 		server/*.js \
 		server/views/*.handlebars \
 		server/document-types/*.js \
@@ -194,16 +220,21 @@ dist/$(BUILD_TYPE)/%/package.json: %/package.json
 	cp $< $@
 
 dist/$(BUILD_TYPE)/electron/node_modules: \
-	dist/$(BUILD_TYPE)/electron/package.json
-	cd $$(dirname $<) && npm install
+	dist/$(BUILD_TYPE)/electron/package.json \
+	dist/$(BUILD_TYPE)/electron/README.md
+	cd $$(dirname $<) && npm install $(NPM_INSTALL_FLAGS)
 
 # html index used by electron
 dist/$(BUILD_TYPE)/electron/assets/index.html: electron/index.html
 	mkdir -p $$(dirname $@)
 	cp $< $@
 
-# mdlive 'executable' for launching the web server from cli
-dist/$(BUILD_TYPE)/web/bin/mdlive: server/bin/mdlive
+# sangria 'executable' for launching the web server from cli
+dist/$(BUILD_TYPE)/web/bin/sangria: server/bin/sangria
+	mkdir -p $$(dirname $@)
+	cp $< $@
+
+dist/$(BUILD_TYPE)/electron/bin/sangria-app: electron/bin/sangria-app
 	mkdir -p $$(dirname $@)
 	cp $< $@
 
