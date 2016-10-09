@@ -3,7 +3,7 @@ import * as types from 'flowtype/sangria-types';
 
 import Framework from './Framework';
 import {network} from '../platform';
-import notificationTemplate from './templates/notification.handlebars';
+import notificationTemplate from '../templates/notification.handlebars';
 import _ from 'underscore';
 
 function htmlToDomNodes(html: string): HTMLElement {

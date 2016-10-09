@@ -1,7 +1,7 @@
 import domready from 'domready';
 import {init as initPlatform} from './platform';
 
-import Toast from '.components/toasts';
+import Toast from './components/toasts';
 import Directories from './components/directories';
 import Sidebar from './components/sidebar';
 import Files from './components/files';

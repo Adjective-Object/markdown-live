@@ -6,7 +6,7 @@ import 'prismjs/components/prism-yaml.min.js';
 import _ from 'underscore';
 import {network} from '../platform';
 
-const navTemplate = require('./templates/file-list.handlebars');
+import navTemplate from '../templates/file-list.handlebars';
 
 const libraries = { Prism, Gator, Framework, _ };
 function provideLibrary(name) {
