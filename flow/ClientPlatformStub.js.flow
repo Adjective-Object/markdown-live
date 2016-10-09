@@ -1,4 +1,4 @@
-declare const platform = {
+type platform = {
 	network: {
 
 	},

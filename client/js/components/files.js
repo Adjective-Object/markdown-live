@@ -1,30 +1,22 @@
+import Framework from './Framework';
 import Gator from 'gator';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-handlebars.min.js';
 import 'prismjs/components/prism-yaml.min.js';
 import _ from 'underscore';
+import {network} from '../platform';
 
-import {network, init as platformInit} from './platform';
-import Framework from './Framework';
-
-import Toast from './toasts';
+const navTemplate = require('./templates/file-list.handlebars');
 
 const libraries = { Prism, Gator, Framework, _ };
 function provideLibrary(name) {
   return libraries[name];
 }
 
-const navTemplate = require('./templates/file-list.handlebars');
-
-// initializers
-const Models = {};
-const Controllers = {};
-const Views = {};
-
 // This class is responsible for handling socket events from the server, as well
 // as keeping track of the list of files currently being edited
 class FilesModel extends Framework {
-  initialize() {
+  initialize(Models, Views, Controllers) {
   }
 
   events() {
@@ -98,7 +90,7 @@ class FilesModel extends Framework {
 
 // controllers
 class FilesController extends Framework {
-  initialize() {
+  initialize(Models, Views, Controllers) {
     this.model = {};
     this.model.files = Models.Files;
 
@@ -173,7 +165,7 @@ class FilesController extends Framework {
 // This 'Stapes' type object is responsible for handling user interaction
 // with the dom
 class FilesView extends Framework {
-  initialize() {
+  initialize(Models, Views, Controllers) {
     this.bindPrintRequest(window);
     this.set('classes', {});
   }
@@ -207,16 +199,6 @@ class FilesView extends Framework {
     Gator(document).on('click', '[data-file]', (e) => {
       e.preventDefault();
       this.emit('switchFile', e.target.getAttribute('data-file') | 0);
-    });
-
-    Gator(document).on('click', '#toggle-collapse', (e) => {
-      e.preventDefault();
-      this.toggleStateClass('collapsed');
-    });
-
-    Gator(document).on('click', '#toggle-nightmode', (e) => {
-      e.preventDefault();
-      this.toggleStateClass('night');
     });
   }
 
@@ -268,41 +250,8 @@ class FilesView extends Framework {
   }
 }
 
-class DirectoriesModel extends Framework {
-  initialize() {
-    this.element = {
-      input: document.querySelector('#input-directory'),
-    };
-  }
-
-  events() {
-    Gator(document).on('click', '#submit-directory', (e) => {
-      network.emit(
-        'addDir',
-        { path: this.element.input.value }
-      );
-    });
-
-    Gator(document).on('click', '.remove-directory', (e) => {
-      const targetDir = e.target.getAttribute('data-dir');
-      network.emit(
-        'rmDir',
-        { path: targetDir }
-      );
-    });
-
-  }
-}
-
-const init = () => {
-  Models.Toast = new Toast();
-  Models.Directories = new DirectoriesModel();
-
-  Views.Files = new FilesView();
-  Models.Files = new FilesModel();
-  Controllers.Files = new FilesController();
-
-  platformInit();
+export default {
+  Model: FilesModel,
+  View: FilesView,
+  Controller: FilesController,
 };
-
-export default init;
