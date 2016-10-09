@@ -10,7 +10,6 @@ const network = {
   },
   on: (evt, callback) => {
     socketClient.on(evt, (payload) => {
-      console.log(evt, payload);
       callback(payload);
     });
   },
