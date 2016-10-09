@@ -3,7 +3,8 @@ import {init as initPlatform} from './platform';
 
 import Toast from './components/toasts';
 import Directories from './components/directories';
-import Sidebar from './components/sidebar';
+import DocumentStates from './components/document-states';
+import ConnectionManager from './components/connection-manager.js'
 import Files from './components/files';
 import _ from 'underscore';
 
@@ -37,7 +38,8 @@ const init = () => {
 
   Controllers.Toast = new Toast.Controller();
   Controllers.Directories = new Directories.Controller();
-  Controllers.Sidebar = new Sidebar.Controller();
+  Controllers.DocumentStates = new DocumentStates.Controller();
+  Controllers.ConnectionManager = new ConnectionManager.Controller();
 
   Views.Files = new Files.View();
   Models.Files = new Files.Model();
