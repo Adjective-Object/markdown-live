@@ -152,7 +152,10 @@ const __ = {
 
     return {
       name: name,
-      dir: path.relative(process.cwd(), dir),
+      dir: path.join(
+        path.basename(process.cwd()),
+        path.relative(process.cwd(), dir),
+      ),
       path: filePath,
       source: data,
       content: content,
