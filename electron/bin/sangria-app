@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+// simple cross-platform launcher for the packaged electorn app
+
+var child = require('child_process');
+var path = require('path');
+
+var commandStr = 'electron ' + path.join(__dirname, '..');
+console.log(commandStr);
+child.exec(commandStr);

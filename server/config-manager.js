@@ -74,7 +74,7 @@ export class ConfigManager {
     // otheerwise attach markdown-live to the platform-depenant user directory
     return path.join(
       this.getPlatformUserConfigDir(this.environment),
-      'markdown-live'
+      'sangria'
     );
   }
 

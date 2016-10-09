@@ -11,7 +11,7 @@ common.addPlatform('electron');
 
 module.exports = common.extend({
   name: 'electron',
-  entry: './electron/app.js',
+  entry: './electron/main.js',
   output: {
     path: common.dist('electron'),
     filename: 'main.js',
