@@ -70,7 +70,7 @@ class FilesModel extends Framework {
   unselect() {
     const active = this.getActive();
     if (active) {
-      this.update(active._id, { selected: false });
+      this.update(active._id, { selected: false }, false);
     }
   }
 
@@ -127,13 +127,9 @@ class FilesController extends Framework {
 
       // TODO defer render until after the iframe body is loaded
       // 'load' event does not guarantee this for some reason
-      newFrame.addEventListener('load', () => {
-        this.postRender();
-      });
-
+      newFrame.addEventListener('load', this.postRender.bind(this));
       this.element.documents.appendChild(newFrame);
-    }
-    else {
+    } else if (this.model.files.get) {
       Array.prototype.forEach.call(
         this.element.documents.children,
         (item) => item.remove()
@@ -142,21 +138,24 @@ class FilesController extends Framework {
   }
 
   postRender() {
-    this.emit('postrender');
+    const newFrame = this.element.documents.childNodes[
+      this.element.documents.childNodes.length - 1
+    ];
 
     // dump all but the last iframe
     const firstFrame = this.element.documents.childNodes[0];
     const scrollLeft = firstFrame.contentDocument.body.scrollLeft;
     const scrollTop = firstFrame.contentDocument.body.scrollTop;
-    while(this.element.documents.childNodes.length > 1) {
-      this.element.documents.childNodes[0].remove();
-    }
 
     // scroll to the place the old iframe was at
-    const newFrame = this.element.documents.childNodes[0];
+    // newFrame = this.element.documents.childNodes[0];
     newFrame.contentDocument.body.scrollTop = scrollTop;
     newFrame.contentDocument.body.scrollLeft = scrollLeft;
     this.view.hijackIframe(newFrame);
+
+    while(this.element.documents.childNodes.length > 1) {
+      this.element.documents.childNodes[0].remove();
+    }
 
     // inform the iframe that the post-render processing is complete
     const event = new CustomEvent('post-render', {});
@@ -180,7 +179,6 @@ class FilesView extends Framework {
 
   // hijacks a same-origin iframe element's links
   hijackIframe(iframe) {
-    console.log('hijacking iframe');
     // redirect links
     const anchors =
       Array.prototype.slice.call(
@@ -192,7 +190,6 @@ class FilesView extends Framework {
         // hijack hash links to scroll the iframe
         const targetId = a.href.substring(a.href.indexOf('#') + 1);
         a.href = a.addEventListener('click', (e) => {
-          console.log('hijacked ;)');
           e.preventDefault();
           iframe.contentWindow.scrollTo(
             0,
@@ -208,6 +205,7 @@ class FilesView extends Framework {
     });
 
     this.bindPrintRequest(iframe.contentWindow);
+    this.emit('newFrame', iframe);
 
     // introduce a require-type hook in the iframe child
     iframe.contentWindow.use = provideLibrary;

@@ -7,6 +7,7 @@ export default class Framework {
     this.data = {};
     this.hashes = {};
     this.listeners = {};
+    this.emitChangeEvents = true;
   }
 
   push(val, emit = true) {
@@ -17,14 +18,12 @@ export default class Framework {
     val._id = this._guidCounter++;
     this.data[val._id] = val;
 
-    if (emit) {
-      this.emit('change');
-    }
+    if (emit && this.emitChangeEvents) this.emit('change');
 
     return val._id;
   }
 
-  set(id, val) {
+  set(id, val, emit = true) {
     const valMd5 = ObjMd5(val);
     if (this.hashes[id] === valMd5) {
       return;
@@ -32,7 +31,7 @@ export default class Framework {
 
     this.hashes[id] = valMd5;
     this.data[id] = val;
-    this.emit('change');
+    if (emit && this.emitChangeEvents) this.emit('change');
   }
 
   get(filter) {
@@ -48,7 +47,7 @@ export default class Framework {
     return this.data[id];
   }
 
-  update(id, newVal) {
+  update(id, newVal, emit = true) {
     const valMd5 = ObjMd5(newVal);
     if (this.hashes[id] === valMd5) {
       return this.data[id];
@@ -56,11 +55,11 @@ export default class Framework {
 
     this.data[id] = assign(this.data[id], newVal);
     this.hashes[id] = valMd5;
-    this.emit('change');
+    if (emit && this.emitChangeEvents) this.emit('change');
     return this.data[id];
   }
 
-  remove(filter) {
+  remove(filter, emit = true) {
     let shouldUpdate = false;
 
     for (const k in this.data) {
@@ -70,14 +69,15 @@ export default class Framework {
       }
     }
 
-    if (shouldUpdate) {
+    if (shouldUpdate && emit && this.emitChangeEvents) {
       this.emit('change');
     }
   }
 
-  rm(id) {
+  rm(id, emit = true) {
+    if (!this.data[id]) return;
     delete this.data[id];
-    this.emit('change');
+    if (emit && this.emitChangeEvents) this.emit('change')
   }
 
   clear() {
