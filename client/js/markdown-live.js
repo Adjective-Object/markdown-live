@@ -34,8 +34,6 @@ const Models = {};
 const Controllers = {};
 const Views = {};
 
-let sticky = false;
-
 class Toast extends Framework {
   initialize() {
     this.elements = {
@@ -141,13 +139,6 @@ class FilesModel extends Framework {
         this.select(node._id);
       }
       else {
-        let iframeBody = document.querySelector('iframe').contentWindow.document.body;
-
-        if (existingFile.source.substr(-20) !== file.source.substr(-20) &&
-            iframeBody.scrollTop + window.innerHeight > iframeBody.offsetHeight) {
-            sticky = true;
-        }
-
         this.update(existingFile._id, file);
       }
     };
@@ -252,7 +243,7 @@ class FilesController extends Framework {
 
     // scroll to the place the old iframe was at
     const newFrame = this.element.documents.childNodes[0];
-    newFrame.contentDocument.body.scrollTop = sticky ? newFrame.contentDocument.body.offsetHeight : scrollTop;
+    newFrame.contentDocument.body.scrollTop = scrollTop;
     newFrame.contentDocument.body.scrollLeft = scrollLeft;
     this.view.hijackIframe(newFrame);
 
