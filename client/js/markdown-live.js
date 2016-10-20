@@ -2,6 +2,8 @@ import Gator from 'gator';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-handlebars.min.js';
 import 'prismjs/components/prism-yaml.min.js';
+import 'prismjs/components/prism-bash.min.js';
+import 'prismjs/components/prism-php.min.js';
 import io from 'socket.io-client';
 import _ from 'underscore';
 
