@@ -3,8 +3,8 @@ const chokidar = require('chokidar');
 const path = require('path');
 import {fs} from 'mz';
 
-type StringMap = {[key:string]: ?string};
-type Config = {[key:string]: ?(string | Object)};
+type StringMap = {[key: string]: ?string};
+type Config = {[key: string]: ?(string | Object)};
 
 export class ConfigManager {
   environment: StringMap;
@@ -74,7 +74,7 @@ export class ConfigManager {
     // otheerwise attach markdown-live to the platform-depenant user directory
     return path.join(
       this.getPlatformUserConfigDir(this.environment),
-      'markdown-live'
+      'sangria'
     );
   }
 
@@ -111,7 +111,7 @@ export class ConfigManager {
                 );
               }
             })
-          );
+        );
       })
       // if the promise chain resolves correctly, we exit with 'true'
       .then((): boolean => true)
