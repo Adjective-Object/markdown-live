@@ -10,6 +10,8 @@ app.on('ready', () => {
     width: 800,
   });
 
+  mainWindow.setMenu(null);
+
   const localPath = path.join(app.getAppPath(), 'assets/index.html');
   mainWindow.loadURL('file://' + localPath);
   // this might be a hack

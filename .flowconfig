@@ -1,2 +1,4 @@
 [options]
 module.name_mapper.extension='handlebars' -> '<PROJECT_ROOT>/flow/HandlebarsStub.js.flow'
+module.name_mapper='../platform' -> '<PROJECT_ROOT>/flow/ClientPlatformStub.js.flow'
+module.name_mapper='flowtype/sangria-types' -> '<PROJECT_ROOT>/flow/sangria-types.js.flow'

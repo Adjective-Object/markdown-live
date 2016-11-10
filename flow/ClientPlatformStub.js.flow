@@ -1,0 +1,6 @@
+type platform = {
+	network: {
+
+	},
+};
+export default platform;

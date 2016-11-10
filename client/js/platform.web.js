@@ -16,25 +16,6 @@ const network = {
 };
 
 function init(Models, Views, Controllers) {
-  network.on('disconnect', () => {
-    Models.Toast.notify(
-      'disconnect',
-      'socket connection to server was lost',
-      'error',
-      [],
-      2000
-    );
-  });
-
-  network.on('reconnect', () => {
-    Models.Toast.notify(
-      'reconnect',
-      'socket connection restored',
-      'ok',
-      [],
-      2000
-    );
-  });
 }
 
 export { network, init };

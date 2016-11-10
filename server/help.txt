@@ -1,4 +1,4 @@
-Usage: mdlive [OPTIONS]
+Usage: sangria [OPTIONS]
 
   Markdown preview with live update.
 

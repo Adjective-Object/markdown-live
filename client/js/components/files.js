@@ -1,116 +1,22 @@
+import Framework from './Framework';
 import Gator from 'gator';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-handlebars.min.js';
 import 'prismjs/components/prism-yaml.min.js';
 import _ from 'underscore';
+import {network} from '../platform';
 
-import {network, init as platformInit} from './platform';
-import Framework from './Framework';
+import navTemplate from '../templates/file-list.handlebars';
 
 const libraries = { Prism, Gator, Framework, _ };
 function provideLibrary(name) {
   return libraries[name];
 }
 
-function unpackTemplate(html) {
-  const template = document.createElement('template');
-  template.innerHTML = html;
-  return template.content.firstChild;
-}
-
-const navTemplate = require('./templates/file-list.handlebars');
-const notificationTemplate = require('./templates/notification.handlebars');
-
-// initializers
-const Models = {};
-const Controllers = {};
-const Views = {};
-
-class Toast extends Framework {
-  initialize() {
-    this.elements = {
-      dock: document.getElementById('notification-dock'),
-    };
-  }
-
-  events() {
-    network.on('toast', (msg) => {
-      this.notify(
-        msg.title,
-        msg.text || '',
-        msg.kind || 'info',
-        msg.actions || [],
-        msg.timeout || null);
-    });
-  }
-
-  notify(title, text, kind = 'info', actions = [], timeout = 0) {
-    let id = null;
-
-    actions = actions.map((a) => {
-      if (typeof a.action === 'string') {
-        return {
-          text: a.text,
-          /* eslint-disable no-eval */
-          action: eval('(function() {' + a.action + '})'),
-          /* eslint-enable no-eval */
-        };
-      }
-
-      return a;
-    });
-
-    actions.push({
-      text: 'ok',
-      action: (e) => this.dismiss(id),
-    });
-
-    // create the element, bind the actions
-    const toast = unpackTemplate(notificationTemplate({
-      title, text, kind, actions,
-    }));
-
-    _.each(
-        toast.querySelectorAll('button[notification-action]'),
-        (button, i) => {
-          button.addEventListener('click', actions[i].action);
-        });
-
-    id = this.push({
-      text, kind, actions,
-      timeoutHandle: timeout
-        ? setTimeout((e) => { this.dismiss(id); }, timeout)
-        : null,
-      element: toast,
-    });
-
-    this.elements.dock.appendChild(toast);
-    toast.style.height = toast.networkHeight + 'px';
-    toast.classList.add('enter');
-    setTimeout(() => {
-      toast.classList.remove('enter');
-    }, 0);
-  }
-
-  dismiss(id) {
-    const tokill = this.data[id];
-    if (tokill.timeoutHandle) {
-      clearTimeout(tokill.timeoutHandle);
-    }
-
-    this.rm(id);
-
-    tokill.element.classList.add('exit');
-    setTimeout(() => {
-      tokill.element.remove();
-    }, 200);
-  }
-}
-
 // This class is responsible for handling socket events from the server, as well
 // as keeping track of the list of files currently being edited
 class FilesModel extends Framework {
-  initialize() {
+  initialize(Models, Views, Controllers) {
   }
 
   events() {
@@ -164,7 +70,7 @@ class FilesModel extends Framework {
   unselect() {
     const active = this.getActive();
     if (active) {
-      this.update(active._id, { selected: false });
+      this.update(active._id, { selected: false }, false);
     }
   }
 
@@ -184,7 +90,7 @@ class FilesModel extends Framework {
 
 // controllers
 class FilesController extends Framework {
-  initialize() {
+  initialize(Models, Views, Controllers) {
     this.model = {};
     this.model.files = Models.Files;
 
@@ -221,13 +127,10 @@ class FilesController extends Framework {
 
       // TODO defer render until after the iframe body is loaded
       // 'load' event does not guarantee this for some reason
-      newFrame.addEventListener('load', () => {
-        this.postRender();
-      });
-
+      newFrame.addEventListener('load', this.postRender.bind(this));
       this.element.documents.appendChild(newFrame);
     }
-    else {
+    else if (this.model.files.get) {
       Array.prototype.forEach.call(
         this.element.documents.children,
         (item) => item.remove()
@@ -236,19 +139,24 @@ class FilesController extends Framework {
   }
 
   postRender() {
+    const newFrame = this.element.documents.childNodes[
+      this.element.documents.childNodes.length - 1
+    ];
+
     // dump all but the last iframe
     const firstFrame = this.element.documents.childNodes[0];
     const scrollLeft = firstFrame.contentDocument.body.scrollLeft;
     const scrollTop = firstFrame.contentDocument.body.scrollTop;
-    while(this.element.documents.childNodes.length > 1) {
-      this.element.documents.childNodes[0].remove();
-    }
 
     // scroll to the place the old iframe was at
-    const newFrame = this.element.documents.childNodes[0];
+    // newFrame = this.element.documents.childNodes[0];
     newFrame.contentDocument.body.scrollTop = scrollTop;
     newFrame.contentDocument.body.scrollLeft = scrollLeft;
     this.view.hijackIframe(newFrame);
+
+    while(this.element.documents.childNodes.length > 1) {
+      this.element.documents.childNodes[0].remove();
+    }
 
     // inform the iframe that the post-render processing is complete
     const event = new CustomEvent('post-render', {});
@@ -259,34 +167,8 @@ class FilesController extends Framework {
 // This 'Stapes' type object is responsible for handling user interaction
 // with the dom
 class FilesView extends Framework {
-  initialize() {
+  initialize(Models, Views, Controllers) {
     this.bindPrintRequest(window);
-    this.set('classes', {});
-  }
-
-  setStateClasses(iframe) {
-    const classes = this.data.classes;
-    for (const className in classes) {
-      iframe.contentDocument.body.classList.toggle(
-        className,
-        classes[className]);
-    }
-  }
-
-  toggleStateClass(className) {
-    // toggle if the class is set
-    this.set('classes', _.assign(
-      this.data.classes, {
-        [className]: !this.data.classes[className],
-      }));
-
-    const body = document.getElementsByTagName('body')[0];
-    body.classList.toggle(className);
-    Array.prototype.slice.call(
-        document.getElementById('docview').getElementsByTagName('iframe')
-      ).forEach((iframe) => {
-        this.setStateClasses(iframe);
-      });
   }
 
   events() {
@@ -294,21 +176,10 @@ class FilesView extends Framework {
       e.preventDefault();
       this.emit('switchFile', e.target.getAttribute('data-file') | 0);
     });
-
-    Gator(document).on('click', '#toggle-collapse', (e) => {
-      e.preventDefault();
-      this.toggleStateClass('collapsed');
-    });
-
-    Gator(document).on('click', '#toggle-nightmode', (e) => {
-      e.preventDefault();
-      this.toggleStateClass('night');
-    });
   }
 
   // hijacks a same-origin iframe element's links
   hijackIframe(iframe) {
-    console.log('hijacking iframe');
     // redirect links
     const anchors =
       Array.prototype.slice.call(
@@ -320,7 +191,6 @@ class FilesView extends Framework {
         // hijack hash links to scroll the iframe
         const targetId = a.href.substring(a.href.indexOf('#') + 1);
         a.href = a.addEventListener('click', (e) => {
-          console.log('hijacked ;)');
           e.preventDefault();
           iframe.contentWindow.scrollTo(
             0,
@@ -336,7 +206,7 @@ class FilesView extends Framework {
     });
 
     this.bindPrintRequest(iframe.contentWindow);
-    this.setStateClasses(iframe);
+    this.emit('newFrame', iframe);
 
     // introduce a require-type hook in the iframe child
     iframe.contentWindow.use = provideLibrary;
@@ -354,41 +224,8 @@ class FilesView extends Framework {
   }
 }
 
-class DirectoriesModel extends Framework {
-  initialize() {
-    this.element = {
-      input: document.querySelector('#input-directory'),
-    };
-  }
-
-  events() {
-    Gator(document).on('click', '#submit-directory', (e) => {
-      network.emit(
-        'addDir',
-        { path: this.element.input.value }
-      );
-    });
-
-    Gator(document).on('click', '.remove-directory', (e) => {
-      const targetDir = e.target.getAttribute('data-dir');
-      network.emit(
-        'rmDir',
-        { path: targetDir }
-      );
-    });
-
-  }
-}
-
-const init = () => {
-  Models.Toast = new Toast();
-  Models.Directories = new DirectoriesModel();
-
-  Views.Files = new FilesView();
-  Models.Files = new FilesModel();
-  Controllers.Files = new FilesController();
-
-  platformInit();
+export default {
+  Model: FilesModel,
+  View: FilesView,
+  Controller: FilesController,
 };
-
-export default init;

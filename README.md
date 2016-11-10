@@ -1,4 +1,4 @@
-# markdown-live
+# Sangria
 
 [![Build Status](https://travis-ci.org/Adjective-Object/markdown-live.svg?branch=travis)](https://travis-ci.org/Adjective-Object/markdown-live)
 
@@ -123,13 +123,13 @@ configuration directory.
 
 | Platform    | Config Directory
 | :--         | :--
-| Linux       | `${XDG_CONFIG_HOME}/markdown-live`, or if not set, `~/.config/markdown-live`
-| macOS       | `~/Library/Preferences`
-| Windows     | `~/AppData/markdown-live`
+| Linux       | `${XDG_CONFIG_HOME}/sangria`, or if not set, `~/.config/sangria`
+| macOS       | `~/Library/Preferences/sangria`
+| Windows     | `~/AppData/sangria`
 
-e.g. on Linux, the file would be at `~/.config/markdown-live/user-markdown.css`
+e.g. on Linux, the file would be at `~/.config/sangria/user-markdown.css`
 
-If `$HOME` is unset on Linux or macOS, `/var/local/markdown-live` will be used
+If `$HOME` is unset on Linux or macOS, `/var/local/sangria` will be used
 instead.
 
 ## Contributions

@@ -152,7 +152,10 @@ const __ = {
 
     return {
       name: name,
-      dir: path.relative(process.cwd(), dir),
+      dir: path.join(
+        path.basename(process.cwd()),
+        path.relative(process.cwd(), dir),
+      ),
       path: filePath,
       source: data,
       content: content,
@@ -166,6 +169,7 @@ class MarkdownLive {
   constructor(options) {
     this.options = __.extend(DefaultArgs, options);
     this.log = (this.options.verbose) ? __.log : function doNothing() {};
+    this.directories = {};
 
     this.help();
     config.init()
@@ -174,7 +178,7 @@ class MarkdownLive {
         this.socket();
         this.open();
 
-        this.directories = {};
+        this.initDirectory(this.options.dir);
       });
   }
 
@@ -227,12 +231,15 @@ class MarkdownLive {
     const dependencies = docType.dependencies(filePath);
     this.dependencyWatchers[filePath] = chokidar.watch(dependencies)
       .on('change', (depPath) => {
+        console.log('change in', filePath, depPath);
         this.renderAndSend('data', filePath);
       })
       .on('add', (depPath) => {
+        console.log('add in', filePath, depPath);
         this.renderAndSend('data', filePath);
       })
       .on('unlink', (depPath) => {
+        console.log('unlink in', filePath, depPath);
         this.renderAndSend('data', filePath);
       });
 

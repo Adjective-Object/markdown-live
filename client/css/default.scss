@@ -252,6 +252,12 @@ h1, h2, h3, h4, h5 {
       top: 1px;
     }
   }
+
+  transition: opacity 0.2s;
+}
+
+.collapsed .nav__add-directory {
+    opacity: 0;
 }
 
 #button-drawer {

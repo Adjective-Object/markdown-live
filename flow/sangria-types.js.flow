@@ -1,0 +1,17 @@
+type ToastKind = enum;
+type ToastMessage = {
+	action: string,
+	text: string
+};
+type EvaluatedToastMessage = {
+	action: Function,
+	text: string
+};
+type Toast = {
+	title: string,
+	text: string,
+	kind: ToastKind,
+	actions: ToastMessage[],
+	timeout: ?number,
+};
+
