@@ -1,5 +1,5 @@
 import Framework from './Framework';
-import {network} from '../platform'
+import {network} from '../platform';
 
 class ConnectionManager extends Framework {
   initialize(Models, Views, Controllers) {

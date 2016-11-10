@@ -129,7 +129,8 @@ class FilesController extends Framework {
       // 'load' event does not guarantee this for some reason
       newFrame.addEventListener('load', this.postRender.bind(this));
       this.element.documents.appendChild(newFrame);
-    } else if (this.model.files.get) {
+    }
+    else if (this.model.files.get) {
       Array.prototype.forEach.call(
         this.element.documents.children,
         (item) => item.remove()

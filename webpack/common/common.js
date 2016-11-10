@@ -67,6 +67,8 @@ const vendor = [
   'prismjs',
   'prismjs/components/prism-handlebars.min.js',
   'prismjs/components/prism-yaml.min.js',
+  'prismjs/components/prism-cpp.min.js',
+  'prismjs/components/prism-c.min.js',
   'socket.io-client',
 ];
 
@@ -97,12 +99,12 @@ const baseConfig = {
     extensions: ['', '.js', '.handlebars'],
   },
   externals: [
-    function(context, request, callback) {
+    function checkIsFlowtypeImport(context, request, callback) {
       if (/^flowtype\/.*$/.test(request)) {
-        return callback(null, "var null");
+        return callback(null, 'var null');
       }
-      callback();
-    }
+      return callback();
+    },
   ],
 };
 

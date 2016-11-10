@@ -77,7 +77,7 @@ export default class Framework {
   rm(id, emit = true) {
     if (!this.data[id]) return;
     delete this.data[id];
-    if (emit && this.emitChangeEvents) this.emit('change')
+    if (emit && this.emitChangeEvents) this.emit('change');
   }
 
   clear() {

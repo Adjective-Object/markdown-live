@@ -6,11 +6,15 @@ import {network} from '../platform';
 import notificationTemplate from '../templates/notification.handlebars';
 import _ from 'underscore';
 
-function htmlToDomNodes(html: string): HTMLElement {
-  const template = // HTMLTemplateElement
-    document.createElement('template');
+class HTMLTemplateElement extends HTMLElement {
+  content: Element
+}
+
+function htmlToDomNodes(html: string): ?Element {
+  const template: HTMLTemplateElement =
+    (document.createElement('template'): any);
   template.innerHTML = html;
-  return template.content.firstChild;
+  return template.content.firstElementChild;
 }
 
 class ToastController extends Framework {
@@ -71,6 +75,8 @@ class ToastController extends Framework {
       title, text, kind, actions,
     }));
 
+    if (!toast) return;
+
     _.each(
         toast.querySelectorAll('button[notification-action]'),
         (button: HTMLElement, i: number) => { // HTMLButtonElement
@@ -113,4 +119,4 @@ class ToastController extends Framework {
 
 export default {
   Controller: ToastController,
-}
+};

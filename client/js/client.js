@@ -4,7 +4,7 @@ import {init as initPlatform} from './platform';
 import Toast from './components/toasts';
 import Directories from './components/directories';
 import DocumentStates from './components/document-states';
-import ConnectionManager from './components/connection-manager.js'
+import ConnectionManager from './components/connection-manager.js';
 import Files from './components/files';
 import _ from 'underscore';
 

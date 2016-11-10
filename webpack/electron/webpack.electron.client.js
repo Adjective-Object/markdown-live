@@ -9,7 +9,7 @@ common.addPlatform('electron');
 module.exports = common.extend({
   name: 'client',
   entry: {
-    client: './client/js/client.js'
+    client: './client/js/client.js',
   },
   output: {
     path: common.dist('electron/assets/js'),

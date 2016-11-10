@@ -87,7 +87,7 @@ APP_TARGETS=\
 	dist/$(BUILD_TYPE)/electron/main.js \
 	dist/$(BUILD_TYPE)/electron/package.json \
 	dist/$(BUILD_TYPE)/electron/README.md \
-	# dist/$(BUILD_TYPE)/electron/node_modules
+	dist/$(BUILD_TYPE)/electron/node_modules
 	
 app: $(APP_TARGETS)
 
