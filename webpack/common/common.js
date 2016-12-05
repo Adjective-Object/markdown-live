@@ -67,8 +67,9 @@ const vendor = [
   'prismjs',
   'prismjs/components/prism-handlebars.min.js',
   'prismjs/components/prism-yaml.min.js',
-  'prismjs/components/prism-cpp.min.js',
   'prismjs/components/prism-c.min.js',
+  'prismjs/components/prism-bash.min.js',
+  'prismjs/components/prism-php.min.js',
   'socket.io-client',
 ];
 
