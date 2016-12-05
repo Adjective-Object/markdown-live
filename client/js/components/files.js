@@ -3,6 +3,11 @@ import Gator from 'gator';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-handlebars.min.js';
 import 'prismjs/components/prism-yaml.min.js';
+import 'prismjs/components/prism-handlebars.min.js';
+import 'prismjs/components/prism-yaml.min.js';
+import 'prismjs/components/prism-c.min.js';
+import 'prismjs/components/prism-bash.min.js';
+import 'prismjs/components/prism-php.min.js';
 import _ from 'underscore';
 import {network} from '../platform';
 
