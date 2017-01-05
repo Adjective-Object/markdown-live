@@ -7,4 +7,6 @@ public/js/*
 md-live.tar
 *.sublime-*
 dist
+yarn.lock
+test*.md
 
