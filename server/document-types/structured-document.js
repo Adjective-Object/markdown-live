@@ -67,16 +67,15 @@ function parseMeta(file, meta) {
 
   try {
     for(const key in meta.helpers) {
+      const fullPath = path.join(path.dirname(file), meta.helpers[key])
       try {
         /* eslint-disable no-undef */
-        handlebars.registerHelper(key, nodeRequire(
-              path.join(path.dirname(file), meta.helpers[key])
-          ));
+        handlebars.registerHelper(key, $require(fullPath));
         /* eslint-enable no-undef */
       }
       catch (e) {
-        throw makeClientError('could not register helper \'' +
-            meta.helpers[key] + '\'');
+        console.dir(e);
+        throw makeClientError('could not register helper \'' + fullPath + '\'');
       }
     }
 
