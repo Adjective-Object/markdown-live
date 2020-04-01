@@ -11,7 +11,7 @@ const renderer = new markdown.Renderer();
 
 const Templates = [];
 handlebars.registerHelper('md', function markdownHelper(str) {
-  return new handlebars.SafeString(
+  return str && new handlebars.SafeString(
     markdown(str, {renderer: renderer})
   );
 });
