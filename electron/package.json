@@ -26,21 +26,21 @@
   ],
   "dependencies": {
     "async-each": "^1.0.1",
-    "chokidar": "^1.6.0",
-    "electron": "^1.4.1",
-    "glob-parent": "^2.0.0",
+    "chokidar": "^3.3.1",
+    "electron": "^8.2.0",
+    "glob-parent": "^5.1.1",
     "handlebars": "^4.0.5",
     "js-yaml": "^3.6.1",
-    "marked": "^0.3.2",
+    "marked": "^0.8.2",
     "minimist": "^1.1.0",
-    "object-hash": "^1.1.4",
-    "open": "0.0.5",
     "mz": "^2.4.0",
+    "object-hash": "^2.0.3",
+    "open": "7.0.3",
     "underscore": "^1.8.3",
-    "watch": "^0.13.0"
+    "watch": "^1.0.2"
   },
   "devDependencies": {
     "electron-reload": "^1.0.2",
-    "source-map-support": "^0.4.3"
+    "source-map-support": "^0.5.16"
   }
 }

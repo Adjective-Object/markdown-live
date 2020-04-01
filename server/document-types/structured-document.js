@@ -1,11 +1,12 @@
+// @flow
 'use strict';
 
-const handlebars = require('handlebars');
-const yaml = require('js-yaml');
-const path = require('path');
-const fs = require('fs');
+import handlebars from 'handlebars';
+import yaml from 'js-yaml';
+import path from 'path';
+import fs from 'fs';
 
-const markdown = require('marked');
+import markdown from 'marked';
 const renderer = new markdown.Renderer();
 
 const Templates = [];
@@ -15,8 +16,22 @@ handlebars.registerHelper('md', function markdownHelper(str) {
   );
 });
 
-const ClientError = require('./lib.js').ClientError;
-const errorTemplate = require('./error-template.handlebars');
+let currentRenderingTemplateBasePath = '';
+handlebars.registerHelper('asset', function assetHelper(assetStr) {
+  const resultString = `/template-assets?templatePath=${
+      encodeURIComponent(currentRenderingTemplateBasePath)
+    }&relativePath=${
+      encodeURIComponent(assetStr)
+    }`
+  console.log('asset', assetStr, resultString)
+  return new handlebars.SafeString(
+    resultString
+  );
+});
+
+
+import {ClientError} from './lib.js';
+import errorTemplate from './error-template.handlebars';
 
 function makeClientError(text) {
   return new ClientError({
@@ -67,16 +82,22 @@ function parseMeta(file, meta) {
 
   try {
     for(const key in meta.helpers) {
+      const helperPath = path.join(path.dirname(file), meta.helpers[key]);
       try {
-        /* eslint-disable no-undef */
-        handlebars.registerHelper(key, nodeRequire(
-              path.join(path.dirname(file), meta.helpers[key])
-          ));
-        /* eslint-enable no-undef */
+        // require via global.$require instead of require()
+        // so we bypass webpack mangling
+        handlebars.registerHelper(key, global.$require(
+          helperPath
+        ));
       }
       catch (e) {
         throw makeClientError('could not register helper \'' +
-            meta.helpers[key] + '\'');
+            meta.helpers[key] +
+            '\' from path \'' +
+            helperPath +
+            '\': ' +
+            e.toString()
+          );
       }
     }
 
@@ -142,8 +163,10 @@ const StructuredDocument = {
   render: (filePath, data) => {
     const docs = loadDocs(data);
     if (docs.length !== 1 && docs.length !== 2) {
-      throw makeClientError('expected 2 yaml documents. See the documentation');
+      throw makeClientError('expected 1 or 2 yaml documents. See the documentation');
     }
+
+    currentRenderingTemplateBasePath = path.dirname(filePath);
 
     let meta = loadMeta(filePath, docs);
     let content = loadDoc(docs);
@@ -166,4 +189,4 @@ const StructuredDocument = {
 
 };
 
-module.exports = StructuredDocument;
+export default  StructuredDocument;

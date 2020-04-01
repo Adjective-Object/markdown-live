@@ -1,9 +1,9 @@
 // @flow
-const chokidar = require('chokidar');
-const path = require('path');
+import chokidar from 'chokidar';
+import path from 'path';
 import {fs} from 'mz';
 
-type StringMap = {[key: string]: ?string};
+type StringMap = {[key: string]: string | void};
 type Config = {[key: string]: ?(string | Object)};
 
 export class ConfigManager {
@@ -35,30 +35,30 @@ export class ConfigManager {
     });
   }
 
-  getPlatformUserConfigDir(): string {
+  getPlatformUserConfigDir(environment: typeof process.env): string {
     // windows
-    if (this.environment.APPDATA) {
-      return this.environment.APPDATA;
+    if (environment.APPDATA) {
+      return environment.APPDATA;
     }
 
     // osx or linux, somehow userless
-    if (!this.environment.HOME) {
+    if (!environment.HOME) {
       return '/var/local';
     }
 
     // osx
     else if (this.platform === 'darwin') {
-      return path.join(this.environment.HOME, 'Library', 'Preferences');
+      return path.join(environment.HOME, 'Library', 'Preferences');
     }
 
     // linux, with XDG
-    else if (this.environment.XDG_CONFIG_HOME) {
-      return this.environment.XDG_CONFIG_HOME;
+    else if (environment.XDG_CONFIG_HOME) {
+      return environment.XDG_CONFIG_HOME;
     }
 
     // default to $HOME/.config
     const xdgDefaultPath = path.join(
-      this.environment.HOME,
+      environment.HOME,
       '.config'
     );
 
@@ -196,7 +196,7 @@ export class ConfigManager {
   write(filePath: string, content: string | Object) {
     const stringContent:string =
       (typeof content === 'object')
-        ? JSON.toString(content)
+        ? JSON.stringify(content)
         : content;
 
     if (this.configCache) this.configCache[filePath] = stringContent;

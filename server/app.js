@@ -1,28 +1,28 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const process = require('process');
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
 
-const _ = require('underscore');
+import _ from 'underscore';
 
-const chokidar = require('chokidar');
-const open = require('open');
+import chokidar from 'chokidar';
+import open from 'open';
 
 import Server from './server-communication';
 import config from './config-manager';
 
-const MarkdownDocument = require('./document-types/markdown-document');
-const StructuredDocument = require('./document-types/structured-document');
+import MarkdownDocument from './document-types/markdown-document';
+import StructuredDocument from './document-types/structured-document';
 
 const docTypes = [
   MarkdownDocument,
   StructuredDocument,
 ];
 
-const _lib = require('./document-types/lib.js');
-const ClientError = _lib.ClientError;
-const errorTemplate = require('./document-types/error-template.handlebars');
+
+import { ClientError } from './document-types/lib.js';
+import errorTemplate from './document-types/error-template.handlebars';
 
 /* eslint-disable camelcase */
 const Message = {
@@ -379,4 +379,4 @@ class MarkdownLive {
   }
 }
 
-module.exports = MarkdownLive;
+export default  MarkdownLive;

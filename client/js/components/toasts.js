@@ -27,8 +27,12 @@ class ToastController extends Framework {
       Views: types.SangriaViews,
       Controllers: types.SangriaController
       ) {
+    const dock = document.getElementById('notification-dock')
+    if (dock === null) {
+        throw new Error("failed to find #notification-dock in the document")
+    }
     this.elements = {
-      dock: document.getElementById('notification-dock'),
+      dock: dock,
     };
   }
 

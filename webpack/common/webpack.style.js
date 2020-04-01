@@ -1,36 +1,34 @@
 'use strict';
 const common = require('./common');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const precss = require('precss');
-const autoprefixer = require('autoprefixer');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   name: 'style',
   context: common.projectRoot,
   entry: common.entryGlob('client/css/*.scss'),
-  output: {
-    path: 'dist/web/public/css',
-    filename: '[name].css',
-  },
   plugins: [
-    new ExtractTextPlugin('[name].css'),
+    new MiniCssExtractPlugin(),
   ],
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract(
-          'css-loader?minimize!sass-loader!postcss-loader'
-        ),
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: process.env.NODE_ENV === 'development',
+            },
+          },
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.svg$/,
-        loader: 'svg-url-loader',
+        use: 'svg-url-loader',
       },
     ],
-  },
-  postcss: function applyPostCss() {
-    return [precss, autoprefixer];
   },
 };

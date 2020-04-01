@@ -21,13 +21,16 @@ module.exports = common.extend({
       $dirname: '__dirname',
       $require: 'require',
     })].concat(common.devBuild ? [
-      new webpack.BannerPlugin('require("source-map-support").install();',
-       { raw: true, entryOnly: false }),
-      new webpack.BannerPlugin(
-        'require("electron-reload")(__dirname, {main: "main.js", electron: "' + electronExec + '"});', {
-          raw: true,
-          entryOnly: false,
-        }),
+      new webpack.BannerPlugin({
+        raw: true,
+        entryOnly: false,
+        banner: 'require("source-map-support").install();',
+      }),
+      new webpack.BannerPlugin({
+        banner: 'require("electron-reload")(__dirname, {main: "main.js", electron: "' + electronExec + '"});',
+        raw: true,
+        entryOnly: false,
+      }),
     ] : []),
   electron: {
     __filename: true,

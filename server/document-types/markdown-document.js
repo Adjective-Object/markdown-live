@@ -22,4 +22,4 @@ const MarkdownDocument = {
   type: 'markdown',
 };
 
-module.exports = MarkdownDocument;
+export default  MarkdownDocument;

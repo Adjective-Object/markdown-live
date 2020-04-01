@@ -1,4 +1,4 @@
-const {ipcMain} = require('electron');
+import {ipcMain} from 'electron';
 
 class IpcServer {
   constructor(options) {

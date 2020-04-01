@@ -6,7 +6,6 @@ const styleConfig = require('../common/webpack.style');
 const webStyleConfig = _.clone(styleConfig);
 webStyleConfig.output = {
   path: common.dist('web/public/css'),
-  filename: '[name].css',
 };
 
 module.exports = webStyleConfig;

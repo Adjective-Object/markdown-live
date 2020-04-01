@@ -1,6 +1,6 @@
 'use strict';
 
-function ClientError(toast) {
+export function ClientError(toast) {
   this.toast = toast;
   this.toast.kind = this.toast.kind || 'error';
 }
@@ -16,7 +16,7 @@ function containsObject(obj, list) {
   return false;
 }
 
-function recurseKeys(obj, slug, blacklist) {
+export function recurseKeys(obj, slug, blacklist) {
   slug = slug || '';
   blacklist = blacklist || [];
   for (const x in obj) {
@@ -35,8 +35,3 @@ function recurseKeys(obj, slug, blacklist) {
     }
   }
 }
-
-module.exports = {
-  ClientError: ClientError,
-  recurseKeys: recurseKeys,
-};

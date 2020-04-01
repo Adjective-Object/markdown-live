@@ -163,7 +163,6 @@ h1, h2, h3, h4, h5 {
   }
 
   .dir__remove {
-    display: inline-block;
     float: right;
     padding: 0;
     vertical-align: middle;
@@ -240,6 +239,8 @@ h1, h2, h3, h4, h5 {
 
   input[type="text"] {
     flex-grow: 1;
+    flex-shrink: 1;
+    width: 0;
   }
 
   button {

@@ -1,25 +1,49 @@
-const express = require('express');
-const path = require('path');
+// @flow
+import express from 'express';
+import path from 'path';
+import {Server as HttpServer} from 'http';
+import socketIo from 'socket.io';
+import indexTemplate from './views/index.handlebars';
+
 const app = express();
-
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
-
-const indexTemplate = require('./views/index.handlebars');
+const io = socketIo(server);
 
 class SocketServer {
-  constructor(options) {
+  url: string
+  handlers: {[key: string]: Function[]}
+
+  constructor(options: {
+    port: number,
+    dir: string,
+  }) {
     this.url = `http://localhost:${options.port}`;
 
-    /* eslint-disable no-undef */
-    app.use(express.static(path.join($dirname, 'public')));
-    /* eslint-enable no-undef */
-    app.use(express.static(options.dir));
     app.get('/', (req, res) => {
       res.end(indexTemplate({
         url: this.url,
       }));
     });
+    app.get('/template-assets', (req, res) => {
+      const templatePath = req.query.templatePath;
+      const relativePath = req.query.relativePath;
+      if (!templatePath || !relativePath) {
+        res.status(401);
+        res.end();
+      } else {
+        const dlPath = path.join(
+          templatePath,
+          relativePath
+        );
+        console.log('download', dlPath)
+        res.sendFile(dlPath)
+      }
+    });
+
+    /* eslint-disable no-undef */
+    app.use(express.static(path.join($dirname, 'public')));
+    /* eslint-enable no-undef */
+    app.use(express.static(options.dir));
 
     this.handlers = {};
     this.port = options.port;

@@ -79,25 +79,33 @@ const baseConfig = {
     fs: 'empty',
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.handlebars$/,
-        loader: handlebarsLoaderPath,
-        query: { runtime: handlebarsRuntimePath },
+        use: [
+          {
+            loader: handlebarsLoaderPath,
+            query: { runtime: handlebarsRuntimePath },    
+          },
+        ],
       },
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader',
-        query: {
-          'presets': ['es2015'],
-          'plugins': ['transform-flow-strip-types'],
-        },
+        use: [
+          {
+            loader: 'babel-loader',
+            query: {
+              'presets': ['@babel/preset-env'],
+              'plugins': ['transform-flow-strip-types'],
+            },
+          },
+        ],
       },
     ],
   },
   resolve: {
-    extensions: ['', '.js', '.handlebars'],
+    extensions: ['.js', '.handlebars'],
   },
   externals: [
     function checkIsFlowtypeImport(context, request, callback) {
@@ -114,13 +122,9 @@ const devJsConfig = _extend({
 }, baseConfig);
 
 const prodJsConfig = _extend({
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-      },
-    }),
-  ],
+  optimizations: {
+    minimize: true,
+  },
 }, baseConfig);
 
 const jsConfig = devBuild
